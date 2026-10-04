@@ -1,0 +1,101 @@
+{
+  "scope": "Offline whitevariant artifact review only;no targetaccess or payloadedits.",
+  "variant": "Whiteglyphs;samenative touchcounter andoriginalOSdriveruse as reviewedpinkvariant",
+  "baseline_archive": "analysis\\persistence\\native-counter-pink-reviewed\\analysis\\display-takeover",
+  "baseline_review": "analysis\\persistence\\native-counter-pink-reviewed\\analysis\\display-takeover\\native-counter-independent-review-1.50.10.json",
+  "baseline_review_sha256": "cc02849b3d0eba952a977be67c6a4f8de132f0295f70697e67682b0b1baf8433",
+  "source_change": "NormalizedtextwhiteC equals archivedpinkC with exactlythe singleglyphconstant0xffff00ffu replacedby0xffffffffu.NootherC textchange;rawline-endingdifferences are not treatedascodechanges.",
+  "source_sha256": "21338ffa0d9fef1df73841d8b45879f762486d884cf07600f4dc4162ee41e8b8",
+  "baseline_bin_sha256": "a08e8379ad25b14c82b2ef9d98c001699f34048238bec2a96484a9fefe32cf8c",
+  "bin_sha256": "80a92ac659f795546258b24b31780fae353f0dd5e543a97c0d47b8b139ecae9d",
+  "elf_sha256": "3e8006c27ebe1664000eba147527dda4f24793aabd264d4a6ee9dd880107cc7a",
+  "current_adopted_manifest_sha256": "55fbb71be4fe4abd40a245f72f303073cc5afce0288a5aa238bf35ea475af4ed",
+  "bytes": 966,
+  "entry": "0x3804b2f5",
+  "allocated_sections": [
+    {
+      "name": ".start",
+      "address": "0x3804b2f4",
+      "size": 4,
+      "flags": 6
+    },
+    {
+      "name": ".counter",
+      "address": "0x3804b2f8",
+      "size": 962,
+      "flags": 54
+    }
+  ],
+  "symbols": {
+    "paint": {
+      "value": "0x3804b4c9",
+      "size": 300
+    },
+    "font": {
+      "value": "0x3804b63c",
+      "size": 126
+    },
+    "alphabet": {
+      "value": "0x3804b61d",
+      "size": 19
+    },
+    "counter_start": {
+      "value": "0x3804b2f5",
+      "size": 4
+    },
+    "counter_main": {
+      "value": "0x3804b2f9",
+      "size": 464
+    }
+  },
+  "undefined_symbols": [],
+  "relocation_sections": [],
+  "RW_BSS_bytes": 0,
+  "load_file_address": "0x92b2f8",
+  "BIN_equals_allocated_sections": true,
+  "difference": {
+    "offsets": [
+      "0x26c",
+      "0x26d",
+      "0x26e",
+      "0x26f"
+    ],
+    "instruction_address": "0x3804b560",
+    "old_bytes": "6ff47f44",
+    "new_bytes": "4ff0ff34",
+    "old_instruction": "mvn r4, #0xff00",
+    "new_instruction": "mov.w r4, #-1",
+    "all_other_BIN_bytes_identical": true
+  },
+  "machine_proof": {
+    "constant_register": "r4=0xffffffff",
+    "glyph_store_address": "0x3804b5c4",
+    "glyph_store_instruction": "strmi.w r4, [r1, r5, lsl #2]",
+    "no_intervening_r4_write": true,
+    "color_limit": "Allfourpixelbytesareff,soopaque white regardlessR/B byteordering;changesglyphcoloronly,notpanelbacklight/PWM behavior."
+  },
+  "sector_review": {
+    "code": {
+      "sector_offset": "0x92b000",
+      "patch_offset": "0x2f8",
+      "patch_bytes": 966,
+      "changed_bytes": 950,
+      "original_matches_firmware": true,
+      "all_other_bytes_preserved": true,
+      "patched_sha256": "e2ac1b8fb72cf457280295dccdda19f2f996b89fc0f04286fc0d53cbc5161abb"
+    },
+    "entry": {
+      "sector_offset": "0xccd000",
+      "patch_offset": "0xcc8",
+      "patch_bytes": 4,
+      "changed_bytes": 3,
+      "original_matches_firmware": true,
+      "all_other_bytes_preserved": true,
+      "patched_sha256": "945c03b6dfb4e2f1fa0082664c8766d5c740c7c11de98c0c64a692ba0bc9b81d"
+    }
+  },
+  "carried_forward_review": "ExactAPIaddresses,PANsource+24,flags41,DOWN/UPlatch,canvaslifetime,fallback,stack/font/pixelbounds,entry4Btrampolineand966Bfit arebyteidentical to reviewedpinkexceptcolorload.Noanimation,timerfadeorPWMcallisadded.",
+  "runtime_limit": "Root/userconfirmedhardwarecoldboot/touchforpink;whitevariantrequiresparentinstall/readbackandvisiblecoldbootverification.",
+  "result": "No material blocker identified in this narrowly changed whitebinary and itsadopted sectorimages.",
+  "target_operations": 0
+}

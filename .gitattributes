@@ -1,0 +1,6 @@
+# Frozen installer inputs are authenticated byte-for-byte. Preserve existing
+# line endings in the index and on checkout, including on Windows.
+* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Preserve the exact historical probe, including its reviewed final blank line.
+diagnostics/mcu-reset-bootbreak-resume-probe.cfg whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol

@@ -1,0 +1,487 @@
+{
+  "scope": "Offline-only selected MCU/BES2003 pin mapping; no target reads, code execution, RAM or Flash writes.",
+  "firmware_version": "1.50.10",
+  "backup_file": "mi-panel-flash-16m-1.50.10-20261004.bin",
+  "backup_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "address_convention": "Every code/data address named offset is a NOR file offset. MCU XIP aliases commonly add 0x0c000000 or 0x2c000000. GPIO labels are logical bank/bit, not package balls or board test pads.",
+  "abi": {
+    "hal_iomux_init_offset": "0x5cb9c4",
+    "entry_size": 4,
+    "fields_offsets": {
+      "pin": 0,
+      "function": 1,
+      "voltage_domain": 2,
+      "pull": 3
+    },
+    "evidence": "ldrb at offsets 0/1/2/3; postincrement pointer by 4.",
+    "public_function_table_exactly_matches_all_32_by_11_bytes": true
+  },
+  "confirmed_startup_routes": {
+    "UART0": {
+      "pins": [
+        {
+          "gpio": "P1_6",
+          "pin_enum": 14,
+          "signal": "RX",
+          "function_enum": 89,
+          "mux_register_value": 1,
+          "pull": "up"
+        },
+        {
+          "gpio": "P1_7",
+          "pin_enum": 15,
+          "signal": "TX",
+          "function_enum": 90,
+          "mux_register_value": 1,
+          "pull": "none"
+        }
+      ],
+      "startup_chain_offsets": [
+        "0x150010",
+        "0x150056",
+        "0x5d6538",
+        "0x5cfb18",
+        "0x5cba14"
+      ],
+      "board_init_offset": "0x5d6294",
+      "board_init_is_called_at_offsets": [
+        "0x1a3d4c",
+        "0x5d655a"
+      ],
+      "configuration_offset": "0x821f70",
+      "serial": {
+        "baud": 921600,
+        "data_bits": 8,
+        "parity": "none",
+        "stop_bits": 1,
+        "hardware_flow_control": false,
+        "dma_flags": 0
+      },
+      "limits": "Proves startup configuration; no passive wire measurement and no physical test-pad trace yet. Later runtime changes not excluded."
+    },
+    "PA_control_GPIO": {
+      "pin_enum": 31,
+      "gpio": "P3_7",
+      "function_enum": 1,
+      "function": "HAL_IOMUX_FUNC_AS_GPIO",
+      "voltage_domain_enum": 0,
+      "voltage_domain": "VIO",
+      "pull_enum": 0,
+      "pull": "none",
+      "initial_direction": "output",
+      "initial_level": 0,
+      "board_init_offset": "0x5d6294",
+      "gpio_init_offset": "0x5d616c",
+      "pin_config_offset": "0x823efb",
+      "set_dir_offset": "0x5d1dcc",
+      "control_pin_setter_offset": "0x5ad6d0",
+      "role_evidence": "Board init passes pin31 to the persistent PA-control pin selector; old PA-control function reads the same selector and toggles GPIO with open all PA / close all PA strings.",
+      "limits": "PA denotes firmware control path; amplifier part, physical trace and polarity beyond observed initialization are unverified."
+    }
+  },
+  "conditional_routes": {
+    "GPIO_keys": {
+      "hal_key_open_offset": "0x5d2ff8",
+      "wrapper_offset": "0x1579f2",
+      "veneer_offset": "0x17b74c",
+      "table_offset": "0x7f8b08",
+      "entries": [
+        {
+          "entry_offset": "0x7f8b08",
+          "key_mask": 2,
+          "pin_config": {
+            "pin_enum": 26,
+            "gpio": "P3_2",
+            "function_enum": 1,
+            "function": "HAL_IOMUX_FUNC_AS_GPIO",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          }
+        },
+        {
+          "entry_offset": "0x7f8b10",
+          "key_mask": 4,
+          "pin_config": {
+            "pin_enum": 27,
+            "gpio": "P3_3",
+            "function_enum": 1,
+            "function": "HAL_IOMUX_FUNC_AS_GPIO",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          }
+        },
+        {
+          "entry_offset": "0x7f8b18",
+          "key_mask": 8,
+          "pin_config": {
+            "pin_enum": 25,
+            "gpio": "P3_1",
+            "function_enum": 1,
+            "function": "HAL_IOMUX_FUNC_AS_GPIO",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          }
+        }
+      ],
+      "evidence_status": "Wrapper calls hal_key_open; hal_key_open iterates three table entries and calls hal_iomux_init for nonzero key masks. The wrapper invocation and physical keys are not established as normal startup."
+    },
+    "I2C": [
+      {
+        "controller": 0,
+        "iomux_helper_offset": "0x5cbbb4",
+        "table_offset": "0x82107d",
+        "pins": [
+          {
+            "pin_enum": 4,
+            "gpio": "P0_4",
+            "function_enum": 10,
+            "function": "HAL_IOMUX_FUNC_I2C_M0_SCL",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          },
+          {
+            "pin_enum": 5,
+            "gpio": "P0_5",
+            "function_enum": 11,
+            "function": "HAL_IOMUX_FUNC_I2C_M0_SDA",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          }
+        ],
+        "evidence_status": "Compiled HAL helper calls hal_iomux_init(count=2); referenced by HAL descriptor. Normal board invocation not established."
+      },
+      {
+        "controller": 1,
+        "iomux_helper_offset": "0x5cbbd4",
+        "table_offset": "0x821075",
+        "pins": [
+          {
+            "pin_enum": 6,
+            "gpio": "P0_6",
+            "function_enum": 12,
+            "function": "HAL_IOMUX_FUNC_I2C_M1_SCL",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          },
+          {
+            "pin_enum": 7,
+            "gpio": "P0_7",
+            "function_enum": 15,
+            "function": "HAL_IOMUX_FUNC_I2C_M1_SDA",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          }
+        ],
+        "evidence_status": "Compiled HAL helper calls hal_iomux_init(count=2); referenced by HAL descriptor. Normal board invocation not established."
+      },
+      {
+        "controller": 2,
+        "iomux_helper_offset": "0x5cbbf4",
+        "table_offset": "0x82106d",
+        "pins": [
+          {
+            "pin_enum": 8,
+            "gpio": "P1_0",
+            "function_enum": 13,
+            "function": "HAL_IOMUX_FUNC_I2C_M2_SCL",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          },
+          {
+            "pin_enum": 9,
+            "gpio": "P1_1",
+            "function_enum": 14,
+            "function": "HAL_IOMUX_FUNC_I2C_M2_SDA",
+            "voltage_domain_enum": 0,
+            "voltage_domain": "VIO",
+            "pull_enum": 1,
+            "pull": "up"
+          }
+        ],
+        "evidence_status": "Compiled HAL helper calls hal_iomux_init(count=2); referenced by HAL descriptor. Normal board invocation not established."
+      }
+    ],
+    "UART2_BLE_diagnostic": {
+      "iomux_helper_offset": "0x5cba74",
+      "caller_offset": "0x5aa22c",
+      "pins": [
+        {
+          "gpio": "P0_0",
+          "signal": "RX",
+          "pull": "up"
+        },
+        {
+          "gpio": "P0_1",
+          "signal": "TX",
+          "pull": "none"
+        }
+      ],
+      "mux_register_value": 1,
+      "evidence_status": "Old call chain is ble_nosignal_start test mode, with UART2 opened. New mux helper remains byte-identical and has one direct caller. No normal board use proved.",
+      "debug_overlap": "Public guide also assigns P0_0/P0_1 to JTMS/SWDIO and JTCK/SWCK under debug mux; choosing UART2 here can change debug pin function."
+    }
+  },
+  "not_established": [
+    "MCU normal SPI or SPILCD assignments",
+    "MCU versus A7 ownership and initializer of the observed SDMMC mux",
+    "Physical GPIO-to-BES2600WM package ball and board-pad mapping",
+    "Current UART baud/format beyond startup configuration"
+  ],
+  "voltage_limit": "VIO enum0 is a requested voltage domain, not 0 V or a proven 1.8/2.8/3.3 V level. Compiled normal-GPIO voltage setter is effectively a no-op; bank supply must be established separately.",
+  "source_reference": "public-pinmux-reference.json and reference/hal_uart.h; source is public OpenHarmony BEST2003 HAL, cross-version alignment confirmed by exact pin-function table match.",
+  "runtime_cross_check": {
+    "source": "Root-agent-provided read-only IOMUX snapshots; this script reads saved files only.",
+    "snapshot_files": [
+      "backups/pinout-registers-1.50.10/iomux-before.bin",
+      "backups/pinout-registers-1.50.10/iomux-after.bin"
+    ],
+    "base_address": "0x40086000",
+    "byte_length": 152,
+    "two_reads_identical": true,
+    "capture_limits": "Running non-atomic register snapshots. Agreement is a stable observation, not a guarantee that every service always uses this mux.",
+    "selected_pins": {
+      "4": {
+        "gpio": "P0_4",
+        "pin_enum": 4,
+        "mux_register_value": 13,
+        "decoded_functions": [],
+        "pullup": false,
+        "pulldown": true
+      },
+      "5": {
+        "gpio": "P0_5",
+        "pin_enum": 5,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "6": {
+        "gpio": "P0_6",
+        "pin_enum": 6,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": true,
+        "pulldown": false
+      },
+      "7": {
+        "gpio": "P0_7",
+        "pin_enum": 7,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": true,
+        "pulldown": false
+      },
+      "8": {
+        "gpio": "P1_0",
+        "pin_enum": 8,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA2"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "9": {
+        "gpio": "P1_1",
+        "pin_enum": 9,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA3"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "10": {
+        "gpio": "P1_2",
+        "pin_enum": 10,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_CMD"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "11": {
+        "gpio": "P1_3",
+        "pin_enum": 11,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_CLK"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "12": {
+        "gpio": "P1_4",
+        "pin_enum": 12,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA0"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "13": {
+        "gpio": "P1_5",
+        "pin_enum": 13,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA1"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "14": {
+        "gpio": "P1_6",
+        "pin_enum": 14,
+        "mux_register_value": 1,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_UART0_RX"
+        ],
+        "pullup": true,
+        "pulldown": false
+      },
+      "15": {
+        "gpio": "P1_7",
+        "pin_enum": 15,
+        "mux_register_value": 1,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_UART0_TX"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      "25": {
+        "gpio": "P3_1",
+        "pin_enum": 25,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": true,
+        "pulldown": false
+      },
+      "26": {
+        "gpio": "P3_2",
+        "pin_enum": 26,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": true,
+        "pulldown": false
+      },
+      "27": {
+        "gpio": "P3_3",
+        "pin_enum": 27,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": true,
+        "pulldown": false
+      },
+      "31": {
+        "gpio": "P3_7",
+        "pin_enum": 31,
+        "mux_register_value": 15,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_GPIO"
+        ],
+        "pullup": false,
+        "pulldown": false
+      }
+    },
+    "UART0_startup_mux_confirmed": true,
+    "PA_GPIO_mux_and_nopull_confirmed": true,
+    "GPIO_key_configs_mux_and_pull_confirmed": true,
+    "SDMMC_runtime_pins": [
+      {
+        "gpio": "P1_3",
+        "pin_enum": 11,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_CLK"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      {
+        "gpio": "P1_2",
+        "pin_enum": 10,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_CMD"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      {
+        "gpio": "P1_4",
+        "pin_enum": 12,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA0"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      {
+        "gpio": "P1_5",
+        "pin_enum": 13,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA1"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      {
+        "gpio": "P1_0",
+        "pin_enum": 8,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA2"
+        ],
+        "pullup": false,
+        "pulldown": false
+      },
+      {
+        "gpio": "P1_1",
+        "pin_enum": 9,
+        "mux_register_value": 9,
+        "decoded_functions": [
+          "HAL_IOMUX_FUNC_SDMMC_DATA3"
+        ],
+        "pullup": false,
+        "pulldown": false
+      }
+    ],
+    "SDMMC_limits": "Shared chip IOMUX registers show SDMMC CLK/CMD/DATA0..3 assignments; MCU versus A7 initializer/driver ownership and physical MMC wiring are not determined by this capture.",
+    "compiled_I2C_helpers_active_on_their_selected_pins": false,
+    "I2C_limit": "P0_4/P0_5, P0_6/P0_7, P1_0/P1_1 are not currently in the functions specified by the three compiled MCU I2C helper tables. This does not prove the device lacks other I2C routes."
+  }
+}

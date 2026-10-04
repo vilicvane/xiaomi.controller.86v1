@@ -1,0 +1,307 @@
+{
+  "scope": "Offline source/image/report work only; no target access by this agent",
+  "firmware": "backups\\mi-panel-flash-16m-1.50.10-20261004.bin",
+  "firmware_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "controller_ownership": [
+    {
+      "image": "main",
+      "file_offset": "0x155858",
+      "ram_address": "0x20003948",
+      "id0": "0x40148000",
+      "id1": "0x40140000"
+    },
+    {
+      "image": "boot",
+      "file_offset": "0x5378",
+      "ram_address": "0x20003300",
+      "id0": "0x40148000",
+      "id1": "0x40140000"
+    }
+  ],
+  "busy_bit_evidence": [
+    {
+      "image": "main",
+      "meaning": "id-selected table, controller+0x0c bit0 wait loop; no firmware timeout",
+      "instructions": [
+        {
+          "address": "0x20000790",
+          "file_offset": "0x1526a0",
+          "bytes": "034b",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0xc]",
+          "literal": {
+            "pool": "0x200007a0",
+            "value": "0x20003948"
+          }
+        },
+        {
+          "address": "0x20000792",
+          "file_offset": "0x1526a2",
+          "bytes": "53f82020",
+          "mnemonic": "ldr.w",
+          "operands": "r2, [r3, r0, lsl #2]"
+        },
+        {
+          "address": "0x20000796",
+          "file_offset": "0x1526a6",
+          "bytes": "d368",
+          "mnemonic": "ldr",
+          "operands": "r3, [r2, #0xc]"
+        },
+        {
+          "address": "0x20000798",
+          "file_offset": "0x1526a8",
+          "bytes": "db07",
+          "mnemonic": "lsls",
+          "operands": "r3, r3, #0x1f"
+        },
+        {
+          "address": "0x2000079a",
+          "file_offset": "0x1526aa",
+          "bytes": "fcd4",
+          "mnemonic": "bmi",
+          "operands": "#0x20000796"
+        },
+        {
+          "address": "0x2000079c",
+          "file_offset": "0x1526ac",
+          "bytes": "7047",
+          "mnemonic": "bx",
+          "operands": "lr"
+        },
+        {
+          "address": "0x2000079e",
+          "file_offset": "0x1526ae",
+          "bytes": "00bf",
+          "mnemonic": "nop",
+          "operands": ""
+        },
+        {
+          "address": "0x200007a0",
+          "file_offset": "0x1526b0",
+          "bytes": "4839",
+          "mnemonic": "subs",
+          "operands": "r1, #0x48"
+        },
+        {
+          "address": "0x200007a2",
+          "file_offset": "0x1526b2",
+          "bytes": "0020",
+          "mnemonic": "movs",
+          "operands": "r0, #0"
+        }
+      ]
+    },
+    {
+      "image": "main",
+      "meaning": "id-selected status+0x0c AND bit0 isbusy predicate",
+      "instructions": [
+        {
+          "address": "0x200008b4",
+          "file_offset": "0x1527c4",
+          "bytes": "034b",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0xc]",
+          "literal": {
+            "pool": "0x200008c4",
+            "value": "0x20003948"
+          }
+        },
+        {
+          "address": "0x200008b6",
+          "file_offset": "0x1527c6",
+          "bytes": "53f82030",
+          "mnemonic": "ldr.w",
+          "operands": "r3, [r3, r0, lsl #2]"
+        },
+        {
+          "address": "0x200008ba",
+          "file_offset": "0x1527ca",
+          "bytes": "d868",
+          "mnemonic": "ldr",
+          "operands": "r0, [r3, #0xc]"
+        },
+        {
+          "address": "0x200008bc",
+          "file_offset": "0x1527cc",
+          "bytes": "00f00100",
+          "mnemonic": "and",
+          "operands": "r0, r0, #1"
+        },
+        {
+          "address": "0x200008c0",
+          "file_offset": "0x1527d0",
+          "bytes": "7047",
+          "mnemonic": "bx",
+          "operands": "lr"
+        },
+        {
+          "address": "0x200008c2",
+          "file_offset": "0x1527d2",
+          "bytes": "00bf",
+          "mnemonic": "nop",
+          "operands": ""
+        },
+        {
+          "address": "0x200008c4",
+          "file_offset": "0x1527d4",
+          "bytes": "4839",
+          "mnemonic": "subs",
+          "operands": "r1, #0x48"
+        },
+        {
+          "address": "0x200008c6",
+          "file_offset": "0x1527d6",
+          "bytes": "0020",
+          "mnemonic": "movs",
+          "operands": "r0, #0"
+        },
+        {
+          "address": "0x200008c8",
+          "file_offset": "0x1527d8",
+          "bytes": "08b5",
+          "mnemonic": "push",
+          "operands": "{r3, lr}"
+        },
+        {
+          "address": "0x200008ca",
+          "file_offset": "0x1527da",
+          "bytes": "fff7",
+          "mnemonic": ".byte",
+          "operands": "0xff, 0xf7"
+        }
+      ]
+    },
+    {
+      "image": "boot",
+      "meaning": "independent boot same table/index/bit0 wait semantics",
+      "instructions": [
+        {
+          "address": "0x20000450",
+          "file_offset": "0x24c8",
+          "bytes": "034b",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0xc]",
+          "literal": {
+            "pool": "0x20000460",
+            "value": "0x20003300"
+          }
+        },
+        {
+          "address": "0x20000452",
+          "file_offset": "0x24ca",
+          "bytes": "53f82020",
+          "mnemonic": "ldr.w",
+          "operands": "r2, [r3, r0, lsl #2]"
+        },
+        {
+          "address": "0x20000456",
+          "file_offset": "0x24ce",
+          "bytes": "d368",
+          "mnemonic": "ldr",
+          "operands": "r3, [r2, #0xc]"
+        },
+        {
+          "address": "0x20000458",
+          "file_offset": "0x24d0",
+          "bytes": "db07",
+          "mnemonic": "lsls",
+          "operands": "r3, r3, #0x1f"
+        },
+        {
+          "address": "0x2000045a",
+          "file_offset": "0x24d2",
+          "bytes": "fcd4",
+          "mnemonic": "bmi",
+          "operands": "#0x20000456"
+        },
+        {
+          "address": "0x2000045c",
+          "file_offset": "0x24d4",
+          "bytes": "7047",
+          "mnemonic": "bx",
+          "operands": "lr"
+        },
+        {
+          "address": "0x2000045e",
+          "file_offset": "0x24d6",
+          "bytes": "00bf",
+          "mnemonic": "nop",
+          "operands": ""
+        },
+        {
+          "address": "0x20000460",
+          "file_offset": "0x24d8",
+          "bytes": "0033",
+          "mnemonic": "adds",
+          "operands": "r3, #0"
+        },
+        {
+          "address": "0x20000462",
+          "file_offset": "0x24da",
+          "bytes": "0020",
+          "mnemonic": "movs",
+          "operands": "r0, #0"
+        }
+      ]
+    }
+  ],
+  "preserved_failed_attempt": {
+    "result": "diagnostics\\mcu-cmu-bootbreak-result.txt",
+    "host_log": "diagnostics/mcu-cmu-bootbreak-probe.txt",
+    "post_failure_log": "diagnostics/mcu-cmu-after-failure-state.txt",
+    "failed_read_address": "0x4014000c",
+    "actual_role": "id1 secondary controller",
+    "reset_possible": false,
+    "global_reset_written": false,
+    "debug_writes_possible": 4,
+    "debug_writes": [
+      "0xe000edf0 0xa05f0001",
+      "0xe000edf0 0xa05f0003",
+      "0xe000ed30 0x0000000a",
+      "0xe000edfc 0x01110001"
+    ],
+    "nor_data_written": false,
+    "ram_or_core_context_written": false,
+    "cleanup_complete": false,
+    "test_error": "failed to read memory",
+    "cleanup_error": "failed to read memory",
+    "phase_label_correction": "Old reset_requested label preceded the failed controller preflight; it did not mean a reset write occurred",
+    "recovery": "User completed full power cycle; root subsequently verified normal screen and fresh SCS/FPB access",
+    "cause": "Wrong inactive/unused secondary controller is a plausible explanation for the stalled AP. Causality and clock/security/master-access alternatives have not been independently measured."
+  },
+  "root_live_evidence": {
+    "main_table": {
+      "path": "diagnostics/mcu-safe-reset-metadata.txt",
+      "address": "0x20003948",
+      "values": [
+        "0x40148000",
+        "0x40140000"
+      ]
+    },
+    "correct_primary": {
+      "path": "diagnostics/mcu-active-flash-metadata.txt",
+      "status_address": "0x4014800c",
+      "status": "0x00001053",
+      "lock_address": "0x40148034",
+      "lock": "0x0002f000",
+      "capture_state": "MCU running/sleeping; busy bit1 does not imply a program/erase fault"
+    }
+  },
+  "corrected_probe": {
+    "path": "diagnostics\\mcu-cmu-active-flash-bootbreak-probe.cfg",
+    "sha256": "11621c5b643a2df1c568b3e58b5428fb4b6fbcc05f3c5abe1556f56606c47a4a",
+    "controller_reads": "Only after actual-image + live SRAM pointer-table verification; id0=0x40148000",
+    "idle_gate": "Keep MCU halted; bounded <=32 reads/200ms of correct-primary status bit0, then lock bit0x100; reject before global write if not settled",
+    "global_reset": "At most one direct AON0x400800a4=0x200, no AIRCR; debug retention is still a silicon measurement",
+    "offline_cases_passed": 16,
+    "offline_summary": "analysis\\persistence\\offline-active-flash-bootbreak\\summary.json"
+  },
+  "limitations": [
+    "Controller busy0 and read-bus lock0 are controller observations, not independent NOR chip WIP verification.",
+    "Main opened1 and recorded suspend0 are context consistency gates, not synchronous-operation busy flags.",
+    "Running status can be busy from instruction fetch or another master; halted settle can fail while A7 remains active.",
+    "No assumption that a sleep observation identifies WFI or that halted PC is an idle loop.",
+    "Corrected cfg remains unexecuted by this agent; only root may run hardware."
+  ]
+}

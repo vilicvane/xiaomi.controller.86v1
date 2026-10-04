@@ -1,0 +1,36 @@
+{
+  "scope": "Feasibility and implementation constraints only; no panel writes or runtime switching performed",
+  "user_preference": "Switch between original UI and custom program without device reboot",
+  "current_state": "Persistent white counter installed; original vapp main and application package retained",
+  "evidence": {
+    "original_lifecycle": "analysis/display-takeover/vapp-lifecycle-switch-review-1.50.10.json",
+    "driver_ownership": "analysis/display-takeover/ui-switch-ownership-review-1.50.10.json",
+    "existing_native_counter": "analysis/persistence/native-counter-hardware-result.json"
+  },
+  "proposed_mechanism": "One launcher serializes two UI lifetimes. Native counter stops drawing/counting before entering original main. To return, a control task requests original app cooperative exit through the verified async stop path, waits for original main to complete GUI cleanup, then starts/resumes the counter UI.",
+  "state_machine": [
+    "CUSTOM_ACTIVE",
+    "CUSTOM_QUIESCING: stop custom display submissions and UI touch actions",
+    "ORIGINAL_STARTING: enter unchanged vapp main with original application arguments",
+    "ORIGINAL_ACTIVE: original app owns foreground display/input",
+    "ORIGINAL_STOP_REQUESTED: notify initialized original runtime asynchronously",
+    "ORIGINAL_QUIESCING: await run return, app thread completion and GUI teardown",
+    "CUSTOM_ACTIVE: establish own source and touch state again"
+  ],
+  "what_is_confirmed": [
+    "Original main body remains present, and a stop/destroy lifecycle exists",
+    "Original normal mode includes a separate App/JS thread; the parent command task alone is not the whole UI",
+    "Touch driver fans out to independent subscribers; framebuffer has one global queue without per-file producer ownership",
+    "Underlying OS, hardware drivers, panel services and device configuration can remain running"
+  ],
+  "required_before_install": [
+    "Prove stop request readiness and thread-safety, including framework/context lifetime during watcher calls",
+    "Prove full stop, worker and input/render callback closure and repeated original-main initialization",
+    "Wait until no old source remains in display queue before freeing owned buffers",
+    "Select a switch gesture/control that cannot also trigger an unintended original UI action",
+    "Fit compiled launcher/controller within independently audited code containers",
+    "Validate a RAM or narrowly scoped persistent round trip original-to-custom-to-original with exact rollback"
+  ],
+  "first_version_limit": "Cooperative destruction/recreation may reopen original UI at its homepage. No interface preserving the original page and full JS state has been demonstrated.",
+  "implementation_status": "Not yet implemented or verified on the device; current installed counter has no bidirectional switch control"
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "scope": "Offline public HAL and saved1.50.10 code review. No hardware access, watchdog ping, disable, clock/reset write, or core execution by this agent.",
+  "public_watchdog_registers": {
+    "implementation": "SP805-style register layout explicitly named by public hal_wdt.c; this is not the DesignWare CCVR layout",
+    "DSP_WDT_BASE": "0x58001000",
+    "LOAD": "0x58001000",
+    "VALUE": "0x58001004",
+    "CONTROL": "0x58001008",
+    "CONTROL_bits": {"0": "interrupt/countdown enable", "1": "reset enable"},
+    "INTCLR_write_only_operation_not_used": "0x5800100c",
+    "RIS": "0x58001010",
+    "MIS": "0x58001014",
+    "LOCK_do_not_write": "0x58001c00",
+    "MCU_WDT_BASE_separate": "0x40001000",
+    "AON_WDT_BASE_separate": "0x40082000",
+    "limitation": "Identifying the DSP watchdog does not identify every MCU/AON/PMU watchdog or firmware cross-core liveness timeout. DSP CONTROL0 alone would only disable this instance."
+  },
+  "actual_firmware_hal_confirmation": {
+    "image": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "evidence": "analysis/display-takeover/a7-watchdog-static-xrefs.json",
+    "reproducer": "analysis/display-takeover/analyze_a7_watchdog.py",
+    "start": "0x383d7244: MOV r4,#0x1000; MOVT r4,#0x5800; writes key1acce551 at+C00, cached LOAD at+0, clears interrupt at+C, CONTROL3 at+8, re-locks",
+    "stop": "0x383d72b8: same controller, CONTROL0",
+    "ping": "0x383d7300: reloads LOAD using cache0x38514fbc when start flag0x38514fc0 is set",
+    "set_timeout": "0x383d7364: getter0x383ceee0, UMULL frequency*timeout_seconds, minus1, clamp, store0x38514fbc",
+    "get_timeleft": "0x383d73b4: VALUE, RIS; if RIS0 adds cached LOAD+1; divides by frequency getter",
+    "runtime_frequency": {
+      "read_address": "0x384ef82c",
+      "size_bytes": 4,
+      "getter": "0x383ceee0",
+      "units": "Software-calibrated ticks per second used by this actual WDT HAL",
+      "payload_initial_value": 16000,
+      "calibration_writes": ["0x383cee84", "0x383cee8c"],
+      "calibration_upper_limit": 32000,
+      "caution": "Read the live word; do not use the initialized16000, nominal32kHz, or an assumed26MHz. Software calibration alone does not establish hardware debug freeze."
+    },
+    "NuttX_lower_driver": {
+      "start_call": "0x38003a0e calls HAL timeout with ldrb r1,[object,#4];0x38003a14 starts controller",
+      "timeout_set_call": "0x38003ade: input milliseconds divided by1000, byte stored at lower-object+4, passed as HAL seconds",
+      "timeout_value": "Actual per-instance timeout byte not yet read. Live LOAD and frequency permit estimating the current stage without locating that object."
+    }
+  },
+  "parent_reported_live_read": {
+    "LOAD": "0x000a90eb",
+    "VALUE": "0x00096bc3",
+    "CONTROL": "0x00000003",
+    "RIS": "0x00000000",
+    "MIS": "0x00000000",
+    "interpretation": "This watchdog is enabled for interrupt/reset. Its remaining seconds must use the live runtime frequency, then be corroborated by actual countdown or source selector; no value is assumed here."
+  },
+  "read_only_clock_selector_candidate": {
+    "address": "0x4000011c",
+    "register": "CMU.DSP_DIV",
+    "bit8": "CMU_SEL_32K_WDT_AP",
+    "limitation": "Macro names identify a selector but do not prove exact frequency or freeze wiring. Do not modify it."
+  },
+  "debug_freeze_status": {
+    "proven": false,
+    "public_review": "No explicit halt/watchdog-freeze selection found in hal_wdt.c, hal_cmu_best2003.c or reg_cmu_best2003.h. WDT has separately controlled O_WDT_AP/AP_WDT clocks and resets; CPU0 debug halt does not itself prove those are gated.",
+    "do_not_use": "hal_cmu_dsp_stop_cpu/reset_hold or clock_disable as a substitute: they reset/gate A7 and shared memory/peripherals, rather than preserve a debug pause."
+  },
+  "future_short_pause_gate": {
+    "before_halt": "Read live frequency word, CONTROL, VALUE and RIS; verify known frequency range and large countdown margin. Reject RIS1 and unexpected CTRL bits for the first screen test; do not rely on the additional second-stage LOAD as slack.",
+    "conservative_margin": "Use VALUE/frequency as time until the next stage, even when RIS0; require this to exceed the complete pause+restore+transport budget by a substantial margin, e.g.5seconds for a1second demonstration. Refresh immediately before HRQ because earlier reads age.",
+    "100ms_counter_probe": "After confirmed HALTED/InstrCompl and stable PRSR, capture VALUE and host time, hold at most100ms, capture VALUE/time again, then immediately RRQ and restore both locks using the already validated cleanup. Keep PRSR latches active and all possible-write flags. No WDT writes.",
+    "counter_probe_limits": "A decrease proves the counter is not fully frozen during that interval; estimate ticks/s from delta/time only if no reload, underflow or status/control change. An increase suggests reload/wrap and is inconclusive. An unchanged value alone needs a running-state control sample and adequate timing resolution before claiming debug freeze.",
+    "screen_pause_limits": "Still bounds only the identified CPU0. Other cores, MCU, DMA, LCDC and watchdogs remain active; automatic restore/resume can be delayed by an individual transport failure."
+  },
+  "sources": [
+    {"url": "https://github.com/openharmony/device_soc_bestechnic/blob/master/bes2600/liteos_m/sdk/bsp/platform/hal/hal_wdt.c", "local": "analysis/display-takeover/reference/hal_wdt.c", "lines": [36,39,45,51,57,153,189,209], "supports": "Controller register layout, start/stop/reload and two-stage timeleft"},
+    {"url": "https://github.com/openharmony/device_soc_bestechnic/blob/master/bes2600/liteos_m/sdk/bsp/platform/hal/best2003/plat_addr_map_best2003.h", "local": "analysis/pinout/reference/plat_addr_map_best2003.h", "lines": [208,266,341,363,370,379], "supports": "Separate MCU/AON/DSP watchdog bases and DSP WDT_BASE conditional"},
+    {"url": "https://github.com/openharmony/device_soc_bestechnic/blob/master/bes2600/liteos_m/sdk/bsp/platform/hal/best2003/reg_cmu_best2003.h", "local": "analysis/display-takeover/reference/reg_cmu_best2003.h", "lines": [89,857,1422,1500], "supports": "DSP_DIV WDT_AP source selector and separate watchdog clocks"},
+    {"url": "https://github.com/openharmony/device_soc_bestechnic/blob/master/bes2600/liteos_m/sdk/bsp/platform/hal/best2003/hal_cmu_best2003.c", "local": "analysis/display-takeover/reference/hal_cmu_best2003.c", "lines": [3428,3456,3466,3470], "supports": "DSP watchdog clocks and destructive DSP reset/clock helpers"}
+  ],
+  "source_integrity": "analysis/display-takeover/reference/watchdog-source-manifest.json"
+}

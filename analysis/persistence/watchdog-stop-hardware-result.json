@@ -1,0 +1,31 @@
+{
+  "executed_by": "root",
+  "firmware": "1.50.10",
+  "recovery_entry_MAIN_code_or_runtime_reads": false,
+  "fresh_ROM_then_preserved_BOOT_stop_verified": true,
+  "BOOT_stop_PC": "0x0c0104c6",
+  "A7CPU_held_reset": true,
+  "watchdog": {
+    "base": "0x40082000",
+    "original_control": 3,
+    "origin": "Original BOOT PMU initialization starts 4-second SP805 watchdog",
+    "stop_equivalent_of": "0x0c013040",
+    "control_after": 0,
+    "lock_after": 1,
+    "software_start_flag_after": 0,
+    "VALUE_two_reads_20ms_apart": "0x0000ac25",
+    "LOAD_INTCLR_or_clock_writes": false,
+    "old_counter_replayed": false
+  },
+  "rollback": "Temporary FPB removed, GLOBAL requested once; fresh OpenOCD process verified MCU running, debug disabled/default DEMCR and all comparators zero",
+  "NOR_debugger_program_erase_status_commands": false,
+  "stop_library_sha256": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+  "evidence": [
+    "diagnostics\\mcu-boot-watchdog-stop-result.txt",
+    "diagnostics\\mcu-after-watchdog-stop-state.txt"
+  ],
+  "limits": [
+    "Known debug/readable-BOOT/clocked-idle-controller entry is required; not arbitrary chip recovery.",
+    "Native NOR read/program/erase were not invoked by this pilot."
+  ]
+}

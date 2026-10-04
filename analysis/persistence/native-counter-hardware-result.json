@@ -1,0 +1,49 @@
+{
+  "firmware": "1.50.10",
+  "program_bytes": 966,
+  "program_sha256": "80a92ac659f795546258b24b31780fae353f0dd5e543a97c0d47b8b139ecae9d",
+  "install_evidence": "analysis/persistence/native-counter-install-session-20261004-172341/result.json",
+  "hardware_install_readback_protection_context": "passed",
+  "host_result_check_correction": "The initial post-operation classifier falsely matched pre_global_debug_cleanup_error 0 as a top-level cleanup_error. Corrected anchored matching; independent fresh read-only verification passed without repeating device writes.",
+  "native_display_and_input": {
+    "status": "passed",
+    "user_observation": "显示正常；点击加一，长按和拖动只加一次",
+    "host_render_or_input_loop": false,
+    "stock_gui_entry_replaced": true
+  },
+  "full_power_cycle": {
+    "status": "passed",
+    "user_observation": "断电重启后自动显示 +0，触摸正常",
+    "fresh_read_only_evidence": "diagnostics/native-counter-cold-state.txt",
+    "patched_sector_sha256": {
+      "code": "c288d2cc8ee74c66d5e7d5e2f91c8f8988758b2a33285bdbd654198f9cee665c",
+      "entry": "945c03b6dfb4e2f1fa0082664c8766d5c740c7c11de98c0c64a692ba0bc9b81d"
+    },
+    "mcu_running": true,
+    "temporary_breakpoint_and_reset_catch_cleared": true,
+    "program_sha256": "a08e8379ad25b14c82b2ef9d98c001699f34048238bec2a96484a9fefe32cf8c",
+    "variant": "Pink baseline before cosmetic white glyph change"
+  },
+  "installed_state": "White native counter installed; exact original sectors and previous pink variant preserved offline",
+  "restore_command": ".\\scripts\\Set-PanelNativeCounter.ps1 -Mode restore",
+  "scope_limit": "Persistent native application reuses original NuttX, board initialization and hardware drivers. This is not an independently built full firmware or evidence of a proprietary UI extension API.",
+  "complete_experiment_validation": "passed",
+  "breathing_effect": {
+    "explicitly_implemented_by_counter": false,
+    "source": "Unresolved transient effect; no breathing animation in this program; observed steady-state pixel and PWM control values unchanged",
+    "counter_behavior": "Constant background and glyph colors; redraw only when count changes",
+    "pixel_samples": "Three white-source snapshots had identical colors and counts",
+    "actual_PWM6_bank1_TWINKLE23": "0x4008902c read0; BR_EN bit23 not set in observed steady-state samples",
+    "PWM_evidence": "diagnostics/pwm6-white-counter-state.txt"
+  },
+  "white_variant": {
+    "requested_by_user": true,
+    "binary_change": "Only one4B glyph-color instruction changed; all other program bytes identical",
+    "independent_review": "analysis/display-takeover/native-counter-white-independent-review-1.50.10.json",
+    "warm_boot_and_whole_sector_readback": "passed",
+    "owned_presented_source_samples": "Three samples contain only backgroundff101010 and glyphffffffff; framebuffer displayed-source pointer remains owned canvas",
+    "color_evidence": "diagnostics/native-counter-white-colors.txt",
+    "count_logic_changes": false
+  },
+  "restore_validation": "Exact original sectors successfully restored and reread before white reinstall; evidence analysis/persistence/native-counter-restore-session-20261004-171830/result.json"
+}

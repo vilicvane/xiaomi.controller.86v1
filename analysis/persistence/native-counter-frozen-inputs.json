@@ -1,0 +1,26 @@
+{
+  "scope": "Exact 1.50.10 native task install/revert inputs",
+  "sha256": {
+    "analysis/display-takeover/native-counter-patch-inputs-1.50.10.json": "55fbb71be4fe4abd40a245f72f303073cc5afce0288a5aa238bf35ea475af4ed",
+    "analysis/display-takeover/native-counter.c": "21338ffa0d9fef1df73841d8b45879f762486d884cf07600f4dc4162ee41e8b8",
+    "analysis/display-takeover/native-counter-entry.S": "ad2fefca2fcbc643b539c69b569c0aae32f8b244055a40059cd5690dce68b094",
+    "analysis/display-takeover/native-counter.ld": "1276d8c8c3fa48ea830e4f5a340bf4ad2b61784b698708f911fcfc2d01dcea35",
+    "analysis/display-takeover/native-counter.elf": "3e8006c27ebe1664000eba147527dda4f24793aabd264d4a6ee9dd880107cc7a",
+    "analysis/display-takeover/native-counter.bin": "80a92ac659f795546258b24b31780fae353f0dd5e543a97c0d47b8b139ecae9d",
+    "analysis/persistence/run_native_counter_firmware.py": "d1cbe79d79061a3a3df75b47f67cb2634da7e3f3a95381c3e515adb1be01ad15",
+    "diagnostics/swd-memory.cfg": "8e1e707483009a25d8a77752512a4afad9839b0a2f88c75656b21e7dc195a6a2",
+    "diagnostics/swd-dap.cfg": "de1b441878f71ac2985deae1c694d9790c2b386e35bdaac8787759f08416b8f5",
+    "diagnostics/boot-watchdog-stop.cfg": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+    "diagnostics/boot-nor-read-runner.cfg": "1bd3b194645e755753b0253c9d0f0cab5a3b3cb189c83451cc522130d9560742",
+    "analysis/persistence/boot-nor-read-runner-data.cfg": "a52e7a38a7735ff5d8f2974057a013ce2329cb55cbc00071cce7ac5cd9c5e656",
+    "diagnostics/boot-nor-native-app-runner.cfg": "a39977808f17c040dd8d2969d548beee1377cc20c095c2084e3aa5df01854edb",
+    "diagnostics/boot-nor-native-app-stage-inputs.cfg": "0fc6b40ba1df96832568deacc8f75ef3ade9b6bcbe44e5d583dc0d1aeeaee4cc",
+    "diagnostics/mcu-native-counter-install-session.cfg": "5e0d3785918921f7ea1ddaf974118857be9e8ee9c27bb0ae923f43592bef9206",
+    "diagnostics/mcu-native-counter-restore-session.cfg": "79a44c8f3065dbc165604c0dc417411a0a247044e38cd952483828d9d9d537ca",
+    "diagnostics/read-native-counter-state.cfg": "4e4a76ee58dedd4586e298cf2187d11f701e283cb1f9f58d10ee4a05e2ba3ec8",
+    "analysis\\display-takeover\\native-counter-original-sector-92b000.bin": "8c6d7fd8a60c6445cc88086f0f88f70abc6973ea8743321df0483a784cfcfa56",
+    "analysis\\display-takeover\\native-counter-patched-sector-92b000.bin": "e2ac1b8fb72cf457280295dccdda19f2f996b89fc0f04286fc0d53cbc5161abb",
+    "analysis\\display-takeover\\native-counter-original-sector-ccd000.bin": "b9206c93037f422f618fc481d22d46082a8e6ef61b0c951e93742f9bf24837a0",
+    "analysis\\display-takeover\\native-counter-patched-sector-ccd000.bin": "945c03b6dfb4e2f1fa0082664c8766d5c740c7c11de98c0c64a692ba0bc9b81d"
+  }
+}

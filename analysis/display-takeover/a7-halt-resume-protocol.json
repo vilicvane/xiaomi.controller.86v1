@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "scope": "Offline protocol review only. This file does not execute target operations. Root agent owns execution and user authorization.",
+  "purpose": "First validate a brief A7 CPU0 halt/resume through generic MEM-AP, with no framebuffer change, instruction injection, CPU register reads/writes, cache maintenance, peripheral clock/reset change, or Flash/RAM write.",
+  "base": "0x58050000",
+  "observed": {
+    "sources": ["diagnostics/display-read-a7-debug-identity.txt", "diagnostics/display-read-control-and-a7-status.txt", "diagnostics/display-read-a7-gates-and-nor-metadata.txt"],
+    "DIDR": "0x3515f005",
+    "MIDR": "0x410fc075",
+    "core": "Arm Cortex-A7 r0p5",
+    "OSLSR": "0x0000000a",
+    "OSLSR_decode": "OSLM split bits3,0 = 0b10 (OS Lock implemented, no OSSRR); OSLK bit1 =1 (locked)",
+    "AUTHSTATUS": "0x000000ff",
+    "AUTHSTATUS_decode": {
+      "bits1_0": "NSI/NSE =11, non-secure invasive implemented/enabled",
+      "bits3_2": "NSNI/NSNE =11, non-secure non-invasive implemented/enabled",
+      "bits5_4": "SI/SE =11, secure invasive implemented/enabled",
+      "bits7_6": "SNI/SNE =11, secure non-invasive implemented/enabled",
+      "limitation": "Authentication inputs permit invasive debug in both security states. This is not proof that a particular system-bus write bypasses Software/OS Lock."
+    },
+    "DSCR": "0x02000002",
+    "DSCR_decode": "HALTED0, RESTARTED1, HDBGen0, ITRen0, ExtDCCmode0, sticky exceptions0; bit24 is UNKNOWN while running and must not be used as a pre-halt gate",
+    "PRSR_first": "0x0000002b",
+    "PRSR_decode": "PU1, SPD1, R0, SR1, HALTED0, OSLK1, DLK0; SPD/SR can be historical and their read-clear side effects are suppressed while Software Lock is set",
+    "ECR": "0x00000000",
+    "ECR_decode": "OS Unlock Catch bit0 disabled",
+    "LSR": "0x00000003",
+    "LSR_decode": "Software Lock implemented bit0=1 and set bit1=1; nTT bit2=0",
+    "CMU_DSP_CFG0": "0x0007f800",
+    "CMU_decode": "Both implemented DBGEN/SPIDEN/NIDEN/SPNIDEN signal fields are set. Do not modify this register for the halt/resume test."
+  },
+  "registers": {
+    "DBGECR": "0x58050024",
+    "DBGDSCR": "0x58050088",
+    "DBGDRCR": "0x58050090",
+    "DBGOSLAR": "0x58050300",
+    "DBGOSLSR": "0x58050304",
+    "DBGPRSR": "0x58050314",
+    "DBGLAR": "0x58050fb0",
+    "DBGLSR": "0x58050fb4",
+    "DBGAUTHSTATUS": "0x58050fb8"
+  },
+  "lock_keys_have_opposite_meanings": {
+    "Software_Lock_DBGLAR": {"unlock_value": "0xc5acce55", "lock_value": "0x00000000"},
+    "OS_Lock_DBGOSLAR": {"unlock_value": "0x00000000", "lock_value": "0xc5acce55"}
+  },
+  "minimal_write_whitelist": [
+    {"address": "0x58050fb0", "values": ["0xc5acce55", "0x00000000"], "purpose": "Temporarily clear/restore Software Lock"},
+    {"address": "0x58050300", "values": ["0x00000000", "0xc5acce55"], "purpose": "Temporarily clear/restore OS Lock"},
+    {"address": "0x58050090", "values": ["0x00000001", "0x00000006"], "purpose": "HRQ; then RRQ+CSE"}
+  ],
+  "sequence": [
+    {"step": 1, "operation": "Use the existing generic mem_ap target. Read fresh ECR/LSR/OSLSR/AUTH/DSCR/PRSR and record original lock states.", "gates": "CPU was running, AUTH low8=ff, ECR bit0=0, PRSR.PU=1/R=0/DLK=0, DSCR.ITRen=0, sticky exceptions=0. For this simplest test require DSCR writable controls mask0x0030fc00=0. Do not gate on running InstrCompl bit24."},
+    {"step": 2, "operation": "Set lar_write_possible flag before issuing DBGLAR=c5acce55. Read DBGLSR and require SLI1/SLK0 (low3=1 for this view).", "failure": "If unchanged locked or read/write fails, do not continue to OS unlock or HRQ. Cleanup can attempt DBGLAR=0 to re-establish original Software Lock, and must verify if readable."},
+    {"step": 3, "operation": "After confirmed Software unlock, read PRSR once to record/ack historical SPD/SR, then immediately read it again to establish a live baseline.", "gates": "Second read requires PU1,R0,DLK0,SPD0,SR0; then arm reset/power-loss tracking. The first post-unlock read's historical bits must not be interpreted as test-induced reset. Neither CPU was halted nor HRQ issued yet."},
+    {"step": 4, "operation": "Set oslar_write_possible flag before issuing DBGOSLAR=0. Read OSLSR and PRSR, require OSLK0 in both. Check reset/power tracker and AUTH still enabled.", "expected_OSLSR_low4": "0x8", "failure": "Never advance if OS unlock failed. Restore OS Lock first while Software Lock remains clear, then Software Lock. If CPU unexpectedly halted after unlock, treat it as a possible debug-state transition and use the guarded resume cleanup, not an unconditional relock."},
+    {"step": 5, "operation": "Read fresh DSCR/PRSR. If still running with the gated controls, set hrq_write_possible before issuing DBGDRCR=1. Poll DSCR.HALTED until 1 using a bounded deadline; interleave PRSR reads for live reset/power status.", "note": "No HDBGen write is needed for this Halt request. Official Arm CSAT A7 example halts using DRCR.HRQ before its optional HDBGen configuration.", "timeout": "A zero write to DRCR is not a cancellation. HRQ is held until Debug state entry. If the request times out, do not report successful rollback merely because the CPU currently reads running."},
+    {"step": 6, "operation": "When halted, read DSCR/PRSR again. Require DSCR.HALTED1 and PRSR.HALTED1, InstrCompl bit24=1, ITRen0, stable power/reset tracker. Record the halt time and DSCR method-of-entry bits5:2.", "expected_MOE": "0 for HRQ; another method indicates a concurrent debug event and must be reported", "hold": "For this first control test, issue resume immediately after status capture. No intentional hold/sleep or screen writes. Timers/watchdogs/DMA and MCU execution are not halted by CPU0 halt."},
+    {"step": 7, "operation": "Set rrq_write_possible before issuing DBGDRCR=6 (RRQ bit1 plus CSE bit2), with bit4 Cancel Bus Requests always 0. Poll until DSCR.HALTED0 and RESTARTED1; verify PRSR.HALTED0 and no reset/power-loss latch.", "resume_gate": "Only when the CPU is actually halted, InstrCompl1 and ITRen0. Record sticky-exception bits before CSE. No ITR/DTR access or PC/CPSR restoration is needed because no instruction/register transfer was performed."},
+    {"step": 8, "operation": "Once running is verified, restore original OS Lock first: DBGOSLAR=c5acce55, verify OSLSR.OSLK1. Then restore original Software Lock: DBGLAR=0, verify DBGLSR.SLK1.", "expected_restored": {"OSLSR_low4": "0xa", "LSR_low3": "0x3"}, "note": "Lock registers are write-only; restore their Boolean lock state, not an imagined saved register value."},
+    {"step": 9, "operation": "Read DSCR/PRSR once after relock to verify running and record final observation; compare only meaningful writable control bits, not full DSCR status against the pre-halt word.", "control_mask": "0x0030fc00", "success": "A7 confirmed halted then resumed, both original locks restored, no test-interval reset/power loss, no injected instructions or core registers changed."}
+  ],
+  "catch_cleanup_rules": [
+    "Maintain possible-write flags before issuing each mutation, including lock changes and HRQ/RRQ, because a failing AP transfer can have committed the target write.",
+    "Use one PRSR-read helper for every read after the live baseline is armed. Latch PU0, R1, SR1, SPD1 or DLK1; repeated reads can clear sticky bits and must not erase the software latch. Initial historic SPD/SR are recorded separately.",
+    "When cleanup begins, get fresh power/reset, lock, and DSCR state. Do not blindly replay old DSCR or CPU register data. No CPU register snapshot or restoration is part of this protocol.",
+    "If our temporary unlock may have led to a halt, and a fresh consistent status proves powered/stable halted, ITRen0 and InstrCompl1, send DRCR6 once and verify running before restoring either lock.",
+    "If already running and HRQ was never possibly issued, restore OS Lock then Software Lock and verify; this is a complete lock-only rollback.",
+    "If HRQ may have been issued but halt was never observed, a running read alone does not prove there is no pending request. A bounded continued observation may catch a late halt and perform the guarded resume. If it remains uncertain, mark incomplete recovery; do not invent a DRCR cancellation or use reset/clock/power controls as silent cleanup.",
+    "Do not relock OS/Software debug access while a halted core still needs a restart through that same system view. If resume cannot be confirmed, preserve diagnostic access and report the unresolved halted state instead of claiming restoration.",
+    "If reset/power loss occurred, do not treat the old execution state as valid or attempt PC/core-register restoration. Record the event and actual latest state. Recovery beyond the guarded debug resume is root/user owned.",
+    "If lock restoration fails, keep the precise current lock state in the result. A successful CPU resume does not by itself mean the entire temporary debug configuration was restored."
+  ],
+  "important_scope_limits": [
+    "Only the identified CPU debug component at0x58050000 is controlled. This does not pause all cores, MCU, DMA, LCDC scanout, or the whole DSP power domain.",
+    "Pure halt/resume preserves the current architectural execution point without injected instructions, but changes elapsed time and debug status. It is not a rollback of peripheral timers, interrupts, DMA traffic, exclusive-monitor behavior, or firmware timeouts.",
+    "The public ROM table at0x58040000 has a first entry0x00020003 pointing at0x58060000. This does not invalidate the directly verified Cortex-A7 IDs at0x58050000, but the incomplete ROM capture does not establish cluster/core count."
+  ],
+  "primary_sources": [
+    {"url": "https://documentation-service.arm.com/static/602cf701083323480d479d18", "document": "Cortex-A7 MPCore TRM DDI0464F", "sections": ["10.4.3", "10.4.11", "10.4.12"], "supports": "A7 DRCR commands and OS Lock key/model"},
+    {"url": "https://documentation-service.arm.com/static/6347e3d64c59b30b51773989?token=", "document": "Low Level Debug using CSAT on Armv7-based platforms 102715_0100_02_en", "pages": [14,15], "supports": "Official A7 OS-unlock -> DRCR1 halt sequence precedes optional HDBGen write; DRCR2 minimal restart example"},
+    {"url": "https://documentation-service.arm.com/static/5f8daeb7f86e16515cdb8c4e", "document": "ARMv7-A/R ARM DDI0406C.d", "sections": ["C3.6", "C11.11.1", "C11.11.17", "C11.11.20", "C11.11.29", "DBGPRSR description"], "supports": "Authentication fields, HRQ pending semantics, InstrCompl set on debug entry, lock/status semantics, PRSR read-clear Software Lock limitation"},
+    {"url": "https://raw.githubusercontent.com/ARM-software/CSAL/master/include/csregisters.h", "supports": "Debug register offsets and DRCR command masks"},
+    {"local": "C:/Utilities/openocd-0.12.0/src/target/cortex_a.c", "lines": [758,884,899,912], "supports": "DRCR1 halt; InstrCompl check, ITRen clear, DRCR6 restart; the full cortex_a target flow performs additional changes deliberately omitted here"},
+    {"local": "C:/Utilities/openocd-0.12.0/src/target/arm_dpm.h", "lines": [158,210,223], "supports": "DSCR, DRCR, PRSR and OSLSR masks"}
+  ]
+}

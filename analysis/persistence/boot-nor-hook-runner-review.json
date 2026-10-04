@@ -1,0 +1,205 @@
+{
+  "offline_only": true,
+  "hardware_actions": 0,
+  "runner": "diagnostics\\boot-nor-hook-runner.cfg",
+  "runner_sha256": "c37ef00010de3bc59155da30e88ebd8f395797f1df684667305e7ea50490e11a",
+  "kernel_derived_from": "diagnostics\\boot-nor-padding-runner.cfg",
+  "kernel_source_sha256": "68b1b7fb778cd507bee20837979f2529af4ed31bf369437dc45ebf8917d4655c",
+  "frozen_kernel_source": "analysis\\persistence\\boot-nor-hook-kernel-source-68b1b7fb.cfg",
+  "inputs_sha256": "b1b7eb14b1c72b3bb649e185d64e991d4b1567ebf04bd29d957cbf83db3502d3",
+  "public_operation": "bnh_run_hook capture_dir install|restore remove_fpb_command",
+  "immutable_dependencies": [
+    "boot-nor-read-runner-data.cfg",
+    "boot-nor-one-call.bin",
+    "boot-hook-review-1.50.10.json"
+  ],
+  "scope": {
+    "sectors": [
+      "150000/4096",
+      "824000/4096"
+    ],
+    "install_first": "program256B824400=32Bstub+FF withoutpayloadsectorerase;verifywholepayload4096",
+    "install_second": "eraseentry150000+exactpatchednonFFpages;verifywholeentry4096",
+    "restore_first": "eraseentry150000+originalnonFFpages;verifywholeentry4096",
+    "restore_second": "erasepayload824000+originalnonFFpages;verifywholepayload4096"
+  },
+  "preconditions": [
+    "same-process successfulreader",
+    "freshoriginalBOOTHAL/staticcode andopenedctx",
+    "A7/WF/BTCPUs heldreset",
+    "outerverifiedAONwatchdogCTRL0",
+    "installrequiresbothoriginal4Kbaselines;restorerequiresoriginal-or-patched4Kpersector"
+  ],
+  "failure_policy": "noautomatic retry/nextstage/reprotect/erase/resume; unclosednativecontext not replayed; halted root diagnosis and independentrecovery",
+  "partial_restore_supervised_helper": "after independentfreshBOOT/reader/controller revalidation, root may supervisefixedoriginal restore-entry helper evenifentrybaselineunknown; exactcompiledoriginalpages,sourceandprefixadmissionbeforeerase,no payloadaccess,noautofailurewrite; protection/status/cachestepsalsofixedandexplicit; separatefrompublicrestorebaselinegate",
+  "status_semantics": "BPmask407c only;BP0skipstatuswrites;native05/35 before andafterphases;WIP/WEL0,QE/everyotherstablebitexact;bothscopedcacheI/D;leaveBOOTstopped",
+  "mock_status": "23/23 pure Jim independent native/sector model passed; frozen exact runner/input hashes; hardware installation and cold acceptance pending root",
+  "sector_hashes": {
+    "entry_original": "3101ad7541df4682cc6c94c254621aa4489285e6b670eff99727d6f6d5537878",
+    "entry_patched": "c63a0a22425b0b391487992520503d62d0f1830543169f364d083afb6e1b6e2b",
+    "payload_original": "9d04976a9fd747c83929019061f6a91203b509a6c7201d1abd59ea01ca520652",
+    "payload_patched": "3eb7efc10d77e46b8f895b702129a48dfde84c1c5535d3ae5354e8fb7f835f21"
+  },
+  "frozen": true,
+  "offline_validation": {
+    "summary": "analysis\\persistence\\offline-hook-runner\\run-6\\summary.json",
+    "cases": [
+      {
+        "case": "install_bp0",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\install_bp0\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\install_bp0-host.txt"
+      },
+      {
+        "case": "install_bp7c",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\install_bp7c\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\install_bp7c-host.txt"
+      },
+      {
+        "case": "restore_bp0",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\restore_bp0\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\restore_bp0-host.txt"
+      },
+      {
+        "case": "restore_bp7c",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\restore_bp7c\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\restore_bp7c-host.txt"
+      },
+      {
+        "case": "baseline_entry_mismatch",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\baseline_entry_mismatch\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\baseline_entry_mismatch-host.txt"
+      },
+      {
+        "case": "baseline_payload_mismatch",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\baseline_payload_mismatch\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\baseline_payload_mismatch-host.txt"
+      },
+      {
+        "case": "reset_payload",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\reset_payload\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\reset_payload-host.txt"
+      },
+      {
+        "case": "fault_payload",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\fault_payload\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\fault_payload-host.txt"
+      },
+      {
+        "case": "native_error_payload",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\native_error_payload\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\native_error_payload-host.txt"
+      },
+      {
+        "case": "payload_whole_readback_mismatch",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\payload_whole_readback_mismatch\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\payload_whole_readback_mismatch-host.txt"
+      },
+      {
+        "case": "qe_changed_payload",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\qe_changed_payload\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\qe_changed_payload-host.txt"
+      },
+      {
+        "case": "active_watchdog",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\active_watchdog\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\active_watchdog-host.txt"
+      },
+      {
+        "case": "watchdog_reenabled",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\watchdog_reenabled\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\watchdog_reenabled-host.txt"
+      },
+      {
+        "case": "initialized_config_changed",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\initialized_config_changed\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\initialized_config_changed-host.txt"
+      },
+      {
+        "case": "erase_delayed",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\erase_delayed\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\erase_delayed-host.txt"
+      },
+      {
+        "case": "erase_timeout",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\erase_timeout\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\erase_timeout-host.txt"
+      },
+      {
+        "case": "program_timeout",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\program_timeout\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\program_timeout-host.txt"
+      },
+      {
+        "case": "read_timeout",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\read_timeout\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\read_timeout-host.txt"
+      },
+      {
+        "case": "arbitrary_mode",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_mode\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_mode-host.txt"
+      },
+      {
+        "case": "arbitrary_stage",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_stage\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_stage-host.txt"
+      },
+      {
+        "case": "arbitrary_helper_prefix",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_helper_prefix\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_helper_prefix-host.txt"
+      },
+      {
+        "case": "arbitrary_helper_words",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_helper_words\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\arbitrary_helper_words-host.txt"
+      },
+      {
+        "case": "partial_entry_fixed_restore",
+        "passed": true,
+        "evidence": "analysis\\persistence\\offline-hook-runner\\run-6\\partial_entry_fixed_restore\\mock-summary.txt",
+        "host_log": "analysis\\persistence\\offline-hook-runner\\run-6\\partial_entry_fixed_restore-host.txt"
+      }
+    ],
+    "all_passed": true,
+    "runner_parse": "passed source-only noadapter/init",
+    "limits": [
+      "Native ARM instruction execution is simulated, not CPU-emulated",
+      "Cold boot acceptance and physical recovery are not demonstrated by this test",
+      "Partial entry uses fixed supervised helper after model fresh-reader/controller provenance, not expanded public mode"
+    ],
+    "earlier_failed_evidence": "offline-hook-runner/run-1..run-5 preserved; realmulti-lineconstant canonicalization andouter/stage logging defects fixed; simulatederasehex/decimal comparison also corrected; finalrun6 allpassed"
+  },
+  "material_unchanged_files": [
+    "diagnostics/boot-nor-read-runner.cfg",
+    "diagnostics/boot-nor-padding-runner.cfg",
+    "original NOR backup"
+  ],
+  "root_reported_hardware_prerequisites": {
+    "reader": "analysis/persistence/native-read-hardware-result.json: ID856518 SR1=7c SR2=02 allreturns0 contextrestored",
+    "padding": "analysis/persistence/padding-hardware-20261004-151413/result.txt: onepageprogram24ms erase83ms wholeoriginal4K/BP/QE/core restored; parent-onlyhardware",
+    "watchdog": "diagnostics/mcu-boot-watchdog-stop-result.txt: CTRL0,relocked,VALUEunchanged20ms*2"
+  }
+}

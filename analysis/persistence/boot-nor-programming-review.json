@@ -1,0 +1,743 @@
+{
+  "offline_only": true,
+  "hardware_operations_performed": 0,
+  "source_image": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+  "source_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "view": "boot only; do not use these addresses with main/recovery code",
+  "functions": [
+    {
+      "name": "get_size",
+      "address": "0x20000f20",
+      "thumb_data_pointer": "0x20000f21",
+      "thumb_RAMX_pointer": "0x200f21",
+      "file_offset": "0x2f98",
+      "size": 128,
+      "sha256": "be555b4bcdf53f7540f631ca19deb5e24a3b194a148235a7efc8066c46593fdb",
+      "abi": "r0=id,r1=total*,r2=block*,r3=sector*,[sp]=page*; valid id/opened required"
+    },
+    {
+      "name": "set_protection",
+      "address": "0x20000fe8",
+      "thumb_data_pointer": "0x20000fe9",
+      "thumb_RAMX_pointer": "0x200fe9",
+      "file_offset": "0x3060",
+      "size": 80,
+      "sha256": "2e954aff91c747e4f7090766bcb15ae5b3da10f6e44ac122fb5a3f44afdb1d6a",
+      "abi": "r0=id,r1=BP composite; pre/status callback type4/post; IRQ save/restore; r0=0 success,0x10 not-open,0x0a callback unavailable"
+    },
+    {
+      "name": "erase",
+      "address": "0x20001104",
+      "thumb_data_pointer": "0x20001105",
+      "thumb_RAMX_pointer": "0x201105",
+      "file_offset": "0x317c",
+      "size": 8,
+      "sha256": "453b0fd483612d2a8d7a436d35eb3cc6ddc22476e0091038e60813b8d97e1d32",
+      "abi": "r0=id,r1=address,r2=len; forces suspend0"
+    },
+    {
+      "name": "write",
+      "address": "0x20001248",
+      "thumb_data_pointer": "0x20001249",
+      "thumb_RAMX_pointer": "0x201249",
+      "file_offset": "0x32c0",
+      "size": 16,
+      "sha256": "bdfb9c4152f678e8eed26df46db46972317bddf676b8facde5b2f67e99d7ef9d",
+      "abi": "r0=id,r1=address,r2=RAM source,r3=len; forces suspend0"
+    },
+    {
+      "name": "pre_operation",
+      "address": "0x200018a8",
+      "thumb_data_pointer": "0x200018a9",
+      "thumb_RAMX_pointer": "0x2018a9",
+      "file_offset": "0x3920",
+      "size": 8,
+      "sha256": "62e8a110e10d2e2df02457c75d17e0708c95973e039cd895a6a5da2d9668d482",
+      "abi": "r0=id; pre_ex with suspend0"
+    },
+    {
+      "name": "post_operation",
+      "address": "0x200018f8",
+      "thumb_data_pointer": "0x200018f9",
+      "thumb_RAMX_pointer": "0x2018f9",
+      "file_offset": "0x3970",
+      "size": 8,
+      "sha256": "ee76d9457a86a30eea822ecb9e6b56c3e040878862e565c0eae6a85e574cfe18",
+      "abi": "r0=id; restores mode/divider/read-bus state"
+    },
+    {
+      "name": "read_register",
+      "address": "0x20001900",
+      "thumb_data_pointer": "0x20001901",
+      "thumb_RAMX_pointer": "0x201901",
+      "file_offset": "0x3978",
+      "size": 60,
+      "sha256": "ad941707c8c5e06c6126085cae403d89c23f7f2aa2ddc6bffc636ba0d336638f",
+      "abi": "r0=id,r1=opcode,r2=RAM output,r3=len; requires pre/post"
+    },
+    {
+      "name": "status_low",
+      "address": "0x2000193c",
+      "thumb_data_pointer": "0x2000193d",
+      "thumb_RAMX_pointer": "0x20193d",
+      "file_offset": "0x39b4",
+      "size": 56,
+      "sha256": "f78aec6a5087ed8da844e91461e4f0ff3c5d965ec06ed6067c543eb8a2b370d4",
+      "abi": "r0=id; returns command05 byte; guard SRAM20003a58"
+    },
+    {
+      "name": "wait_WIP",
+      "address": "0x20001974",
+      "thumb_data_pointer": "0x20001975",
+      "thumb_RAMX_pointer": "0x201975",
+      "file_offset": "0x39ec",
+      "size": 124,
+      "sha256": "739c37139b48365aa925a046f44a32558547bcfa159a56a0f7c7ee2ea828b7f7",
+      "abi": "r0=id,r1=suspend; no bounded timeout; suspend0 excludes NVIC helpers"
+    },
+    {
+      "name": "status_high",
+      "address": "0x20001c2c",
+      "thumb_data_pointer": "0x20001c2d",
+      "thumb_RAMX_pointer": "0x201c2d",
+      "file_offset": "0x3ca4",
+      "size": 56,
+      "sha256": "7f3e00381041eb2ba9c0625fd7a928267a82d0c360bc7be4c792fc1660d33fd5",
+      "abi": "r0=id; returns command35 byte; guard SRAM20003a58"
+    },
+    {
+      "name": "write_status_register",
+      "address": "0x20001cb4",
+      "thumb_data_pointer": "0x20001cb5",
+      "thumb_RAMX_pointer": "0x201cb5",
+      "file_offset": "0x3d2c",
+      "size": 68,
+      "sha256": "d175edcc8d66629613422966da1f8e8ff8e96e6c5386a31d05bedf8189166bf3",
+      "abi": "r0=id,r1=volatile bool,r2=opcode,r3=RAM source,[sp]=len; not read-only"
+    },
+    {
+      "name": "native_JEDEC",
+      "address": "0x20001cf8",
+      "thumb_data_pointer": "0x20001cf9",
+      "thumb_RAMX_pointer": "0x201cf9",
+      "file_offset": "0x3d70",
+      "size": 40,
+      "sha256": "7ee5fc399782a49ca6975876c42b6d16c41207ad4d8aca633937e8180808c73d",
+      "abi": "r0=id,r1=RAM output,r2=len; pre/9f min3/post; return0"
+    },
+    {
+      "name": "set_BP_dispatch",
+      "address": "0x20002394",
+      "thumb_data_pointer": "0x20002395",
+      "thumb_RAMX_pointer": "0x202395",
+      "file_offset": "0x440c",
+      "size": 40,
+      "sha256": "959b0fdcfe25d416207eaf0b46229192fb98984ae92bcc68a533cba791e2c393",
+      "abi": "r0=id,r1=BP; indirect cfg callback type4; ignores callback detailed result"
+    },
+    {
+      "name": "chip_status_callback",
+      "address": "0x200024f4",
+      "thumb_data_pointer": "0x200024f5",
+      "thumb_RAMX_pointer": "0x2024f5",
+      "file_offset": "0x456c",
+      "size": 356,
+      "sha256": "808898af67191da7a4dd57c7675e0d4647c8e254832ff6442cbdb44b5bdf2886",
+      "abi": "r0=id,r1=type0..4,r2=parameter; guard SRAM20003a58; activecfg RAMX pointer002024f5"
+    },
+    {
+      "name": "delay_us",
+      "address": "0x20002d78",
+      "thumb_data_pointer": "0x20002d79",
+      "thumb_RAMX_pointer": "0x202d79",
+      "file_offset": "0x4df0",
+      "size": 48,
+      "sha256": "e17e33b38b9ed0f673d28e13ceb129116da8983ba6ae9641abe8badf51c31559",
+      "abi": "r0=us; uses timer40003004 and calibration20003adc /4"
+    },
+    {
+      "name": "cache_invalidate",
+      "address": "0x20002fb4",
+      "thumb_data_pointer": "0x20002fb5",
+      "thumb_RAMX_pointer": "0x202fb5",
+      "file_offset": "0x502c",
+      "size": 72,
+      "sha256": "c66fb1e4dc237c1a61a9c9676682be82bdacceb78df6e5f181ab60997ffd7f5a",
+      "abi": "r0=cache0I/1D,r1=start,r2=len; line32; IRQ save/restore; len>=0x4000 clears whole cache"
+    },
+    {
+      "name": "timer_frequency",
+      "address": "0x20003008",
+      "thumb_data_pointer": "0x20003009",
+      "thumb_RAMX_pointer": "0x203009",
+      "file_offset": "0x5080",
+      "size": 12,
+      "sha256": "253fb81ac32a555ef1c288784b9909e2af85ed6e0f0fe4db2ae665f00c80a9a4",
+      "abi": "r0=live word20003adc >>2"
+    }
+  ],
+  "globals": [
+    {
+      "address": "0x20003300",
+      "size": 8,
+      "meaning": "controller base pointer table; raw verified id0=40148000,id1=40140000",
+      "access": "read"
+    },
+    {
+      "address": "0x20003607",
+      "size": 4,
+      "meaning": "erase opcodes; aligned4KiB uses first opcode20",
+      "access": "read"
+    },
+    {
+      "address": "0x20003694",
+      "size": 136,
+      "meaning": "chip cfg pointer table",
+      "access": "read"
+    },
+    {
+      "address": "0x2000382c",
+      "size": 28,
+      "meaning": "85-65-18 chip cfg; BPmask407c, callback002024f5",
+      "access": "read"
+    },
+    {
+      "address": "0x20003a58",
+      "size": 4,
+      "meaning": "stack guard, inside boot SRAM initialized block; initialDEADBEEF",
+      "access": "read"
+    },
+    {
+      "address": "0x20003adc",
+      "size": 4,
+      "meaning": "live timer frequency calibration; initial24000000; getter>>2",
+      "access": "read"
+    },
+    {
+      "address": "0x20003ae0",
+      "size": 36,
+      "meaning": "id0 context; opened0,JEDEC1..3,total+18,page+1c",
+      "access": "read"
+    },
+    {
+      "address": "0x20003b28",
+      "size": 8,
+      "meaning": "saved resume Flash address",
+      "access": "conditional write on suspend"
+    },
+    {
+      "address": "0x20003b30",
+      "size": 8,
+      "meaning": "saved resume write buffer",
+      "access": "conditional write on suspend"
+    },
+    {
+      "address": "0x20003b38",
+      "size": 8,
+      "meaning": "saved resume remaining length",
+      "access": "conditional write on suspend"
+    },
+    {
+      "address": "0x20003b5a",
+      "size": 2,
+      "meaning": "suspend state, id0 must start0 and normal non-suspend return sets0",
+      "access": "read/write"
+    },
+    {
+      "address": "0x20003b5c",
+      "size": 24,
+      "meaning": "interrupt masks; WIP suspend0 path does not dereference",
+      "access": "conditional read"
+    },
+    {
+      "address": "0x20003b74",
+      "size": 2,
+      "meaning": "pre-operation divider per id",
+      "access": "read"
+    },
+    {
+      "address": "0x20003b76",
+      "size": 2,
+      "meaning": "standard read divider per id",
+      "access": "read"
+    },
+    {
+      "address": "0x20003b78",
+      "size": 2,
+      "meaning": "alternate read divider per id",
+      "access": "read"
+    },
+    {
+      "address": "0x20003b7a",
+      "size": 2,
+      "meaning": "active chip table index; expect0f after actual856518 open",
+      "access": "read"
+    },
+    {
+      "address": "0x20003b7c",
+      "size": 2,
+      "meaning": "memory-read suspend arbitration flag",
+      "access": "conditional read"
+    },
+    {
+      "address": "0x20003b80",
+      "size": 8,
+      "meaning": "saved bus-lock per id; pre writes/post reads",
+      "access": "read/write"
+    },
+    {
+      "address": "0x20003b88",
+      "size": 8,
+      "meaning": "selected read-mode bitmap per id",
+      "access": "read"
+    },
+    {
+      "address": "0x20003b9e",
+      "size": 2,
+      "meaning": "IRQ mask selection flags, suspend path only",
+      "access": "conditional read"
+    }
+  ],
+  "normal_closure": {
+    "native_jedec": {
+      "entry": "0x20001cf8",
+      "closure": [
+        "0x200003c4",
+        "0x200003d8",
+        "0x200003e8",
+        "0x2000042a",
+        "0x20000450",
+        "0x20000464",
+        "0x20000484",
+        "0x200004a0",
+        "0x200004bc",
+        "0x20000514",
+        "0x20000558",
+        "0x20000588",
+        "0x200005a4",
+        "0x200005dc",
+        "0x200008a4",
+        "0x200008c8",
+        "0x2000090c",
+        "0x20001638",
+        "0x20001680",
+        "0x200018a8",
+        "0x200018f8",
+        "0x20001900",
+        "0x20001cf8"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 64,
+      "flash_literals": [],
+      "abnormal_edges": [],
+      "unresolved": []
+    },
+    "pre_operation": {
+      "entry": "0x200018a8",
+      "closure": [
+        "0x200003e8",
+        "0x20000450",
+        "0x20000464",
+        "0x20000484",
+        "0x200004a0",
+        "0x200004bc",
+        "0x200005a4",
+        "0x200005dc",
+        "0x200008a4",
+        "0x2000090c",
+        "0x20001680",
+        "0x200018a8"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 48,
+      "flash_literals": [],
+      "abnormal_edges": [],
+      "unresolved": []
+    },
+    "read_register": {
+      "entry": "0x20001900",
+      "closure": [
+        "0x200003c4",
+        "0x200003d8",
+        "0x2000042a",
+        "0x20000450",
+        "0x20000514",
+        "0x20000588",
+        "0x20001900"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 48,
+      "flash_literals": [],
+      "abnormal_edges": [],
+      "unresolved": []
+    },
+    "post_operation": {
+      "entry": "0x200018f8",
+      "closure": [
+        "0x200003e8",
+        "0x20000450",
+        "0x20000464",
+        "0x20000484",
+        "0x200004a0",
+        "0x200004bc",
+        "0x20000558",
+        "0x200005a4",
+        "0x200008c8",
+        "0x20001638",
+        "0x20001680",
+        "0x200018f8"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 48,
+      "flash_literals": [],
+      "abnormal_edges": [],
+      "unresolved": []
+    },
+    "HAL_write": {
+      "entry": "0x20001248",
+      "closure": [
+        "0x2000039c",
+        "0x200003c4",
+        "0x200003d8",
+        "0x200003e8",
+        "0x2000040c",
+        "0x2000042a",
+        "0x20000450",
+        "0x20000464",
+        "0x20000484",
+        "0x200004a0",
+        "0x200004bc",
+        "0x20000514",
+        "0x20000558",
+        "0x20000588",
+        "0x200005a4",
+        "0x200005c0",
+        "0x200005dc",
+        "0x20000698",
+        "0x200008a4",
+        "0x200008c8",
+        "0x2000090c",
+        "0x200011bc",
+        "0x20001248",
+        "0x20001638",
+        "0x20001680",
+        "0x200016f8",
+        "0x20001844",
+        "0x200018b0",
+        "0x20001900",
+        "0x2000193c",
+        "0x20001974",
+        "0x2000225c",
+        "0x20002d78",
+        "0x20003008"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 200,
+      "flash_literals": [],
+      "abnormal_edges": [
+        {
+          "pc": "0x200011cc",
+          "target": "0x200032e0",
+          "reason": "trace/assert error path to Flash"
+        },
+        {
+          "pc": "0x200011da",
+          "target": "0x200032f0",
+          "reason": "assert failure path to Flash"
+        },
+        {
+          "pc": "0x200011ee",
+          "target": "0x200032e0",
+          "reason": "trace/assert error path to Flash"
+        },
+        {
+          "pc": "0x20001966",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        }
+      ],
+      "unresolved": []
+    },
+    "HAL_erase": {
+      "entry": "0x20001104",
+      "closure": [
+        "0x200003c4",
+        "0x200003d8",
+        "0x200003e8",
+        "0x2000040c",
+        "0x2000042a",
+        "0x20000450",
+        "0x20000464",
+        "0x20000484",
+        "0x200004a0",
+        "0x200004bc",
+        "0x200004e0",
+        "0x20000514",
+        "0x20000558",
+        "0x20000588",
+        "0x200005a4",
+        "0x200005c0",
+        "0x200005dc",
+        "0x20000658",
+        "0x20000698",
+        "0x200006c4",
+        "0x200008a4",
+        "0x200008c8",
+        "0x2000090c",
+        "0x20001104",
+        "0x20001638",
+        "0x2000165c",
+        "0x20001680",
+        "0x200016f8",
+        "0x20001710",
+        "0x20001728",
+        "0x20001844",
+        "0x200018b0",
+        "0x20001900",
+        "0x2000193c",
+        "0x20001974",
+        "0x20001c2c",
+        "0x20001cb4",
+        "0x20002158",
+        "0x20002d78",
+        "0x20003008"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 232,
+      "flash_literals": [],
+      "abnormal_edges": [
+        {
+          "pc": "0x2000108a",
+          "target": "0x200032e0",
+          "reason": "trace/assert error path to Flash"
+        },
+        {
+          "pc": "0x20001098",
+          "target": "0x200032f0",
+          "reason": "assert failure path to Flash"
+        },
+        {
+          "pc": "0x200010ac",
+          "target": "0x200032e0",
+          "reason": "trace/assert error path to Flash"
+        },
+        {
+          "pc": "0x20001c56",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        },
+        {
+          "pc": "0x20001966",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        },
+        {
+          "pc": "0x2000258e",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        }
+      ],
+      "unresolved": []
+    },
+    "HAL_set_protection": {
+      "entry": "0x20000fe8",
+      "closure": [
+        "0x200003c4",
+        "0x200003d8",
+        "0x200003e8",
+        "0x2000040c",
+        "0x2000042a",
+        "0x20000450",
+        "0x20000464",
+        "0x20000484",
+        "0x200004a0",
+        "0x200004bc",
+        "0x200004e0",
+        "0x20000514",
+        "0x20000558",
+        "0x20000588",
+        "0x200005a4",
+        "0x200005c0",
+        "0x200005dc",
+        "0x200008a4",
+        "0x200008c8",
+        "0x2000090c",
+        "0x20000fe8",
+        "0x20001638",
+        "0x20001680",
+        "0x20001710",
+        "0x20001728",
+        "0x200018a8",
+        "0x200018f8",
+        "0x20001900",
+        "0x2000193c",
+        "0x20001974",
+        "0x20001c2c",
+        "0x20001cb4",
+        "0x20002394",
+        "0x200024f4"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 200,
+      "flash_literals": [],
+      "abnormal_edges": [
+        {
+          "pc": "0x20001c56",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        },
+        {
+          "pc": "0x2000258e",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        },
+        {
+          "pc": "0x20001966",
+          "target": "0x20002658",
+          "reason": "stack failure path to trace/assert"
+        }
+      ],
+      "unresolved": []
+    },
+    "cache_invalidate": {
+      "entry": "0x20002fb4",
+      "closure": [
+        "0x20002fb4"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 8,
+      "flash_literals": [],
+      "abnormal_edges": [],
+      "unresolved": []
+    },
+    "get_size": {
+      "entry": "0x20000f20",
+      "closure": [
+        "0x20000f20"
+      ],
+      "maximum_stack_bytes_excluding_caller_interrupts": 32,
+      "flash_literals": [],
+      "abnormal_edges": [
+        {
+          "pc": "0x20000f30",
+          "target": "0x200032e0",
+          "reason": "trace/assert error path to Flash"
+        },
+        {
+          "pc": "0x20000f3c",
+          "target": "0x200032f0",
+          "reason": "assert failure path to Flash"
+        },
+        {
+          "pc": "0x20000f52",
+          "target": "0x200032e0",
+          "reason": "trace/assert error path to Flash"
+        }
+      ],
+      "unresolved": []
+    }
+  },
+  "boot_owned_capture_region": {
+    "start": "0x200001a8",
+    "end_exclusive": "0x20003c20",
+    "size": 14968,
+    "initialized_code_rodata": "200001a8..20003ae0 from file2220..5b58",
+    "mutable_BSS_context": "20003ae0..20003c20; must use post-init boot live state",
+    "never_overwrite_running_main_and_resume_without_complete_original_restore": true
+  },
+  "guard": {
+    "address": "0x20003a58",
+    "initial_value": "0xdeadbeef",
+    "all_critical_guard_pools_point_into_this_boot_copy": true,
+    "Flash_guard_redirect_required": false
+  },
+  "current_boot_chip_runtime_not_yet_captured_by_this_audit": {
+    "index_node": "0x20003b7a",
+    "expected_index": "0x0f",
+    "table_slot": "0x200036d0",
+    "expected_cfg": "0x2000382c",
+    "callback_node": "0x20003844",
+    "expected_callback": "0x002024f5"
+  },
+  "geometry": {
+    "context": "0x20003ae0",
+    "total_node": "0x20003af8",
+    "page_node": "0x20003afc",
+    "expected_total": "0x1000000",
+    "expected_page": "0x100",
+    "fixed_sector": "0x1000",
+    "fixed_block": "0x8000"
+  },
+  "read_only_sequence": [
+    "native_JEDEC(0,out,3)",
+    "pre(0)",
+    "read_reg(0,05,out+3,1)",
+    "read_reg(0,35,out+4,1)",
+    "post(0)",
+    "BKPT with IRQ still masked; host validates and restores core/software state"
+  ],
+  "controller_mapping_correction": {
+    "previous_wrong_assumption": "logical id0=40140000; report labels were not raw-table verified",
+    "corrected_mapping": {
+      "id0": "0x40148000",
+      "id1": "0x40140000"
+    },
+    "proof": "BOOT source file5378..5380 / RAM20003300..3308 raw bytes=0080144000001440; HAL uses table[id]",
+    "live_status": "root captured main matching table; BOOT live table must be revalidated before any peripheral access",
+    "hardware_failure_limit": "inactive4014000c access stalled root AP; mapping correction is proved, stall causality not independently proved"
+  },
+  "controller_snapshot": {
+    "base": "0x40148000",
+    "logical_id": 0,
+    "table": "0x20003300",
+    "table_file_offset": "0x5378",
+    "first_step": "read and validate live SRAM table before any peripheral register access",
+    "safe_metadata_offsets": [
+      "0x04",
+      "0x0c",
+      "0x14",
+      "0x34",
+      "0x3c"
+    ],
+    "entry_idle_checks": {
+      "+0x0c bit0": "0",
+      "+0x34 bit0x100": "0"
+    },
+    "restore_expectation": "divider+14 and stable mode/lock values return; command/address+00 and transfer-length fields+04 can change",
+    "do_not_bulk_read_FIFO_offsets": [
+      "0x08",
+      "0x10"
+    ]
+  },
+  "software_restore": {
+    "read_only_probe_writes": "id0 saved-bus-lock word20003b80 only, beyond output/scratch stack",
+    "successful_non_suspend_write_erase_additional_software_write": "id0 suspend state byte20003b5a set0; pending/resume fields only on suspended result1",
+    "protection_setter": "pre/post saved lock; IRQ save/restore; actual chip volatile status bits mutate, so capture and explicitly restore originalBP",
+    "fixed_code_tables": "not changed by selected normal operations",
+    "restore_paused_boot_core": "all GPRs,CONTROL,MSP,PSP,MSPLIM,PSPLIM,PRIMASK and debugger halt/breakpoint state must be retained",
+    "scratch_stack_limit": "boot initializes MSP200d5e00 and MSPLIM200d3e00; dedicated MSP stack elsewhere must satisfy or deliberately preserve/adjust/restore limit; write/erase callee peak232 plus caller requires >=512-byte recommendation"
+  },
+  "status_restore": {
+    "mask": "0x407c",
+    "formula": "(SR1 | (SR2<<8)) & 0x407c",
+    "setter": "boot HAL20000fe8 forces type4 through active cfg; low01/high31 status writes use volatileWREN50",
+    "verify": "read both05/35 again; compareBP and preserved QE/other stable bits; HAL return0 does not prove callback success"
+  },
+  "timer": {
+    "counter": "0x40003004",
+    "calibration_word": "0x20003adc",
+    "initial_calibration": 24000000,
+    "getter": "boot20003008 returns calibration>>2",
+    "delay": "boot20002d78, Puya erase/program400/450us",
+    "precondition": "counter advances and live calibration matches cold timer clock; stock boot initialization must already have run"
+  },
+  "cache": {
+    "invalidate_function": "0x20002fb4",
+    "id0I_controller": "0x27ffc000",
+    "id1D_controller": "0x27ffa000",
+    "line_bytes": 32,
+    "normal_stack_bytes": 8,
+    "Flash_dependencies": false,
+    "after_restore": "uncached28000000+offset readback first; invalidate changed Flash lines for I andD before continuing boot",
+    "address_alias_reference": "current main wrapper uses cached data alias2c000000+offset for both cacheIDs; whole-cache len>=4000 is possible but may affect unrelated cached data ownership"
+  },
+  "cold_scope_limits": [
+    "requires deterministic stop after preserved boot initialized NOR and before main overwrites SRAM",
+    "assert/stack-failure paths still call Flash; only validargs/context/guard normal closure proved",
+    "watchdog/A7/IRQ and DMA ownership constraints still apply",
+    "noboot NOR erase/program/protection operation has been exercised by this audit",
+    "this proves static independent boot driver availability, not completed cold write/restore validation"
+  ]
+}

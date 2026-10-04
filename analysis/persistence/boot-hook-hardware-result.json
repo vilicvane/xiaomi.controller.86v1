@@ -1,0 +1,953 @@
+{
+  "reader_only": true,
+  "hardware_actions_performed_by_recorder": 0,
+  "firmware": "1.50.10",
+  "executed_by": "root; this program only parses saved artifacts",
+  "frozen_bundle": {
+    "diagnostics/boot-nor-hook-runner.cfg": {
+      "expected_sha256": "c37ef00010de3bc59155da30e88ebd8f395797f1df684667305e7ea50490e11a",
+      "actual_sha256": "c37ef00010de3bc59155da30e88ebd8f395797f1df684667305e7ea50490e11a"
+    },
+    "diagnostics/boot-nor-hook-stage-inputs.cfg": {
+      "expected_sha256": "b1b7eb14b1c72b3bb649e185d64e991d4b1567ebf04bd29d957cbf83db3502d3",
+      "actual_sha256": "b1b7eb14b1c72b3bb649e185d64e991d4b1567ebf04bd29d957cbf83db3502d3"
+    }
+  },
+  "frozen_bundle_exact": true,
+  "install": {
+    "status": "passed",
+    "capture": "analysis/persistence/hook-install-hardware-20261004-153157",
+    "mode": "install",
+    "whole_sectors": {
+      "entry": {
+        "bytes": 4096,
+        "before_sha256": "3101ad7541df4682cc6c94c254621aa4489285e6b670eff99727d6f6d5537878",
+        "after_sha256": "c63a0a22425b0b391487992520503d62d0f1830543169f364d083afb6e1b6e2b",
+        "after_expected_state": "patched",
+        "exact_match": true
+      },
+      "payload": {
+        "bytes": 4096,
+        "before_sha256": "9d04976a9fd747c83929019061f6a91203b509a6c7201d1abd59ea01ca520652",
+        "after_sha256": "3eb7efc10d77e46b8f895b702129a48dfde84c1c5535d3ae5354e8fb7f835f21",
+        "after_expected_state": "patched",
+        "exact_match": true
+      }
+    },
+    "native_calls": [
+      {
+        "directory": "install-entry-erase",
+        "stage": "install-entry-erase",
+        "kind": "onecall",
+        "elapsed_ms": 85,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "0d194388ad2fd542132d81978dae76f9327d52f9fc51165000c35dc66466964a"
+      },
+      {
+        "directory": "install-entry-page-0",
+        "stage": "install-entry-page-0",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "33d26ceed69cc3f9341bb9f761c38fdb723593c76298a4acad25a515b0970529"
+      },
+      {
+        "directory": "install-entry-page-1",
+        "stage": "install-entry-page-1",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "36809b2bae009c9d3ddfbee7fb1bee251dab538e772954a601c3bea6075f6b74"
+      },
+      {
+        "directory": "install-entry-page-10",
+        "stage": "install-entry-page-10",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "552871d4a676f906b27f3e501ff9a18482ea7e823c3b8d1a12caf3c741180a5e"
+      },
+      {
+        "directory": "install-entry-page-11",
+        "stage": "install-entry-page-11",
+        "kind": "onecall",
+        "elapsed_ms": 25,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "5c5bcf54f42ee618bbc729d24ff5a92c4e9fbcb84ea9f529d1d0ccc44b84145d"
+      },
+      {
+        "directory": "install-entry-page-12",
+        "stage": "install-entry-page-12",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "39cb4f8c678a14e5f4bb851fe394f5f8c86a52bb454c8898efb4338c76b36e76"
+      },
+      {
+        "directory": "install-entry-page-13",
+        "stage": "install-entry-page-13",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "b81e82b4c7290619dadeed07d32f4865e22ce9d470262192fffc48312d375862"
+      },
+      {
+        "directory": "install-entry-page-14",
+        "stage": "install-entry-page-14",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "7bc3d89fcd56a7fdc1e731b16f8c1750e339132163df944a531c91b111eacfdd"
+      },
+      {
+        "directory": "install-entry-page-15",
+        "stage": "install-entry-page-15",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "efd6f259839cfc776271840d8b9de061095f013b3d5e36040a6147892cac9c5a"
+      },
+      {
+        "directory": "install-entry-page-2",
+        "stage": "install-entry-page-2",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "16fec3ddc266eaa830445e2ad90a2b3d7f5d4d4eec279426dba521f2406d32cf"
+      },
+      {
+        "directory": "install-entry-page-3",
+        "stage": "install-entry-page-3",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "59ea527e3e98005e9a64a87399f7673416de239d3ff0e959046d4ddec37724eb"
+      },
+      {
+        "directory": "install-entry-page-4",
+        "stage": "install-entry-page-4",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "cfcc58d5a52a4230c831f34f6402acadd65e8e28285878d32016206841654703"
+      },
+      {
+        "directory": "install-entry-page-5",
+        "stage": "install-entry-page-5",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "eedb0ab55aa477d5df5797525f80307df8336a4319fc87e383433cbd24bd62d5"
+      },
+      {
+        "directory": "install-entry-page-6",
+        "stage": "install-entry-page-6",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "4535c07e92d5266e8d96c38f87b7e743a92c65501d2de1602e3645d088fdb6b5"
+      },
+      {
+        "directory": "install-entry-page-7",
+        "stage": "install-entry-page-7",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "ec32a285e2f44ed8c860ad62856dc196f35eafde48ca4cdc9887ff9fc79315e3"
+      },
+      {
+        "directory": "install-entry-page-8",
+        "stage": "install-entry-page-8",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "6a0f96557d6ac28a7ac3fe48d280cddf96802843bb88e8cd811807f2aa9c4de0"
+      },
+      {
+        "directory": "install-entry-page-9",
+        "stage": "install-entry-page-9",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "8d8bddfbe9bda1bcd1205700e0024fcf5966aa554c37f173b1a8d03e00711e1d"
+      },
+      {
+        "directory": "install-payload-page",
+        "stage": "install-payload-page",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "d1e9e59ed9ecdf0b6c0c99d81cbfc6a910eaca0efc12536b603f923d60544468"
+      },
+      {
+        "directory": "invalidate-entry-d",
+        "stage": "invalidate-entry-d",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "cb50862fa7775f171e89e916b2a32949b421f992e8c5190bb40fd90c18d46cce"
+      },
+      {
+        "directory": "invalidate-entry-i",
+        "stage": "invalidate-entry-i",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "614543ae8d7b4cf08f0b6a4f650fdac562695601e855380dc248ed75847586cc"
+      },
+      {
+        "directory": "invalidate-payload-d",
+        "stage": "invalidate-payload-d",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "c0bc7c1b08b316b8014c0afaff45fd256fb95da13ad12e10c55d2fc737253aa5"
+      },
+      {
+        "directory": "invalidate-payload-i",
+        "stage": "invalidate-payload-i",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "25c8e22b1339fddd57550165d4b2a74fe0d3333e049c1021c2d4eeae880df368"
+      },
+      {
+        "directory": "reprotect",
+        "stage": "reprotect",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "58ac9fcfb0f5c55d6ce99a7ed328f5b54db93c4f30674bfa42b0d01d938ddda9"
+      },
+      {
+        "directory": "status-before",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          124,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "a99886c67c79b3c417dc297eaed7028675219aaa3749b05d98a3d184fbb071c2"
+      },
+      {
+        "directory": "status-final-data",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          0,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "f5d168138f8894260e71e92f183820c704f034483f021206cc2cc084b3ea7fdb"
+      },
+      {
+        "directory": "status-payload",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          0,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "f5d168138f8894260e71e92f183820c704f034483f021206cc2cc084b3ea7fdb"
+      },
+      {
+        "directory": "status-restored",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          124,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "a99886c67c79b3c417dc297eaed7028675219aaa3749b05d98a3d184fbb071c2"
+      },
+      {
+        "directory": "status-unprotected",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          0,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "f5d168138f8894260e71e92f183820c704f034483f021206cc2cc084b3ea7fdb"
+      },
+      {
+        "directory": "unprotect",
+        "stage": "unprotect",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "21d0b4790c2792b00a62258c3097e9530b320ea65050dd6c33e82f1c6fd25ec6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "9860da40ac2c36e55811d3fc569949659d4e29acfae0803a74e13f5fd08b57ae"
+      }
+    ],
+    "native_call_count": 29,
+    "SR1_SR2_before": [
+      "0x7c",
+      "0x2"
+    ],
+    "BP_mask": "0x407c",
+    "BP_before_after": "0x7c",
+    "BP_QE_and_all_stable_status_restored": true,
+    "all_borrowed_SRAM_and_context_restored": true,
+    "outer": {
+      "status": "passed",
+      "log": "diagnostics/mcu-boot-hook-install-result.txt",
+      "sha256": "9cbd08eaf812a0edfd95fff77e915880e3013fc8d7ec875d1f94f765756e269a",
+      "pre_GLOBAL_DCRDR_cleared": true,
+      "GLOBAL_dispatch_verified": true,
+      "fresh_process_required": true,
+      "cleanup_complete_note": "cleanup_complete0 is expected: ordinary boot is checked by separate fresh MEM-AP log"
+    }
+  },
+  "restore": {
+    "status": "passed",
+    "capture": "analysis/persistence/hook-restore-hardware-20261004-153535",
+    "mode": "restore",
+    "whole_sectors": {
+      "entry": {
+        "bytes": 4096,
+        "before_sha256": "c63a0a22425b0b391487992520503d62d0f1830543169f364d083afb6e1b6e2b",
+        "after_sha256": "3101ad7541df4682cc6c94c254621aa4489285e6b670eff99727d6f6d5537878",
+        "after_expected_state": "original",
+        "exact_match": true
+      },
+      "payload": {
+        "bytes": 4096,
+        "before_sha256": "3eb7efc10d77e46b8f895b702129a48dfde84c1c5535d3ae5354e8fb7f835f21",
+        "after_sha256": "9d04976a9fd747c83929019061f6a91203b509a6c7201d1abd59ea01ca520652",
+        "after_expected_state": "original",
+        "exact_match": true
+      }
+    },
+    "native_calls": [
+      {
+        "directory": "invalidate-entry-d",
+        "stage": "invalidate-entry-d",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "33dac66cf9023426d7b9e68e7845321e155df45732391eab0147cada42269fd7"
+      },
+      {
+        "directory": "invalidate-entry-i",
+        "stage": "invalidate-entry-i",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "7515bc2d50fbbfe1bd95b50b9158b905ba728d7d4804f915a02f6e2a4d12b96c"
+      },
+      {
+        "directory": "invalidate-payload-d",
+        "stage": "invalidate-payload-d",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "5ab09ebeedf17cce0ce478a4b60b1599d30d07f668bc5f8ad640603f6bc81355"
+      },
+      {
+        "directory": "invalidate-payload-i",
+        "stage": "invalidate-payload-i",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "0daae6c5a1b3ddd168074e76ef62827953fac6e881cccec6214f2a419eb20e00"
+      },
+      {
+        "directory": "reprotect",
+        "stage": "reprotect",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "d8504815ac7b3892745f50eaaf1208f862040dab8add3f4f1171553e3fa9b976"
+      },
+      {
+        "directory": "restore-entry-erase",
+        "stage": "restore-entry-erase",
+        "kind": "onecall",
+        "elapsed_ms": 88,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "5381c67aac753d8a3bbc1869f5320f9f4e2e2c0cdf65803c26be9d722331254a"
+      },
+      {
+        "directory": "restore-entry-page-0",
+        "stage": "restore-entry-page-0",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "a01dffebc6ccdd0bd39105c9409cb3cf9c99a14267e2d4d66ae70a6ef1527bc6"
+      },
+      {
+        "directory": "restore-entry-page-1",
+        "stage": "restore-entry-page-1",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "9a5acb656b953b1e2c429b53c336b696bf210fd22b94d829c909bc6e8f144da9"
+      },
+      {
+        "directory": "restore-entry-page-10",
+        "stage": "restore-entry-page-10",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "e9a64f16653a7f295888991bbfa81c284cdcf8734f1708c32ad4c8f2ca16bef7"
+      },
+      {
+        "directory": "restore-entry-page-11",
+        "stage": "restore-entry-page-11",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "587dcf604677c98009265de0c52a12a55540dc15d5087ae12d392acf0971116c"
+      },
+      {
+        "directory": "restore-entry-page-12",
+        "stage": "restore-entry-page-12",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "ba8f22e5ec956360f3e7284be5ef88ad8673602db351d7a02908d6790b580699"
+      },
+      {
+        "directory": "restore-entry-page-13",
+        "stage": "restore-entry-page-13",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "4ff4604408741bf806d3c1d2c667095f2c43e56c0df0f86451fe3904d3ae4034"
+      },
+      {
+        "directory": "restore-entry-page-14",
+        "stage": "restore-entry-page-14",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "7b7184f6088f519a477f7d78bc48632c180a10cf1d844026b027618e0df47997"
+      },
+      {
+        "directory": "restore-entry-page-15",
+        "stage": "restore-entry-page-15",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "981a6d994ed352204efa4e63329164c61cafd499ea8c6c3f354a049a8d641e77"
+      },
+      {
+        "directory": "restore-entry-page-2",
+        "stage": "restore-entry-page-2",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "58eaab97b074858e3acb9a695f95fce6555e0bb370dab793f5841360628595cb"
+      },
+      {
+        "directory": "restore-entry-page-3",
+        "stage": "restore-entry-page-3",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "65e56276b0e474292b60d991fbb78b48b3746c310f22784c9ae5a13dbebf71b3"
+      },
+      {
+        "directory": "restore-entry-page-4",
+        "stage": "restore-entry-page-4",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "21bb93ec4c92caf27755facd6d1bb31da13155f44e77a482d5132e572340c294"
+      },
+      {
+        "directory": "restore-entry-page-5",
+        "stage": "restore-entry-page-5",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "a22c0e3b255e431800763298c73a714c69bc93a38437c48a41ecf65329643f70"
+      },
+      {
+        "directory": "restore-entry-page-6",
+        "stage": "restore-entry-page-6",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "cb50f5a92cc4fd771b3cfd206010a3fcf9f6776bc836259b803e65d00892c3ef"
+      },
+      {
+        "directory": "restore-entry-page-7",
+        "stage": "restore-entry-page-7",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "6d375cdcafec5767520ddeee9b1ec1c2f13bbecfa8abba88c3814cf5a770ceeb"
+      },
+      {
+        "directory": "restore-entry-page-8",
+        "stage": "restore-entry-page-8",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "a53e39e68ea3b1134a84e6c24ea77fd970208597cdf67da87bccb8b8d1587ced"
+      },
+      {
+        "directory": "restore-entry-page-9",
+        "stage": "restore-entry-page-9",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "8763c0cdc87b22ef5fcdba7e4a75061e38d93cc14991859ec0d4f223b8afb0a4"
+      },
+      {
+        "directory": "restore-payload-erase",
+        "stage": "restore-payload-erase",
+        "kind": "onecall",
+        "elapsed_ms": 83,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "8829135d1560c37dfe815f29fdb1a93175f1dfcbe544413a42fe365a0b743ff9"
+      },
+      {
+        "directory": "restore-payload-page-0",
+        "stage": "restore-payload-page-0",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "16901ca8745977b98a94253c6be86629482a040a641e324587d7ea069ecc1cf0"
+      },
+      {
+        "directory": "restore-payload-page-1",
+        "stage": "restore-payload-page-1",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "3e524a03f96443c43c26ea3a78de16e5fb6fe54c60fac4ba66e170a38a2a778a"
+      },
+      {
+        "directory": "restore-payload-page-2",
+        "stage": "restore-payload-page-2",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "d469f8a959aaa71bdc89eb24ce5db20b4ac7b600b4bbfbbca43dc227ee14020e"
+      },
+      {
+        "directory": "restore-payload-page-3",
+        "stage": "restore-payload-page-3",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "e0995726046ff456e0b8799de6cd155333b0bf6849da8f594675efbe34539d91"
+      },
+      {
+        "directory": "status-before",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          124,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "4371ba98cfe1dd9952cb9e9e00d95e06a3eeeba63c158f7ee78a0a731e88423e"
+      },
+      {
+        "directory": "status-entry-restored",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          0,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "3126b72a8c74a1499e3f1234976592d87e8b2854d7673134c098bdb7326095cd"
+      },
+      {
+        "directory": "status-final-data",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          0,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "3126b72a8c74a1499e3f1234976592d87e8b2854d7673134c098bdb7326095cd"
+      },
+      {
+        "directory": "status-restored",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          124,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "4371ba98cfe1dd9952cb9e9e00d95e06a3eeeba63c158f7ee78a0a731e88423e"
+      },
+      {
+        "directory": "status-unprotected",
+        "stage": "read-status",
+        "kind": "read",
+        "elapsed_ms": 25,
+        "status_bytes": [
+          0,
+          2
+        ],
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "3126b72a8c74a1499e3f1234976592d87e8b2854d7673134c098bdb7326095cd"
+      },
+      {
+        "directory": "unprotect",
+        "stage": "unprotect",
+        "kind": "onecall",
+        "elapsed_ms": 24,
+        "status_bytes": null,
+        "scratch_original_and_restored_sha256": "17f6178f0304405ef96a3551455f2daf8573f88741c93f4eea7fd3847e0204e6",
+        "initialized_8B_sha256": "c41c02954fa6582777cddeef43777e4c58df5d7d8594cbfbbf63736f9c524200",
+        "binary_output_and_guards_verified": true,
+        "core_SPI_HAL_restored": "asserted by completed runner readback gates; scratch/config independently byte-compared",
+        "log_sha256": "47ad40b910d0fede6627f377263e779c72e690920ca7ab3b76952b55a29c8588"
+      }
+    ],
+    "native_call_count": 33,
+    "SR1_SR2_before": [
+      "0x7c",
+      "0x2"
+    ],
+    "BP_mask": "0x407c",
+    "BP_before_after": "0x7c",
+    "BP_QE_and_all_stable_status_restored": true,
+    "all_borrowed_SRAM_and_context_restored": true,
+    "outer": {
+      "status": "passed",
+      "log": "diagnostics/mcu-boot-hook-restore-result.txt",
+      "sha256": "9a2bceaf28907d1c515311ec95e58a408f9eedd3d4b5a2eb0671d1b0e8de6f85",
+      "pre_GLOBAL_DCRDR_cleared": true,
+      "GLOBAL_dispatch_verified": true,
+      "fresh_process_required": true,
+      "cleanup_complete_note": "cleanup_complete0 is expected: ordinary boot is checked by separate fresh MEM-AP log"
+    }
+  },
+  "warm_boot": {
+    "status": "passed",
+    "log": "diagnostics/boot-hook-marker-warm.txt",
+    "expected_firmware_state": "patched",
+    "FIRST_DCRDR": "0x4b4f4f48",
+    "first_before_other_metadata": true,
+    "MCU_running_default_debug_and_no_faults": true,
+    "entry_payload_bytes_exact": true,
+    "DHCSR": "0x3140000",
+    "historical_reset_seen": true,
+    "sleep_seen": true,
+    "sha256": "a1eb69fe9e99a8b20386ca815c1fdd040e972e2065ac41006f9abea1fcc296e5"
+  },
+  "cold_boot": {
+    "status": "passed",
+    "log": "diagnostics/boot-hook-marker-cold.txt",
+    "expected_firmware_state": "patched",
+    "FIRST_DCRDR": "0x4b4f4f48",
+    "first_before_other_metadata": true,
+    "MCU_running_default_debug_and_no_faults": true,
+    "entry_payload_bytes_exact": true,
+    "DHCSR": "0x3100000",
+    "historical_reset_seen": true,
+    "sleep_seen": false,
+    "sha256": "009b989dd65f4e8dbc00352ddb56fb64abccbbf6257145cbec745e26829f1020",
+    "cold_user_confirmed": true
+  },
+  "restore_boot": {
+    "status": "passed",
+    "log": "diagnostics/boot-hook-marker-restored.txt",
+    "expected_firmware_state": "original",
+    "FIRST_DCRDR": "0x0",
+    "first_before_other_metadata": true,
+    "MCU_running_default_debug_and_no_faults": true,
+    "entry_payload_bytes_exact": true,
+    "DHCSR": "0x3140000",
+    "historical_reset_seen": true,
+    "sleep_seen": true,
+    "sha256": "b25bfd793d31d1ce3205044731b4454c9af46f53ee1928a7437af8c7f323d2e8"
+  },
+  "cold_user_observation": null,
+  "limits": [
+    "Marker identifies execution of reviewed startup hook, not arbitrary custom firmware correctness.",
+    "Physical power loss and panel/Mi Home/control observations require explicit user provenance.",
+    "Saved runner logs assert core/HAL/controller readback; SRAM/config/output are independently byte-checked.",
+    "Parser never obtains fresh device state; callers supply logs from separate first-read MEM-AP sessions."
+  ],
+  "durable_hook_validation": "passed",
+  "user_observations": {
+    "status": "recorded",
+    "source": "analysis/persistence/boot-hook-user-observation.json",
+    "sha256": "1fbe0fb4e0523ba2615746cce74420fef965132f859742bc2f1d20911b1a653a",
+    "observations": {
+      "date": "2026-10-04",
+      "firmware": "1.50.10",
+      "test": "Persistent MCU startup trampoline followed by original firmware",
+      "requested_physical_action": "Disconnect nanoDAP USB and panel power for about 10 seconds, then reconnect",
+      "requested_observations": [
+        "Normal screen",
+        "Mi Home online",
+        "Mi Home control works"
+      ],
+      "user_reply": "都正常",
+      "cold_power_cycle_and_observations_confirmed_by_user": true,
+      "warm_marker_log": "diagnostics/boot-hook-marker-warm.txt",
+      "cold_marker_log": "diagnostics/boot-hook-marker-cold.txt",
+      "post_restore_user_observations": {
+        "requested_observations": [
+          "Normal screen",
+          "Mi Home online",
+          "Mi Home control works"
+        ],
+        "user_reply": "正常",
+        "normal_operation_confirmed_by_user": true
+      },
+      "limits": "User observations are separate from SWD measurements; this is an entry-code proof, not a complete independent firmware"
+    }
+  },
+  "complete_experiment_validation": "passed",
+  "all_supplied_evidence_passed": true
+}

@@ -1,0 +1,179 @@
+{
+  "offline_only": true,
+  "target_I_O_performed": 0,
+  "source_SHA256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "previous_error": {
+    "wrong_mapping": "logicalid0=40140000/logicalid1=40148000",
+    "cause": "report label assumed public defaultphysicalcontroller naming without reading currentimage pointertable order",
+    "not_live_verified": "old report mapping and old read-runnermocks were not validated targetSPI evidence"
+  },
+  "corrected_raw_tables": [
+    {
+      "view": "boot",
+      "RAM_address": "0x20003300",
+      "file_offset": "0x5378",
+      "raw_hex": "0080144000001440",
+      "logical_id0": "0x40148000",
+      "logical_id1": "0x40140000"
+    },
+    {
+      "view": "main",
+      "RAM_address": "0x20003948",
+      "file_offset": "0x155858",
+      "raw_hex": "0080144000001440",
+      "logical_id0": "0x40148000",
+      "logical_id1": "0x40140000"
+    }
+  ],
+  "wait_idle_proof": [
+    {
+      "view": "boot",
+      "function": "0x20000450",
+      "instructions": [
+        {
+          "address": "0x20000450",
+          "file_offset": "0x24c8",
+          "bytes": "034b",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0xc]",
+          "literal": {
+            "pool": "0x20000460",
+            "value": "0x20003300"
+          }
+        },
+        {
+          "address": "0x20000452",
+          "file_offset": "0x24ca",
+          "bytes": "53f82020",
+          "mnemonic": "ldr.w",
+          "operands": "r2, [r3, r0, lsl #2]"
+        },
+        {
+          "address": "0x20000456",
+          "file_offset": "0x24ce",
+          "bytes": "d368",
+          "mnemonic": "ldr",
+          "operands": "r3, [r2, #0xc]"
+        },
+        {
+          "address": "0x20000458",
+          "file_offset": "0x24d0",
+          "bytes": "db07",
+          "mnemonic": "lsls",
+          "operands": "r3, r3, #0x1f"
+        },
+        {
+          "address": "0x2000045a",
+          "file_offset": "0x24d2",
+          "bytes": "fcd4",
+          "mnemonic": "bmi",
+          "operands": "#0x20000456"
+        },
+        {
+          "address": "0x2000045c",
+          "file_offset": "0x24d4",
+          "bytes": "7047",
+          "mnemonic": "bx",
+          "operands": "lr"
+        },
+        {
+          "address": "0x2000045e",
+          "file_offset": "0x24d6",
+          "bytes": "00bf",
+          "mnemonic": "nop",
+          "operands": ""
+        }
+      ],
+      "semantics": "loadcontroller=table[r0]; while(word[controller+0xc]&1)loop; no softwaretimeout",
+      "status_limit": "controllerbusy bit0 is not FlashSR1.WIP; runningFlashfetch or concurrentA7/DMA may make it1"
+    },
+    {
+      "view": "main",
+      "function": "0x20000790",
+      "instructions": [
+        {
+          "address": "0x20000790",
+          "file_offset": "0x1526a0",
+          "bytes": "034b",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0xc]",
+          "literal": {
+            "pool": "0x200007a0",
+            "value": "0x20003948"
+          }
+        },
+        {
+          "address": "0x20000792",
+          "file_offset": "0x1526a2",
+          "bytes": "53f82020",
+          "mnemonic": "ldr.w",
+          "operands": "r2, [r3, r0, lsl #2]"
+        },
+        {
+          "address": "0x20000796",
+          "file_offset": "0x1526a6",
+          "bytes": "d368",
+          "mnemonic": "ldr",
+          "operands": "r3, [r2, #0xc]"
+        },
+        {
+          "address": "0x20000798",
+          "file_offset": "0x1526a8",
+          "bytes": "db07",
+          "mnemonic": "lsls",
+          "operands": "r3, r3, #0x1f"
+        },
+        {
+          "address": "0x2000079a",
+          "file_offset": "0x1526aa",
+          "bytes": "fcd4",
+          "mnemonic": "bmi",
+          "operands": "#0x20000796"
+        },
+        {
+          "address": "0x2000079c",
+          "file_offset": "0x1526ac",
+          "bytes": "7047",
+          "mnemonic": "bx",
+          "operands": "lr"
+        },
+        {
+          "address": "0x2000079e",
+          "file_offset": "0x1526ae",
+          "bytes": "00bf",
+          "mnemonic": "nop",
+          "operands": ""
+        }
+      ],
+      "semantics": "loadcontroller=table[r0]; while(word[controller+0xc]&1)loop; no softwaretimeout",
+      "status_limit": "controllerbusy bit0 is not FlashSR1.WIP; runningFlashfetch or concurrentA7/DMA may make it1"
+    }
+  ],
+  "root_reported_live_evidence": {
+    "files": [
+      "diagnostics/mcu-safe-reset-metadata.txt",
+      "diagnostics/mcu-active-flash-metadata.txt"
+    ],
+    "mapping": "mainRAM20003948={40148000,40140000}",
+    "running_active_controller_reads": {
+      "4014800c": "0x1053",
+      "40148034": "0x2f000"
+    },
+    "limit": "root observed4014000c stall whileoldsecondary was accessed; mapping error and correctbaseaccess are proved, internalcause ofstall not independently proved bythisaudit"
+  },
+  "precondition": "read exactliveSRAM pointertable first; derivechosenbasefromtable[id]; verifyexpectedorder; onlythenaccessperipherals",
+  "runner": "diagnostics/boot-nor-read-runner.cfg nowderivesbasefromliveBOOT20003300,expectsid0=40148000; nonmatchingtable causesnoSPIaccess",
+  "report_updates": [
+    "nor-programming-review.json/md",
+    "boot-nor-programming-review.json/md",
+    "hal-transplant-manifest.json",
+    "boot-nor-read-probe-review.json",
+    "boot-nor-read-runner-review.json/md"
+  ],
+  "preserved_superseded_mock_examples": [
+    "mock-read-runner-success02",
+    "mock-read-runner-powerdown01",
+    "mock-read-runner-reset01",
+    "mock-read-runner-fault01"
+  ]
+}

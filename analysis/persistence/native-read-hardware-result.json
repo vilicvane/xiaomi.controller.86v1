@@ -1,0 +1,39 @@
+{
+  "executed_by": "root",
+  "firmware": "1.50.10",
+  "fresh_preserved_BOOT_stop": "0x0c0104c6",
+  "entry_has_no_MAIN_runtime_or_code_dependencies": true,
+  "A7CPU_held_reset_without_APDBG_reads": true,
+  "BOOT_WDT_CTRL0_verified": true,
+  "native_commands": [
+    "0x9f",
+    "0x05",
+    "0x35"
+  ],
+  "JEDEC": "856518",
+  "SR1": "0x7c",
+  "SR2": "0x02",
+  "BP_mask": "0x007c",
+  "native_read_pre_post_returns": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "native_elapsed_ms": 25,
+  "full_1KiB_scratch_original_equals_restored": true,
+  "scratch_sha256": "d6d00458d17617589aba2a5c9a144a579824aff6509ebeb9d34f352b6ab96340",
+  "core_context_restored_and_verified": true,
+  "SPI_post_and_BOOTHAL_globals_verified": true,
+  "debugger_NOR_program_erase_or_status_write_commands": false,
+  "rollback": "GLOBAL dispatch after verified restoration; fresh process confirms running MCU and zero comparators/default debug state",
+  "evidence": [
+    "analysis\\persistence\\native-read-20261004-150456\\result.txt",
+    "diagnostics\\mcu-after-native-read-state.txt"
+  ],
+  "limits": [
+    "Read recovery is verified; erase/program/restoration remains untested.",
+    "Entry still requires debug/readable preserved BOOT and clocked idle primary controller."
+  ]
+}

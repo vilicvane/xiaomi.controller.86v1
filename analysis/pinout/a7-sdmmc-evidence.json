@@ -1,0 +1,1162 @@
+{
+  "scope": "Offline static analysis of this NOR image only; bounded, not exhaustive.",
+  "input": {
+    "path": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\backups\\mi-panel-flash-16m-1.50.10-20261004.bin",
+    "size": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "a7_mapping": {
+    "header_nor_offset": "0x8e0000",
+    "header_big_endian_payload_length": "0x4f3fe0",
+    "payload_nor_offset": "0x8e0004",
+    "payload_va": "0x38000000",
+    "payload_end_nor_offset_exclusive": "0xdd3fe4",
+    "validation": "All reported code, strings and pin array are inside this payload."
+  },
+  "finding": "The SDMMC controller-0 initialization path calls a helper that passes the six-entry array below to compact HAL pinmap initialization.",
+  "pin_array": {
+    "va": "0x384bb5dc",
+    "nor_offset": "0xd9b5e0",
+    "entry_count": 6,
+    "entry_bytes": 4,
+    "raw_hex": "0b3700000a3800000c3900000d3a0000083b0000093c0000",
+    "entries": [
+      {
+        "array_index": 0,
+        "pin_enum": 11,
+        "pin": "P1_3",
+        "function_enum": 55,
+        "function": "SDMMC_CLK",
+        "voltage_enum": 0,
+        "voltage_field": "HAL_IOMUX_PIN_VOLTAGE_VIO",
+        "pull_enum": 0,
+        "pull_field": "HAL_IOMUX_PIN_NOPULL"
+      },
+      {
+        "array_index": 1,
+        "pin_enum": 10,
+        "pin": "P1_2",
+        "function_enum": 56,
+        "function": "SDMMC_CMD",
+        "voltage_enum": 0,
+        "voltage_field": "HAL_IOMUX_PIN_VOLTAGE_VIO",
+        "pull_enum": 0,
+        "pull_field": "HAL_IOMUX_PIN_NOPULL"
+      },
+      {
+        "array_index": 2,
+        "pin_enum": 12,
+        "pin": "P1_4",
+        "function_enum": 57,
+        "function": "SDMMC_DATA0",
+        "voltage_enum": 0,
+        "voltage_field": "HAL_IOMUX_PIN_VOLTAGE_VIO",
+        "pull_enum": 0,
+        "pull_field": "HAL_IOMUX_PIN_NOPULL"
+      },
+      {
+        "array_index": 3,
+        "pin_enum": 13,
+        "pin": "P1_5",
+        "function_enum": 58,
+        "function": "SDMMC_DATA1",
+        "voltage_enum": 0,
+        "voltage_field": "HAL_IOMUX_PIN_VOLTAGE_VIO",
+        "pull_enum": 0,
+        "pull_field": "HAL_IOMUX_PIN_NOPULL"
+      },
+      {
+        "array_index": 4,
+        "pin_enum": 8,
+        "pin": "P1_0",
+        "function_enum": 59,
+        "function": "SDMMC_DATA2",
+        "voltage_enum": 0,
+        "voltage_field": "HAL_IOMUX_PIN_VOLTAGE_VIO",
+        "pull_enum": 0,
+        "pull_field": "HAL_IOMUX_PIN_NOPULL"
+      },
+      {
+        "array_index": 5,
+        "pin_enum": 9,
+        "pin": "P1_1",
+        "function_enum": 60,
+        "function": "SDMMC_DATA3",
+        "voltage_enum": 0,
+        "voltage_field": "HAL_IOMUX_PIN_VOLTAGE_VIO",
+        "pull_enum": 0,
+        "pull_field": "HAL_IOMUX_PIN_NOPULL"
+      }
+    ]
+  },
+  "call_chain": [
+    {
+      "caller_va": "0x38005712",
+      "caller_nor_offset": "0x8e5716",
+      "mode": "Thumb",
+      "instruction": "blx",
+      "target_va": "0x383d3590"
+    },
+    {
+      "caller_va": "0x383d3590",
+      "caller_nor_offset": "0xcb3594",
+      "mode": "ARM",
+      "instruction": "b",
+      "target_va": "0x383d2368"
+    },
+    {
+      "caller_va": "0x383d2640",
+      "caller_nor_offset": "0xcb2644",
+      "mode": "ARM",
+      "instruction": "bl",
+      "target_va": "0x383d780c"
+    },
+    {
+      "caller_va": "0x383d7818",
+      "caller_nor_offset": "0xcb781c",
+      "mode": "ARM",
+      "instruction": "b",
+      "target_va": "0x383d76e4"
+    }
+  ],
+  "identification": {
+    "open_wrapper_va": "0x383d3590",
+    "host_config_va": "0x383d2368",
+    "pinmux_helper_va": "0x383d780c",
+    "compact_pinmap_init_va": "0x383d76e4",
+    "diagnostics": [
+      {
+        "va": "0x383eb068",
+        "nor_offset": "0xccb06c",
+        "string": "try_sw_reset"
+      },
+      {
+        "va": "0x383e9eec",
+        "nor_offset": "0xcc9ef0",
+        "string": "%s: hal_sdmmc_open ret: %d\n"
+      },
+      {
+        "va": "0x383e9f08",
+        "nor_offset": "0xcc9f0c",
+        "string": "%s: ERROR: hal_sdmmc_open failed: %d, try hw reset\n"
+      },
+      {
+        "va": "0x383e9f3c",
+        "nor_offset": "0xcc9f40",
+        "string": "%s: hal_sdmmc_open ret: %d after hw reset\n"
+      },
+      {
+        "va": "0x384ba9a4",
+        "nor_offset": "0xd9a9a8",
+        "string": "hal_sdmmc_host_device_cfg"
+      },
+      {
+        "va": "0x383ea30c",
+        "nor_offset": "0xcca310",
+        "string": "/dev/mmcsd0"
+      }
+    ],
+    "reset_path_open_calls": [
+      {
+        "caller_va": "0x380044cc",
+        "caller_nor_offset": "0x8e44d0",
+        "mode": "Thumb",
+        "instruction": "blx",
+        "target_va": "0x383d3590"
+      },
+      {
+        "caller_va": "0x380045b4",
+        "caller_nor_offset": "0x8e45b8",
+        "mode": "Thumb",
+        "instruction": "blx",
+        "target_va": "0x383d3590"
+      }
+    ],
+    "reasoning": [
+      "The same ARM wrapper called by the initialization path is called by the Thumb try_sw_reset function alongside explicit hal_sdmmc_open result diagnostics.",
+      "The ARM host configuration body references the hal_sdmmc_host_device_cfg diagnostic name, writes controller base 0x40110000, and branches to the pinmux helper only for its controller-id argument equal to zero.",
+      "The Thumb call at 0x38005712 explicitly sets r0=0 at 0x38005710 and passes its stack configuration via r1=r7+0x14.",
+      "That stack configuration contains raw word fields [1, 48000000, 4]; the ARM body consumes offset 4 as the frequency value and offset 8 as a bus-width byte, comparing width to 8 and defaulting zero width to 4.",
+      "The helper materializes r0=0x384bb5dc, sets r1=6, then branches to the initializer. The initializer loads pin and function bytes with an index shifted by two and applies function and pull configuration; this proves the compiled map stride is four bytes.",
+      "The six pin/function values exactly match the public BEST2003 hal_iomux_set_sdmmc helper. The conclusion rests on the NOR array plus actual calls, not on public routing alone."
+    ]
+  },
+  "code_evidence": {
+    "controller_zero_open_and_stack_configuration": {
+      "mode": "Thumb",
+      "start_va": "0x380056b4",
+      "start_nor_offset": "0x8e56b8",
+      "bytes": "2de9f04fe3b0b74b00af0546a022002107f1e0001b68c7f884314ff00003d3f366ec4ff4d8434df2a938c0f2dc2349f6ec76bb614ff46149c3f601080123c3f64e064ff0030ac0f2f5597b610423fb614046cdf304ef324607f114010020cdf33eef0028c0f22481",
+      "instructions": [
+        {
+          "va": "0x380056b4",
+          "nor_offset": "0x8e56b8",
+          "mnemonic": "push.w",
+          "operands": "{r4, r5, r6, r7, r8, sb, sl, fp, lr}"
+        },
+        {
+          "va": "0x380056b8",
+          "nor_offset": "0x8e56bc",
+          "mnemonic": "sub",
+          "operands": "sp, #0x18c"
+        },
+        {
+          "va": "0x380056ba",
+          "nor_offset": "0x8e56be",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0x2dc]"
+        },
+        {
+          "va": "0x380056bc",
+          "nor_offset": "0x8e56c0",
+          "mnemonic": "add",
+          "operands": "r7, sp, #0"
+        },
+        {
+          "va": "0x380056be",
+          "nor_offset": "0x8e56c2",
+          "mnemonic": "mov",
+          "operands": "r5, r0"
+        },
+        {
+          "va": "0x380056c0",
+          "nor_offset": "0x8e56c4",
+          "mnemonic": "movs",
+          "operands": "r2, #0xa0"
+        },
+        {
+          "va": "0x380056c2",
+          "nor_offset": "0x8e56c6",
+          "mnemonic": "movs",
+          "operands": "r1, #0"
+        },
+        {
+          "va": "0x380056c4",
+          "nor_offset": "0x8e56c8",
+          "mnemonic": "add.w",
+          "operands": "r0, r7, #0xe0"
+        },
+        {
+          "va": "0x380056c8",
+          "nor_offset": "0x8e56cc",
+          "mnemonic": "ldr",
+          "operands": "r3, [r3]"
+        },
+        {
+          "va": "0x380056ca",
+          "nor_offset": "0x8e56ce",
+          "mnemonic": "str.w",
+          "operands": "r3, [r7, #0x184]"
+        },
+        {
+          "va": "0x380056ce",
+          "nor_offset": "0x8e56d2",
+          "mnemonic": "mov.w",
+          "operands": "r3, #0"
+        },
+        {
+          "va": "0x380056d2",
+          "nor_offset": "0x8e56d6",
+          "mnemonic": "blx",
+          "operands": "#0x383d8fa0"
+        },
+        {
+          "va": "0x380056d6",
+          "nor_offset": "0x8e56da",
+          "mnemonic": "mov.w",
+          "operands": "r3, #0x6c00"
+        },
+        {
+          "va": "0x380056da",
+          "nor_offset": "0x8e56de",
+          "mnemonic": "movw",
+          "operands": "r8, #0xd3a9"
+        },
+        {
+          "va": "0x380056de",
+          "nor_offset": "0x8e56e2",
+          "mnemonic": "movt",
+          "operands": "r3, #0x2dc"
+        },
+        {
+          "va": "0x380056e2",
+          "nor_offset": "0x8e56e6",
+          "mnemonic": "movw",
+          "operands": "r6, #0x9fec"
+        },
+        {
+          "va": "0x380056e6",
+          "nor_offset": "0x8e56ea",
+          "mnemonic": "str",
+          "operands": "r3, [r7, #0x18]"
+        },
+        {
+          "va": "0x380056e8",
+          "nor_offset": "0x8e56ec",
+          "mnemonic": "mov.w",
+          "operands": "sb, #0xe100"
+        },
+        {
+          "va": "0x380056ec",
+          "nor_offset": "0x8e56f0",
+          "mnemonic": "movt",
+          "operands": "r8, #0x3801"
+        },
+        {
+          "va": "0x380056f0",
+          "nor_offset": "0x8e56f4",
+          "mnemonic": "movs",
+          "operands": "r3, #1"
+        },
+        {
+          "va": "0x380056f2",
+          "nor_offset": "0x8e56f6",
+          "mnemonic": "movt",
+          "operands": "r6, #0x384e"
+        },
+        {
+          "va": "0x380056f6",
+          "nor_offset": "0x8e56fa",
+          "mnemonic": "mov.w",
+          "operands": "sl, #3"
+        },
+        {
+          "va": "0x380056fa",
+          "nor_offset": "0x8e56fe",
+          "mnemonic": "movt",
+          "operands": "sb, #0x5f5"
+        },
+        {
+          "va": "0x380056fe",
+          "nor_offset": "0x8e5702",
+          "mnemonic": "str",
+          "operands": "r3, [r7, #0x14]"
+        },
+        {
+          "va": "0x38005700",
+          "nor_offset": "0x8e5704",
+          "mnemonic": "movs",
+          "operands": "r3, #4"
+        },
+        {
+          "va": "0x38005702",
+          "nor_offset": "0x8e5706",
+          "mnemonic": "str",
+          "operands": "r3, [r7, #0x1c]"
+        },
+        {
+          "va": "0x38005704",
+          "nor_offset": "0x8e5708",
+          "mnemonic": "mov",
+          "operands": "r0, r8"
+        },
+        {
+          "va": "0x38005706",
+          "nor_offset": "0x8e570a",
+          "mnemonic": "blx",
+          "operands": "#0x383d3510"
+        },
+        {
+          "va": "0x3800570a",
+          "nor_offset": "0x8e570e",
+          "mnemonic": "mov",
+          "operands": "r2, r6"
+        },
+        {
+          "va": "0x3800570c",
+          "nor_offset": "0x8e5710",
+          "mnemonic": "add.w",
+          "operands": "r1, r7, #0x14"
+        },
+        {
+          "va": "0x38005710",
+          "nor_offset": "0x8e5714",
+          "mnemonic": "movs",
+          "operands": "r0, #0"
+        },
+        {
+          "va": "0x38005712",
+          "nor_offset": "0x8e5716",
+          "mnemonic": "blx",
+          "operands": "#0x383d3590"
+        },
+        {
+          "va": "0x38005716",
+          "nor_offset": "0x8e571a",
+          "mnemonic": "cmp",
+          "operands": "r0, #0"
+        },
+        {
+          "va": "0x38005718",
+          "nor_offset": "0x8e571c",
+          "mnemonic": "blt.w",
+          "operands": "#0x38005964"
+        }
+      ]
+    },
+    "host_config_entry_and_controller_base": {
+      "mode": "ARM",
+      "start_va": "0x383d2368",
+      "start_nor_offset": "0xcb236c",
+      "bytes": "f04f2de9005051e2e03f9fe58cd04de20040a0e10260a0e1003093e584308de50030a0e3b800000a049095e51b3ca0e3b73040e3000059e30390a0010ef3ffeb0330a0e3930000e0a00059e19b00003a000054e3b800000a07f3ffeb8080a0e1000054e39b00000a5c30a0e3e87d04e3930403e0517843e30020a0e3031087e0000055e3112044e3202081e50020a0e3042081e50120a0e30340c7e7088081e54c20c1e59300000a0820d5e5000052e30420a0031020c1e50220d5e51220c1e50000d5e5",
+      "instructions": [
+        {
+          "va": "0x383d2368",
+          "nor_offset": "0xcb236c",
+          "mnemonic": "push",
+          "operands": "{r4, r5, r6, r7, r8, sb, sl, fp, lr}"
+        },
+        {
+          "va": "0x383d236c",
+          "nor_offset": "0xcb2370",
+          "mnemonic": "subs",
+          "operands": "r5, r1, #0"
+        },
+        {
+          "va": "0x383d2370",
+          "nor_offset": "0xcb2374",
+          "mnemonic": "ldr",
+          "operands": "r3, [pc, #0xfe0]"
+        },
+        {
+          "va": "0x383d2374",
+          "nor_offset": "0xcb2378",
+          "mnemonic": "sub",
+          "operands": "sp, sp, #0x8c"
+        },
+        {
+          "va": "0x383d2378",
+          "nor_offset": "0xcb237c",
+          "mnemonic": "mov",
+          "operands": "r4, r0"
+        },
+        {
+          "va": "0x383d237c",
+          "nor_offset": "0xcb2380",
+          "mnemonic": "mov",
+          "operands": "r6, r2"
+        },
+        {
+          "va": "0x383d2380",
+          "nor_offset": "0xcb2384",
+          "mnemonic": "ldr",
+          "operands": "r3, [r3]"
+        },
+        {
+          "va": "0x383d2384",
+          "nor_offset": "0xcb2388",
+          "mnemonic": "str",
+          "operands": "r3, [sp, #0x84]"
+        },
+        {
+          "va": "0x383d2388",
+          "nor_offset": "0xcb238c",
+          "mnemonic": "mov",
+          "operands": "r3, #0"
+        },
+        {
+          "va": "0x383d238c",
+          "nor_offset": "0xcb2390",
+          "mnemonic": "beq",
+          "operands": "#0x383d2674"
+        },
+        {
+          "va": "0x383d2390",
+          "nor_offset": "0xcb2394",
+          "mnemonic": "ldr",
+          "operands": "sb, [r5, #4]"
+        },
+        {
+          "va": "0x383d2394",
+          "nor_offset": "0xcb2398",
+          "mnemonic": "mov",
+          "operands": "r3, #0x1b00"
+        },
+        {
+          "va": "0x383d2398",
+          "nor_offset": "0xcb239c",
+          "mnemonic": "movt",
+          "operands": "r3, #0xb7"
+        },
+        {
+          "va": "0x383d239c",
+          "nor_offset": "0xcb23a0",
+          "mnemonic": "cmp",
+          "operands": "sb, #0"
+        },
+        {
+          "va": "0x383d23a0",
+          "nor_offset": "0xcb23a4",
+          "mnemonic": "moveq",
+          "operands": "sb, r3"
+        },
+        {
+          "va": "0x383d23a4",
+          "nor_offset": "0xcb23a8",
+          "mnemonic": "bl",
+          "operands": "#0x383cefe4"
+        },
+        {
+          "va": "0x383d23a8",
+          "nor_offset": "0xcb23ac",
+          "mnemonic": "mov",
+          "operands": "r3, #3"
+        },
+        {
+          "va": "0x383d23ac",
+          "nor_offset": "0xcb23b0",
+          "mnemonic": "mul",
+          "operands": "r0, r3, r0"
+        },
+        {
+          "va": "0x383d23b0",
+          "nor_offset": "0xcb23b4",
+          "mnemonic": "cmp",
+          "operands": "sb, r0, lsr #1"
+        },
+        {
+          "va": "0x383d23b4",
+          "nor_offset": "0xcb23b8",
+          "mnemonic": "blo",
+          "operands": "#0x383d2628"
+        },
+        {
+          "va": "0x383d23b8",
+          "nor_offset": "0xcb23bc",
+          "mnemonic": "cmp",
+          "operands": "r4, #0"
+        },
+        {
+          "va": "0x383d23bc",
+          "nor_offset": "0xcb23c0",
+          "mnemonic": "beq",
+          "operands": "#0x383d26a4"
+        },
+        {
+          "va": "0x383d23c0",
+          "nor_offset": "0xcb23c4",
+          "mnemonic": "bl",
+          "operands": "#0x383cefe4"
+        },
+        {
+          "va": "0x383d23c4",
+          "nor_offset": "0xcb23c8",
+          "mnemonic": "lsl",
+          "operands": "r8, r0, #1"
+        },
+        {
+          "va": "0x383d23c8",
+          "nor_offset": "0xcb23cc",
+          "mnemonic": "cmp",
+          "operands": "r4, #0"
+        },
+        {
+          "va": "0x383d23cc",
+          "nor_offset": "0xcb23d0",
+          "mnemonic": "beq",
+          "operands": "#0x383d2640"
+        },
+        {
+          "va": "0x383d23d0",
+          "nor_offset": "0xcb23d4",
+          "mnemonic": "mov",
+          "operands": "r3, #0x5c"
+        },
+        {
+          "va": "0x383d23d4",
+          "nor_offset": "0xcb23d8",
+          "mnemonic": "movw",
+          "operands": "r7, #0x4de8"
+        },
+        {
+          "va": "0x383d23d8",
+          "nor_offset": "0xcb23dc",
+          "mnemonic": "mul",
+          "operands": "r3, r3, r4"
+        },
+        {
+          "va": "0x383d23dc",
+          "nor_offset": "0xcb23e0",
+          "mnemonic": "movt",
+          "operands": "r7, #0x3851"
+        },
+        {
+          "va": "0x383d23e0",
+          "nor_offset": "0xcb23e4",
+          "mnemonic": "mov",
+          "operands": "r2, #0"
+        },
+        {
+          "va": "0x383d23e4",
+          "nor_offset": "0xcb23e8",
+          "mnemonic": "add",
+          "operands": "r1, r7, r3"
+        },
+        {
+          "va": "0x383d23e8",
+          "nor_offset": "0xcb23ec",
+          "mnemonic": "cmp",
+          "operands": "r5, #0"
+        },
+        {
+          "va": "0x383d23ec",
+          "nor_offset": "0xcb23f0",
+          "mnemonic": "movt",
+          "operands": "r2, #0x4011"
+        },
+        {
+          "va": "0x383d23f0",
+          "nor_offset": "0xcb23f4",
+          "mnemonic": "str",
+          "operands": "r2, [r1, #0x20]"
+        },
+        {
+          "va": "0x383d23f4",
+          "nor_offset": "0xcb23f8",
+          "mnemonic": "mov",
+          "operands": "r2, #0"
+        },
+        {
+          "va": "0x383d23f8",
+          "nor_offset": "0xcb23fc",
+          "mnemonic": "str",
+          "operands": "r2, [r1, #4]"
+        },
+        {
+          "va": "0x383d23fc",
+          "nor_offset": "0xcb2400",
+          "mnemonic": "mov",
+          "operands": "r2, #1"
+        },
+        {
+          "va": "0x383d2400",
+          "nor_offset": "0xcb2404",
+          "mnemonic": "strb",
+          "operands": "r4, [r7, r3]"
+        },
+        {
+          "va": "0x383d2404",
+          "nor_offset": "0xcb2408",
+          "mnemonic": "str",
+          "operands": "r8, [r1, #8]"
+        },
+        {
+          "va": "0x383d2408",
+          "nor_offset": "0xcb240c",
+          "mnemonic": "strb",
+          "operands": "r2, [r1, #0x4c]"
+        },
+        {
+          "va": "0x383d240c",
+          "nor_offset": "0xcb2410",
+          "mnemonic": "beq",
+          "operands": "#0x383d2660"
+        },
+        {
+          "va": "0x383d2410",
+          "nor_offset": "0xcb2414",
+          "mnemonic": "ldrb",
+          "operands": "r2, [r5, #8]"
+        },
+        {
+          "va": "0x383d2414",
+          "nor_offset": "0xcb2418",
+          "mnemonic": "cmp",
+          "operands": "r2, #0"
+        },
+        {
+          "va": "0x383d2418",
+          "nor_offset": "0xcb241c",
+          "mnemonic": "moveq",
+          "operands": "r2, #4"
+        },
+        {
+          "va": "0x383d241c",
+          "nor_offset": "0xcb2420",
+          "mnemonic": "strb",
+          "operands": "r2, [r1, #0x10]"
+        },
+        {
+          "va": "0x383d2420",
+          "nor_offset": "0xcb2424",
+          "mnemonic": "ldrb",
+          "operands": "r2, [r5, #2]"
+        },
+        {
+          "va": "0x383d2424",
+          "nor_offset": "0xcb2428",
+          "mnemonic": "strb",
+          "operands": "r2, [r1, #0x12]"
+        },
+        {
+          "va": "0x383d2428",
+          "nor_offset": "0xcb242c",
+          "mnemonic": "ldrb",
+          "operands": "r0, [r5]"
+        }
+      ]
+    },
+    "host_config_controller_zero_pinmux_branch": {
+      "mode": "ARM",
+      "start_va": "0x383d2628",
+      "start_nor_offset": "0xcb262c",
+      "bytes": "000054e32f02000a6bf2ffeb000054e30080a0e163ffff1a711400ebe81600eb60ffffea",
+      "instructions": [
+        {
+          "va": "0x383d2628",
+          "nor_offset": "0xcb262c",
+          "mnemonic": "cmp",
+          "operands": "r4, #0"
+        },
+        {
+          "va": "0x383d262c",
+          "nor_offset": "0xcb2630",
+          "mnemonic": "beq",
+          "operands": "#0x383d2ef0"
+        },
+        {
+          "va": "0x383d2630",
+          "nor_offset": "0xcb2634",
+          "mnemonic": "bl",
+          "operands": "#0x383cefe4"
+        },
+        {
+          "va": "0x383d2634",
+          "nor_offset": "0xcb2638",
+          "mnemonic": "cmp",
+          "operands": "r4, #0"
+        },
+        {
+          "va": "0x383d2638",
+          "nor_offset": "0xcb263c",
+          "mnemonic": "mov",
+          "operands": "r8, r0"
+        },
+        {
+          "va": "0x383d263c",
+          "nor_offset": "0xcb2640",
+          "mnemonic": "bne",
+          "operands": "#0x383d23d0"
+        },
+        {
+          "va": "0x383d2640",
+          "nor_offset": "0xcb2644",
+          "mnemonic": "bl",
+          "operands": "#0x383d780c"
+        },
+        {
+          "va": "0x383d2644",
+          "nor_offset": "0xcb2648",
+          "mnemonic": "bl",
+          "operands": "#0x383d81ec"
+        },
+        {
+          "va": "0x383d2648",
+          "nor_offset": "0xcb264c",
+          "mnemonic": "b",
+          "operands": "#0x383d23d0"
+        }
+      ]
+    },
+    "host_config_alternate_clock_path_rejoins_pinmux": {
+      "mode": "ARM",
+      "start_va": "0x383d2ef0",
+      "start_nor_offset": "0xcb2ef4",
+      "bytes": "0400a0e1e41400ebccfdffea",
+      "instructions": [
+        {
+          "va": "0x383d2ef0",
+          "nor_offset": "0xcb2ef4",
+          "mnemonic": "mov",
+          "operands": "r0, r4"
+        },
+        {
+          "va": "0x383d2ef4",
+          "nor_offset": "0xcb2ef8",
+          "mnemonic": "bl",
+          "operands": "#0x383d828c"
+        },
+        {
+          "va": "0x383d2ef8",
+          "nor_offset": "0xcb2efc",
+          "mnemonic": "b",
+          "operands": "#0x383d2630"
+        }
+      ]
+    },
+    "pinmux_helper": {
+      "mode": "ARM",
+      "start_va": "0x383d780c",
+      "start_nor_offset": "0xcb7810",
+      "bytes": "dc050be30610a0e34b0843e3b1ffffea",
+      "instructions": [
+        {
+          "va": "0x383d780c",
+          "nor_offset": "0xcb7810",
+          "mnemonic": "movw",
+          "operands": "r0, #0xb5dc"
+        },
+        {
+          "va": "0x383d7810",
+          "nor_offset": "0xcb7814",
+          "mnemonic": "mov",
+          "operands": "r1, #6"
+        },
+        {
+          "va": "0x383d7814",
+          "nor_offset": "0xcb7818",
+          "mnemonic": "movt",
+          "operands": "r0, #0x384b"
+        },
+        {
+          "va": "0x383d7818",
+          "nor_offset": "0xcb781c",
+          "mnemonic": "b",
+          "operands": "#0x383d76e4"
+        }
+      ]
+    },
+    "compact_pinmap_initializer": {
+      "mode": "ARM",
+      "start_va": "0x383d76e4",
+      "start_nor_offset": "0xcb76e8",
+      "bytes": "f0412de9006051e21800000a0050a0e10040a0e3017080e2038080e20401d5e70411d7e7210050e3870051930200009a0444a0e1010084e2f081bde839ffffeb000050e3f9ffff1a0401d5e7210050e30800008a0411d8e7c8ffffeb000050e30700001a014084e2060054e1eaffff1a0000a0e3f081bde80444a0e1020084e2f081bde80404a0e1030080e2f081bde8",
+      "instructions": [
+        {
+          "va": "0x383d76e4",
+          "nor_offset": "0xcb76e8",
+          "mnemonic": "push",
+          "operands": "{r4, r5, r6, r7, r8, lr}"
+        },
+        {
+          "va": "0x383d76e8",
+          "nor_offset": "0xcb76ec",
+          "mnemonic": "subs",
+          "operands": "r6, r1, #0"
+        },
+        {
+          "va": "0x383d76ec",
+          "nor_offset": "0xcb76f0",
+          "mnemonic": "beq",
+          "operands": "#0x383d7754"
+        },
+        {
+          "va": "0x383d76f0",
+          "nor_offset": "0xcb76f4",
+          "mnemonic": "mov",
+          "operands": "r5, r0"
+        },
+        {
+          "va": "0x383d76f4",
+          "nor_offset": "0xcb76f8",
+          "mnemonic": "mov",
+          "operands": "r4, #0"
+        },
+        {
+          "va": "0x383d76f8",
+          "nor_offset": "0xcb76fc",
+          "mnemonic": "add",
+          "operands": "r7, r0, #1"
+        },
+        {
+          "va": "0x383d76fc",
+          "nor_offset": "0xcb7700",
+          "mnemonic": "add",
+          "operands": "r8, r0, #3"
+        },
+        {
+          "va": "0x383d7700",
+          "nor_offset": "0xcb7704",
+          "mnemonic": "ldrb",
+          "operands": "r0, [r5, r4, lsl #2]"
+        },
+        {
+          "va": "0x383d7704",
+          "nor_offset": "0xcb7708",
+          "mnemonic": "ldrb",
+          "operands": "r1, [r7, r4, lsl #2]"
+        },
+        {
+          "va": "0x383d7708",
+          "nor_offset": "0xcb770c",
+          "mnemonic": "cmp",
+          "operands": "r0, #0x21"
+        },
+        {
+          "va": "0x383d770c",
+          "nor_offset": "0xcb7710",
+          "mnemonic": "cmpls",
+          "operands": "r1, #0x87"
+        },
+        {
+          "va": "0x383d7710",
+          "nor_offset": "0xcb7714",
+          "mnemonic": "bls",
+          "operands": "#0x383d7720"
+        },
+        {
+          "va": "0x383d7714",
+          "nor_offset": "0xcb7718",
+          "mnemonic": "lsl",
+          "operands": "r4, r4, #8"
+        },
+        {
+          "va": "0x383d7718",
+          "nor_offset": "0xcb771c",
+          "mnemonic": "add",
+          "operands": "r0, r4, #1"
+        },
+        {
+          "va": "0x383d771c",
+          "nor_offset": "0xcb7720",
+          "mnemonic": "pop",
+          "operands": "{r4, r5, r6, r7, r8, pc}"
+        },
+        {
+          "va": "0x383d7720",
+          "nor_offset": "0xcb7724",
+          "mnemonic": "bl",
+          "operands": "#0x383d740c"
+        },
+        {
+          "va": "0x383d7724",
+          "nor_offset": "0xcb7728",
+          "mnemonic": "cmp",
+          "operands": "r0, #0"
+        },
+        {
+          "va": "0x383d7728",
+          "nor_offset": "0xcb772c",
+          "mnemonic": "bne",
+          "operands": "#0x383d7714"
+        },
+        {
+          "va": "0x383d772c",
+          "nor_offset": "0xcb7730",
+          "mnemonic": "ldrb",
+          "operands": "r0, [r5, r4, lsl #2]"
+        },
+        {
+          "va": "0x383d7730",
+          "nor_offset": "0xcb7734",
+          "mnemonic": "cmp",
+          "operands": "r0, #0x21"
+        },
+        {
+          "va": "0x383d7734",
+          "nor_offset": "0xcb7738",
+          "mnemonic": "bhi",
+          "operands": "#0x383d775c"
+        },
+        {
+          "va": "0x383d7738",
+          "nor_offset": "0xcb773c",
+          "mnemonic": "ldrb",
+          "operands": "r1, [r8, r4, lsl #2]"
+        },
+        {
+          "va": "0x383d773c",
+          "nor_offset": "0xcb7740",
+          "mnemonic": "bl",
+          "operands": "#0x383d7664"
+        },
+        {
+          "va": "0x383d7740",
+          "nor_offset": "0xcb7744",
+          "mnemonic": "cmp",
+          "operands": "r0, #0"
+        },
+        {
+          "va": "0x383d7744",
+          "nor_offset": "0xcb7748",
+          "mnemonic": "bne",
+          "operands": "#0x383d7768"
+        },
+        {
+          "va": "0x383d7748",
+          "nor_offset": "0xcb774c",
+          "mnemonic": "add",
+          "operands": "r4, r4, #1"
+        },
+        {
+          "va": "0x383d774c",
+          "nor_offset": "0xcb7750",
+          "mnemonic": "cmp",
+          "operands": "r4, r6"
+        },
+        {
+          "va": "0x383d7750",
+          "nor_offset": "0xcb7754",
+          "mnemonic": "bne",
+          "operands": "#0x383d7700"
+        },
+        {
+          "va": "0x383d7754",
+          "nor_offset": "0xcb7758",
+          "mnemonic": "mov",
+          "operands": "r0, #0"
+        },
+        {
+          "va": "0x383d7758",
+          "nor_offset": "0xcb775c",
+          "mnemonic": "pop",
+          "operands": "{r4, r5, r6, r7, r8, pc}"
+        },
+        {
+          "va": "0x383d775c",
+          "nor_offset": "0xcb7760",
+          "mnemonic": "lsl",
+          "operands": "r4, r4, #8"
+        },
+        {
+          "va": "0x383d7760",
+          "nor_offset": "0xcb7764",
+          "mnemonic": "add",
+          "operands": "r0, r4, #2"
+        },
+        {
+          "va": "0x383d7764",
+          "nor_offset": "0xcb7768",
+          "mnemonic": "pop",
+          "operands": "{r4, r5, r6, r7, r8, pc}"
+        },
+        {
+          "va": "0x383d7768",
+          "nor_offset": "0xcb776c",
+          "mnemonic": "lsl",
+          "operands": "r0, r4, #8"
+        },
+        {
+          "va": "0x383d776c",
+          "nor_offset": "0xcb7770",
+          "mnemonic": "add",
+          "operands": "r0, r0, #3"
+        },
+        {
+          "va": "0x383d7770",
+          "nor_offset": "0xcb7774",
+          "mnemonic": "pop",
+          "operands": "{r4, r5, r6, r7, r8, pc}"
+        }
+      ]
+    },
+    "open_wrapper": {
+      "mode": "ARM",
+      "start_va": "0x383d3590",
+      "start_nor_offset": "0xcb3594",
+      "bytes": "74fbffea",
+      "instructions": [
+        {
+          "va": "0x383d3590",
+          "nor_offset": "0xcb3594",
+          "mnemonic": "b",
+          "operands": "#0x383d2368"
+        }
+      ]
+    },
+    "try_sw_reset_open_and_diagnostic": {
+      "mode": "Thumb",
+      "start_va": "0x380044c0",
+      "start_nor_offset": "0x8e44c4",
+      "bytes": "791949f6ec72c3f64e022046cff360e804464bf26802c3f63e0249f6ec61c3f63e01034603201cf061f9",
+      "instructions": [
+        {
+          "va": "0x380044c0",
+          "nor_offset": "0x8e44c4",
+          "mnemonic": "adds",
+          "operands": "r1, r7, r5"
+        },
+        {
+          "va": "0x380044c2",
+          "nor_offset": "0x8e44c6",
+          "mnemonic": "movw",
+          "operands": "r2, #0x9fec"
+        },
+        {
+          "va": "0x380044c6",
+          "nor_offset": "0x8e44ca",
+          "mnemonic": "movt",
+          "operands": "r2, #0x384e"
+        },
+        {
+          "va": "0x380044ca",
+          "nor_offset": "0x8e44ce",
+          "mnemonic": "mov",
+          "operands": "r0, r4"
+        },
+        {
+          "va": "0x380044cc",
+          "nor_offset": "0x8e44d0",
+          "mnemonic": "blx",
+          "operands": "#0x383d3590"
+        },
+        {
+          "va": "0x380044d0",
+          "nor_offset": "0x8e44d4",
+          "mnemonic": "mov",
+          "operands": "r4, r0"
+        },
+        {
+          "va": "0x380044d2",
+          "nor_offset": "0x8e44d6",
+          "mnemonic": "movw",
+          "operands": "r2, #0xb068"
+        },
+        {
+          "va": "0x380044d6",
+          "nor_offset": "0x8e44da",
+          "mnemonic": "movt",
+          "operands": "r2, #0x383e"
+        },
+        {
+          "va": "0x380044da",
+          "nor_offset": "0x8e44de",
+          "mnemonic": "movw",
+          "operands": "r1, #0x9eec"
+        },
+        {
+          "va": "0x380044de",
+          "nor_offset": "0x8e44e2",
+          "mnemonic": "movt",
+          "operands": "r1, #0x383e"
+        },
+        {
+          "va": "0x380044e2",
+          "nor_offset": "0x8e44e6",
+          "mnemonic": "mov",
+          "operands": "r3, r0"
+        },
+        {
+          "va": "0x380044e4",
+          "nor_offset": "0x8e44e8",
+          "mnemonic": "movs",
+          "operands": "r0, #3"
+        },
+        {
+          "va": "0x380044e6",
+          "nor_offset": "0x8e44ea",
+          "mnemonic": "bl",
+          "operands": "#0x380207ac"
+        }
+      ]
+    }
+  },
+  "public_reference": {
+    "repo_tree_sha": "17f61a22388e6f2fbd8fe855b0ccb298b9a3bd45",
+    "helper_file": "analysis/pinout/reference/hal_iomux_best2003.c",
+    "helper_lines": [
+      1770,
+      1781
+    ],
+    "helper_url": "https://github.com/openharmony/device_soc_bestechnic/blob/master/bes2600/liteos_m/sdk/bsp/platform/hal/best2003/hal_iomux_best2003.c#L1770",
+    "enum_file": "analysis/pinout/reference/hal_iomux_best2003.h",
+    "struct_file": "analysis/pinout/reference/hal_iomux.h",
+    "note": "Public source enums are interpreted as byte-sized in this image because of observed ldrb/stride-four code, irrespective of the source compiler enum-size settings."
+  },
+  "limitations": [
+    "This establishes firmware-selected logical GPIO routing on a reachable controller-0 SDMMC initialization path; it does not observe execution on hardware.",
+    "It does not map the GPIOs to this board's test pads, connectors, traces or physical BGA balls.",
+    "VIO is the array's voltage-domain enum; this analysis does not measure the rail voltage or prove a voltage switch occurred.",
+    "The generic helper array also occurs at NOR 0xe1dbd8 outside the length-delimited A7 payload. That duplicate is not used as evidence for this call chain."
+  ]
+}

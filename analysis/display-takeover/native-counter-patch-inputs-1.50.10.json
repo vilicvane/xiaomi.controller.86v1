@@ -1,0 +1,54 @@
+{
+  "firmware": {
+    "path": "backups\\mi-panel-flash-16m-1.50.10-20261004.bin",
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "program": {
+    "path": "analysis\\display-takeover\\native-counter.bin",
+    "sha256": "80a92ac659f795546258b24b31780fae353f0dd5e543a97c0d47b8b139ecae9d",
+    "bytes": 966,
+    "entry": "0x3804b2f5",
+    "container_bytes": 1416
+  },
+  "scope": "Replace factory faclvgl main container and normal vapp builtin entry; two exact NOR sectors only. Preserve original vapp implementation and all other bytes.",
+  "install_order": [
+    "code",
+    "entry"
+  ],
+  "restore_order": [
+    "entry",
+    "code"
+  ],
+  "sectors": {
+    "code": {
+      "offset": "0x92b000",
+      "patch_offset": "0x2f8",
+      "patch_bytes": 966,
+      "original": {
+        "path": "analysis\\display-takeover\\native-counter-original-sector-92b000.bin",
+        "sha256": "8c6d7fd8a60c6445cc88086f0f88f70abc6973ea8743321df0483a784cfcfa56",
+        "bytes": 4096
+      },
+      "patched": {
+        "path": "analysis\\display-takeover\\native-counter-patched-sector-92b000.bin",
+        "sha256": "e2ac1b8fb72cf457280295dccdda19f2f996b89fc0f04286fc0d53cbc5161abb",
+        "bytes": 4096
+      }
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "patch_offset": "0xcc8",
+      "patch_bytes": 4,
+      "original": {
+        "path": "analysis\\display-takeover\\native-counter-original-sector-ccd000.bin",
+        "sha256": "b9206c93037f422f618fc481d22d46082a8e6ef61b0c951e93742f9bf24837a0",
+        "bytes": 4096
+      },
+      "patched": {
+        "path": "analysis\\display-takeover\\native-counter-patched-sector-ccd000.bin",
+        "sha256": "945c03b6dfb4e2f1fa0082664c8766d5c740c7c11de98c0c64a692ba0bc9b81d",
+        "bytes": 4096
+      }
+    }
+  }
+}

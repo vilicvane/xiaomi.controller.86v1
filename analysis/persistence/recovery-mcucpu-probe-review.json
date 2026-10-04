@@ -1,0 +1,283 @@
+{
+  "offline_only": true,
+  "hardware_execution_performed": false,
+  "cfg": "diagnostics\\mcu-recovery-mcucpu-bootbreak-probe.cfg",
+  "cfg_sha256": "cfcbaecf3a14d5d1bc185e1bb297bb095bba9d31ee0ab941023030ab3f33ac28",
+  "source_image_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "reused_pilot_sha256": "0ed1ab2443e801089385856f351c88ea44a17849cc67ada8a13a8ca30a1bafbf",
+  "BOOT_signature_windows": [
+    {
+      "label": "boot_header_page",
+      "address": "0xc000000",
+      "bytes": 256,
+      "sha256": "623c943cfc86ab885f0310e8fe800f727362e5066ccd27275a1c0f6282c7cbf4"
+    },
+    {
+      "label": "boot_startup_copy",
+      "address": "0xc00018c",
+      "bytes": 152,
+      "sha256": "b7b1317cd2d29eea21e8e885dc24d0f382cacedd2a3286f321384b5294bcf148"
+    },
+    {
+      "label": "boot_primary_idle_HAL_source",
+      "address": "0xc0024c8",
+      "bytes": 20,
+      "sha256": "c3c56bc96676ccb65b3f4885b1ca8aef651dfb63acd615b5cc7a993008ce5c63"
+    },
+    {
+      "label": "boot_native_nor_init_source",
+      "address": "0xc0033f8",
+      "bytes": 36,
+      "sha256": "bab350345cbeb9caeccf80365ef4691585be0aec5092ba7d3f5f90aafd50b32c"
+    },
+    {
+      "label": "boot_controller_table_source",
+      "address": "0xc005378",
+      "bytes": 8,
+      "sha256": "bdc1b6652c24cdb26605e358cca488c7c0376c74d42950d05ac64611b92a7809"
+    },
+    {
+      "label": "boot_breakpoint",
+      "address": "0xc0104c4",
+      "bytes": 8,
+      "sha256": "f2e1c4d8d4e0c1cc7b4d6eda9dddfd60f2a02aa971306342071dc35463ae4916"
+    },
+    {
+      "label": "boot_dsp_reset_set",
+      "address": "0xc012a54",
+      "bytes": 48,
+      "sha256": "ae6aa020b084fc6eeb463213c2d26c879f6e099c13eb156d9458f076baac6c70"
+    },
+    {
+      "label": "boot_global_reset",
+      "address": "0xc012b68",
+      "bytes": 20,
+      "sha256": "fc287a0d4619e0149629e4d6e4b5979247674ce8080181e46717dee5a3f792db"
+    }
+  ],
+  "primary_controller": "0x40148000",
+  "secondary_controller_access": false,
+  "MAIN_code_or_runtime_reads": false,
+  "APDBG_reads": false,
+  "pulse_route_provenance": "Root measured original MCUCPU40 pilot; analysis/persistence/mcucpu-pilot-hardware-result.json. No claim of identified BOOT generic-pulse code.",
+  "scope": "One DSP isolation + MCUCPU pulse, joint fresh-reset/VCATCH, pre-MAIN BOOT FPB, opened BOOT context, then GLOBAL cleanup whenever reset mutation may have committed.",
+  "limits": [
+    "Requires accessible matching preserved BOOT signature windows, debug/FPB availability and MCU capable of reaching a controlled halt.",
+    "Requires clocked/readable primary SPI, bounded controller idle, and clear readlock/reset bits; these do not prove chip internal WIP or suspend state.",
+    "Signature windows do not hash every BOOT instruction or establish arbitrary corruption tolerance.",
+    "Stock BOOT may change NOR status/protection. No debugger NOR API/data writes.",
+    "No MAIN corruption experiment or recovery-mode hardware execution performed.",
+    "Uncertain posted reset commit triggers one GLOBAL cleanup request; transport failure still needs fresh process/full power recovery verification."
+  ],
+  "offline_validation": {
+    "scope": "Offline Jim Tcl only; source/init/adapter/read/write commands substituted before CFG evaluation",
+    "cases": [
+      {
+        "case": "success",
+        "passed": true,
+        "observed": {
+          "source_error": 0,
+          "break_hit": 1,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\success-result.txt"
+      },
+      {
+        "case": "main_invalid",
+        "passed": true,
+        "observed": {
+          "source_error": 0,
+          "break_hit": 1,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\main_invalid-result.txt"
+      },
+      {
+        "case": "spi_settle",
+        "passed": true,
+        "observed": {
+          "source_error": 0,
+          "break_hit": 1,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\spi_settle-result.txt"
+      },
+      {
+        "case": "boot_source_invalid",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 0,
+          "pulse": 0,
+          "fresh": 0,
+          "dispatch": 1,
+          "cleanup": 1
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\boot_source_invalid-result.txt"
+      },
+      {
+        "case": "nor_busy",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 0,
+          "pulse": 0,
+          "fresh": 0,
+          "dispatch": 1,
+          "cleanup": 1
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\nor_busy-result.txt"
+      },
+      {
+        "case": "nor_locked",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 0,
+          "pulse": 0,
+          "fresh": 0,
+          "dispatch": 1,
+          "cleanup": 1
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\nor_locked-result.txt"
+      },
+      {
+        "case": "nor_reset_active",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 0,
+          "pulse": 0,
+          "fresh": 0,
+          "dispatch": 1,
+          "cleanup": 1
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\nor_reset_active-result.txt"
+      },
+      {
+        "case": "isolation_commit_error",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 1,
+          "pulse": 0,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\isolation_commit_error-result.txt"
+      },
+      {
+        "case": "pulse_commit_error",
+        "passed": true,
+        "observed": {
+          "source_error": 0,
+          "break_hit": 1,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\pulse_commit_error-result.txt"
+      },
+      {
+        "case": "pulse_lost_debug",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 0,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\pulse_lost_debug-result.txt"
+      },
+      {
+        "case": "break_not_hit",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\break_not_hit-result.txt"
+      },
+      {
+        "case": "second_reset",
+        "passed": true,
+        "observed": {
+          "source_error": 1,
+          "break_hit": 0,
+          "global": 1,
+          "pulse": 1,
+          "fresh": 1,
+          "dispatch": 1,
+          "cleanup": 0
+        },
+        "MAIN_reads": 0,
+        "secondary_SPI_reads": 0,
+        "APDBG_reads": 0,
+        "evidence": "analysis\\persistence\\offline-recovery-mcucpu\\second_reset-result.txt"
+      }
+    ],
+    "limits": "Reset semantics modeled from measured original pilot; new recovery variant has no hardware proof and no MAIN corruption test."
+  },
+  "current_original_pilot_sha256": "0ed1ab2443e801089385856f351c88ea44a17849cc67ada8a13a8ca30a1bafbf"
+}

@@ -40,9 +40,34 @@
     "frame_queue_empty": true
   },
   "user_observation": {
-    "ease": "pending",
-    "cold_boot": "pending",
-    "mi_home_online_control": "pending"
+    "ease": "User reports improved feel, with upward dismissal still somewhat abrupt. Easing applies only to remaining travel after release; follow-finger travel is direct.",
+    "cold_boot": "passed: complete panel+nanoDAP power removal, auto counter, gestures and key3 roundtrip normal",
+    "mi_home_online_control": "passed by user report after full power cycle"
   },
-  "rollback": "Set-PanelNativeDrawerEase.ps1 -Mode restore returns exact first drawer, which user has functionally tested. First drawer restore returns broker v1."
+  "rollback": "Set-PanelNativeDrawerEase.ps1 -Mode restore returns exact first drawer, which user has functionally tested. First drawer restore returns broker v1.",
+  "cold_read_only": {
+    "passed": true,
+    "scope": "Full-power-cycle read-only NOR/runtime verification. No halt/reset/target writes.",
+    "capture": "analysis/persistence/native-drawer-ease-hardware-cold-20261004-232015",
+    "sector_sha256": {
+      "code": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+      "entry": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+    },
+    "mcu_running": true,
+    "reset_catch_clear": true,
+    "temporary_breakpoint_removed": true,
+    "fields": {
+      "alive": 1,
+      "mode": 0,
+      "wanted": 0,
+      "ready": 1,
+      "count": 3,
+      "overlay": 0,
+      "cover": 0,
+      "target": 0,
+      "gui_cycles": 27304,
+      "toggles": 29,
+      "last_present": 0
+    }
+  }
 }

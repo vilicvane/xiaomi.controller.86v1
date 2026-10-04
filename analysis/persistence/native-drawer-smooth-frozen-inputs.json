@@ -1,0 +1,74 @@
+{
+  "scope": "Exact independently reviewed 1.50.10 native drawer smooth, verified ease-v1/smooth baselines only; two NOR sectors; restore ease v1",
+  "review_artifacts": [
+    {
+      "path": "analysis/display-takeover/native-drawer-smooth-independent-review-1.50.10.json",
+      "sha256": "8761366b4bf351d9159648430f94fc9d1117512e6d09c52ac3afc0717b27be63"
+    },
+    {
+      "path": "analysis/persistence/native-drawer-smooth-installer-review-1.50.10.json",
+      "sha256": "85a026444247a6bdbd540839abe5723fc72f5a594b27f601bceb587b1693d0b4"
+    },
+    {
+      "path": "analysis/persistence/offline-native-drawer-smooth-runner/run-1/summary.json",
+      "sha256": "95f1d41a8215795b022fa9d13ad1a9cfc5aa3c1057f8851c36a489752a7c83e9"
+    },
+    {
+      "path": "analysis/display-takeover/drawer-smooth-arm-offline-result.json",
+      "sha256": "026c759ae3337fefaf0c5a0c54d75cf3a50bd97c8de7e0eb4f0e4c403219b1f3"
+    },
+    {
+      "path": "analysis/display-takeover/native-drawer-smooth-independent-review-1.50.10.json",
+      "sha256": "8761366b4bf351d9159648430f94fc9d1117512e6d09c52ac3afc0717b27be63"
+    }
+  ],
+  "sha256": {
+    "analysis/persistence/native-drawer-smooth-patch-inputs-1.50.10.json": "9de512f864ffd66c533dea8601ac2394b0eb7fd74e15315f8e7e9c2bed3079b2",
+    "analysis/display-takeover/native-drawer-smooth.c": "1dcde30a3e1b87a9e5be581a8683190e5e465f1e9c6128688209e3cd8edf6ac1",
+    "analysis/display-takeover/native-drawer-smooth-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "analysis/display-takeover/native-drawer-smooth.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/build-native-drawer-smooth.sh": "dd14c0d890ae33c9e1cf0df014c0b1be92d41abeaa8e78a32d63182db24af3b4",
+    "analysis/display-takeover/native-drawer-smooth.elf": "bcb3e1af28253aa5e149a982ff0e13620fab31d830ab59f54e1c91b7f6c8d232",
+    "analysis/display-takeover/native-drawer-smooth.bin": "5d4042305cffbe15731f06ea12a244809158e050a0c850f8e38eb69345061e9e",
+    "analysis/display-takeover/test_native_drawer_ease_arm.py": "c1cf3cc9ec0b0d083c7c6d28aa291eabc66e3d96f1a1ae6efa66ca7658e84ace",
+    "analysis/display-takeover/test_native_drawer_arm.py": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+    "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408",
+    "analysis/persistence/prepare_native_drawer_smooth_inputs.py": "a59725638d0499f90627367fbf83cd324f73492818e8d8057bb50e18deacaa76",
+    "analysis/persistence/run_native_drawer_smooth_firmware.py": "ca57d3cc5ca8ec4c761e4048a2403f459532e58096d0feeb45dd29063bcf1de9",
+    "analysis/persistence/freeze_native_drawer_smooth_inputs.py": "b7bf321e5c84acd450f06c395cbf3a3e178538e6152104daed982df046c1e577",
+    "analysis/persistence/review_native_drawer_smooth_installer.py": "3fb454605d64d9e30827e880fa1d4b0463341b0f8d73b100954d99f34ad563da",
+    "diagnostics/swd-memory.cfg": "8e1e707483009a25d8a77752512a4afad9839b0a2f88c75656b21e7dc195a6a2",
+    "diagnostics/swd-dap.cfg": "de1b441878f71ac2985deae1c694d9790c2b386e35bdaac8787759f08416b8f5",
+    "diagnostics/boot-watchdog-stop.cfg": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+    "diagnostics/boot-nor-read-runner.cfg": "1bd3b194645e755753b0253c9d0f0cab5a3b3cb189c83451cc522130d9560742",
+    "analysis/persistence/boot-nor-read-runner-data.cfg": "a52e7a38a7735ff5d8f2974057a013ce2329cb55cbc00071cce7ac5cd9c5e656",
+    "diagnostics/boot-nor-native-drawer-smooth-runner.cfg": "e2f111de80c54a1c954a026f09820a34f059d003239f1d4d1b567bfe26afb45f",
+    "diagnostics/boot-nor-native-drawer-smooth-stage-inputs.cfg": "dc854a3479ef17449900df9a26aa92433d3d96406eddb65186b80ef6c62eb8bb",
+    "diagnostics/mcu-native-drawer-smooth-install-session.cfg": "ae3d034e5453fa0977e0a7c16ced609293c2bbd26136b88e781b106136e9dde2",
+    "diagnostics/mcu-native-drawer-smooth-restore-session.cfg": "89a1596c35ae338ea86ddb590e34a98f9f8cd9587f9a26d4e3f05b7de82c75a1",
+    "diagnostics/read-native-drawer-smooth-state.cfg": "4865004b0be8b75ffa4f917a5ddb619eb95d227d60179ea9a60400a5b6a5f668",
+    "diagnostics/read-native-drawer-smooth-runtime.cfg": "e4def7189afc887537f8a79c457eaf4ad837c219e797f440e44b673d15f22a60",
+    "analysis/persistence/native-drawer-smooth-writer-preparation.json": "4760134278dcae73fe6500badf1719896a5293fd94b2073c4ce4f2825f81b403",
+    "analysis/persistence/test_native_drawer_smooth_runner_offline.py": "40183bb55aa3ebd7844451fe4fff9781e582ad0ad15acbd5030a55bf2de6b6a0",
+    "analysis/persistence/mock_boot_read_runner.tcl": "c32714c553cf8277901e8dd6f46827c08f9ab469f32176905a27c30d1ae93396",
+    "scripts/Set-PanelNativeDrawerSmooth.ps1": "ea91385f4f5305a62dfa9227af2dea28439e9ff33ab4cb7841743cbd8183d078",
+    "tools/xpack-openocd-0.12.0-7/bin/openocd.exe": "10567f01d37c66a0975537960d66e61f7b4e2a17eb2c9637e2c2cbc569f70c79",
+    "backups/mi-panel-flash-16m-1.50.10-20261004.bin": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+    "analysis/persistence/native-drawer-ease-frozen-inputs.json": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/native-drawer-frozen-inputs.json": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+    "analysis/display-takeover/test_native_drawer_smooth_arm.py": "512c923505aa0d21d07f407c3bf11a2f71fec2c3edc5858030236da151d00ea2",
+    "analysis/persistence/native-drawer-ease-patched-sector-92b000.bin": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+    "analysis/persistence/native-drawer-smooth-original-sector-92b000.bin": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+    "analysis/persistence/native-drawer-smooth-patched-sector-92b000.bin": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31",
+    "analysis/persistence/native-drawer-ease-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-drawer-smooth-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-drawer-smooth-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/display-takeover/native-drawer-smooth-independent-review-1.50.10.json": "8761366b4bf351d9159648430f94fc9d1117512e6d09c52ac3afc0717b27be63",
+    "analysis/persistence/native-drawer-smooth-installer-review-1.50.10.json": "85a026444247a6bdbd540839abe5723fc72f5a594b27f601bceb587b1693d0b4",
+    "analysis/persistence/offline-native-drawer-smooth-runner/run-1/summary.json": "95f1d41a8215795b022fa9d13ad1a9cfc5aa3c1057f8851c36a489752a7c83e9",
+    "analysis/display-takeover/drawer-smooth-arm-offline-result.json": "026c759ae3337fefaf0c5a0c54d75cf3a50bd97c8de7e0eb4f0e4c403219b1f3",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c"
+  }
+}

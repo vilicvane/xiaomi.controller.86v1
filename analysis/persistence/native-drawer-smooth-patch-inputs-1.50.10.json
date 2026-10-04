@@ -1,0 +1,79 @@
+{
+  "offline_only": true,
+  "frozen": false,
+  "hardware_actions": 0,
+  "firmware": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "rollback": {
+    "kind": "native-drawer-ease-v1",
+    "freeze": "analysis/persistence/native-drawer-ease-frozen-inputs.json",
+    "freeze_sha256": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b"
+  },
+  "program": {
+    "path": "analysis/display-takeover/native-drawer-smooth.bin",
+    "elf": "analysis/display-takeover/native-drawer-smooth.elf",
+    "sha256": "5d4042305cffbe15731f06ea12a244809158e050a0c850f8e38eb69345061e9e",
+    "elf_sha256": "bcb3e1af28253aa5e149a982ff0e13620fab31d830ab59f54e1c91b7f6c8d232",
+    "bytes": 3368,
+    "entry": "0x3804b2f5",
+    "start": "0x3804b108",
+    "container_end_exclusive": "0x3804be70",
+    "container_bytes": 3432,
+    "file_start": "0x92b10c"
+  },
+  "scope": "Replace only the existing ease v1 code span with smoothstep animation and bounded successful-frame progress. Original means exact verified ease v1 rollback pages, not stock firmware. All builtin entries remain unchanged, including disabled wifi_recorder. Preserve shared code at/after 0x3804be70 and every other NOR byte.",
+  "disabled_commands": {
+    "wifi_recorder": "-ENOSYS stub at 0x3804b109 retained from ease v1; no new entry mutation"
+  },
+  "install_baseline": "Exact native-drawer-ease-v1 code and entry pages only. First drawer, broker, stock and old counter require their separate reviewed flow first.",
+  "install_order": [
+    "code",
+    "entry"
+  ],
+  "restore_order": [
+    "entry",
+    "code"
+  ],
+  "sectors": {
+    "code": {
+      "offset": "0x92b000",
+      "mutations": [
+        {
+          "sector_offset": "0x10c",
+          "bytes": 3368
+        }
+      ],
+      "baseline_kind": "verified-native-drawer-ease-v1",
+      "baseline_source": "analysis/persistence/native-drawer-ease-patched-sector-92b000.bin",
+      "original": {
+        "path": "analysis/persistence/native-drawer-smooth-original-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-drawer-smooth-patched-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31"
+      }
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "mutations": [],
+      "baseline_kind": "verified-native-drawer-ease-v1",
+      "baseline_source": "analysis/persistence/native-drawer-ease-patched-sector-ccd000.bin",
+      "original": {
+        "path": "analysis/persistence/native-drawer-smooth-original-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-drawer-smooth-patched-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "hardware_operation": false,
+  "elf_sha256": "bcb3e1af28253aa5e149a982ff0e13620fab31d830ab59f54e1c91b7f6c8d232",
+  "source_sha256": "1dcde30a3e1b87a9e5be581a8683190e5e465f1e9c6128688209e3cd8edf6ac1",
+  "test_sha256": "512c923505aa0d21d07f407c3bf11a2f71fec2c3edc5858030236da151d00ea2",
+  "check_count": 22,
+  "checks": [
+    "new ELF preserves two input hooks, physical/virtual classification in either order and boot-held contact protection",
+    "150ms smoothstep admits origin plus five distinct capped poses in both directions, then commits owner",
+    "every5ms accepted pose is monotonic and bounded, including integer-rounded near-end frames",
+    "staleUP100ms, queued wait300ms and originPAN150ms all preserve last admitted40px origin; phase starts only after fresh post-origin clock",
+    "unavailable shown sentinel falls back to logical cover before snapshot resets shown",
+    "each300ms scheduling stall earns at most30ms phase, preserving five intermediate transitions rather than jumping to endpoint",
+    "20ms render/PAN plus5ms idle completes in seven transition submissions, counting previous render cost instead of stretching to thirty frames",
+    "CLOCK failure after admitted origin keeps pending and phase0; recovery re-admits origin and anchors freshly without ownership change",
+    "failedPAN does not admit a pose, consume phase or commit owner; later recovery receives only one capped phase increment",
+    "postPAN CLOCK failure records admitted pose but leaves phase/anchor unchanged; recovery re-admits same pose without moving backward",
+    "UINT32 clock wrap preserves capped phase progression and final endpoint",
+    "key retarget resets from actually admitted33px pose, never logical112px pose from failedPAN",
+    "held contact remains direct finger-follow even across300ms GUI gaps; upward release starts closing only afterward",
+    "one-pixel transition advances through rounded-identical admitted poses and reaches handoff instead of freezing phase",
+    "new contact during snap is swallowed untilUP and blocks owner handoff despite completed phase",
+    "ordinary physical tap counts once onUP without pendingoverlay; held/repeatedUP and virtual contacts do not count or animate",
+    "stock contacts below top band pass completely; delivered virtualDOWN prevents interception; cancelled horizontal contact remains swallowed",
+    "physical and virtual queued rings independently block final handoff, enclosed by both publisher mutexes",
+    "physical pressed byte, queued display frame and changed inode class retain independent final handoff guards",
+    "custom/overlay still suppresses both stock display paths; stock delegation and relocation rejection remain intact",
+    "closed native timer and bootstrap lifetime stay safe; originalmain runs once with exact status across allocation/thread failures",
+    "CLOCK failure at finalphase blocks owner commit until a valid fresh timer clock is restored"
+  ],
+  "limitations": "Actual ARM instructions execute. Native APIs, IRQs, mutexes, LCD scanout and OS scheduling are mocked; admitted poses do not prove physical LCD cadence. No hardware accessed."
+}

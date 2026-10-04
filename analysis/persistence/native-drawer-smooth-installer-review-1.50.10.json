@@ -1,0 +1,52 @@
+{
+  "scope": "Smooth installer and ease-v1 rollback only for this panel 1.50.10; no device access",
+  "offline_only": true,
+  "hardware_actions": 0,
+  "passed": true,
+  "checks": [
+    "All three previous frozen input sets retain their exact bytes; stock NOR provenance remains SHA-checked.",
+    "Rollback fixtures are exact ease v1 full pages. Smooth code changes only inside its declared span; every builtin entry remains byte-identical. Shared bytes at/after 0x92be74 are untouched.",
+    "Inverse namespace/path and error-label normalization makes the smooth writer exactly equal to the frozen ease v1 writer. All native call, allowlist, watchdog, context, transport, status and sequencing checks remain unchanged.",
+    "Both outer MCU sessions are exact frozen ease v1 clones after namespace/path normalization, including fresh BOOT, isolated A7, watchdog stop, verified reader, completion gate and suppressed GLOBAL after uncertain native execution.",
+    "The exact reviewed 168-byte one-call ARM payload remains intact. Only fixed full-page ease rollback/smooth install fixtures change.",
+    "Current Jim cases pass, covering ease/smooth success, first-drawer/broker/stock/counter/unknown refusal, full-page readback, BP/QE, watchdog races, fault/reset/timeout and no stale replay. Equal entry pages cannot identify the drawer variant; the code page must match.",
+    "Freeze rejects overwrites and binds all prior freezes, exact ease rollback, stock NOR, current ELF/BIN/pages, reviews, current ELF model, writer summary and local headers. The public runner rechecks all merged prior catalogs before any hardware access, including zero-execute mode."
+  ],
+  "reviewed_inputs": {
+    "analysis/persistence/native-drawer-smooth-patch-inputs-1.50.10.json": "9de512f864ffd66c533dea8601ac2394b0eb7fd74e15315f8e7e9c2bed3079b2",
+    "analysis/persistence/offline-native-drawer-smooth-runner/run-1/summary.json": "95f1d41a8215795b022fa9d13ad1a9cfc5aa3c1057f8851c36a489752a7c83e9",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/native-drawer-frozen-inputs.json": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+    "analysis/persistence/native-drawer-ease-frozen-inputs.json": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b",
+    "analysis/persistence/prepare_native_drawer_smooth_inputs.py": "a59725638d0499f90627367fbf83cd324f73492818e8d8057bb50e18deacaa76",
+    "analysis/persistence/run_native_drawer_smooth_firmware.py": "ca57d3cc5ca8ec4c761e4048a2403f459532e58096d0feeb45dd29063bcf1de9",
+    "analysis/persistence/freeze_native_drawer_smooth_inputs.py": "b7bf321e5c84acd450f06c395cbf3a3e178538e6152104daed982df046c1e577",
+    "analysis/persistence/test_native_drawer_smooth_runner_offline.py": "40183bb55aa3ebd7844451fe4fff9781e582ad0ad15acbd5030a55bf2de6b6a0",
+    "analysis/persistence/review_native_drawer_smooth_installer.py": "3fb454605d64d9e30827e880fa1d4b0463341b0f8d73b100954d99f34ad563da",
+    "analysis/persistence/native-drawer-smooth-writer-preparation.json": "4760134278dcae73fe6500badf1719896a5293fd94b2073c4ce4f2825f81b403",
+    "diagnostics/boot-nor-native-drawer-smooth-runner.cfg": "e2f111de80c54a1c954a026f09820a34f059d003239f1d4d1b567bfe26afb45f",
+    "diagnostics/boot-nor-native-drawer-smooth-stage-inputs.cfg": "dc854a3479ef17449900df9a26aa92433d3d96406eddb65186b80ef6c62eb8bb",
+    "diagnostics/mcu-native-drawer-smooth-install-session.cfg": "ae3d034e5453fa0977e0a7c16ced609293c2bbd26136b88e781b106136e9dde2",
+    "diagnostics/mcu-native-drawer-smooth-restore-session.cfg": "89a1596c35ae338ea86ddb590e34a98f9f8cd9587f9a26d4e3f05b7de82c75a1",
+    "diagnostics/read-native-drawer-smooth-state.cfg": "4865004b0be8b75ffa4f917a5ddb619eb95d227d60179ea9a60400a5b6a5f668",
+    "diagnostics/read-native-drawer-smooth-runtime.cfg": "e4def7189afc887537f8a79c457eaf4ad837c219e797f440e44b673d15f22a60",
+    "scripts/Set-PanelNativeDrawerSmooth.ps1": "ea91385f4f5305a62dfa9227af2dea28439e9ff33ab4cb7841743cbd8183d078",
+    "analysis/display-takeover/native-drawer-smooth.bin": "5d4042305cffbe15731f06ea12a244809158e050a0c850f8e38eb69345061e9e",
+    "analysis/display-takeover/native-drawer-smooth.elf": "bcb3e1af28253aa5e149a982ff0e13620fab31d830ab59f54e1c91b7f6c8d232",
+    "analysis/persistence/native-drawer-ease-patched-sector-92b000.bin": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+    "analysis/persistence/native-drawer-smooth-original-sector-92b000.bin": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+    "analysis/persistence/native-drawer-smooth-patched-sector-92b000.bin": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31",
+    "analysis/persistence/native-drawer-ease-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-drawer-smooth-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-drawer-smooth-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+  },
+  "native_payload_sha256": "abed88ffa44ddd05eeb547178c981bf784f6ca492d1ecf21613af8fb3cb94c32",
+  "program_bytes": 3368,
+  "writer_mock_cases": 41,
+  "rollback": "Exact verified ease v1, not first drawer, broker or stock",
+  "limitations": [
+    "Core animation behavior requires independent program review and actual ELF model matching this ELF.",
+    "No smooth installation, display, power-cycle or cloud behavior is verified by this offline review.",
+    "The existing BOOT flow was tested under healthy MAIN; arbitrary damaged-MAIN recovery is not demonstrated."
+  ]
+}

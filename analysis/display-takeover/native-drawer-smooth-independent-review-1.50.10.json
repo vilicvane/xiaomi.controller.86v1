@@ -1,0 +1,143 @@
+{
+  "scope": "Independent offline source, linked ELF, capacity, bounded arithmetic and bound mocked-ARM-result review of the new 1.50.10 drawer smooth variant. No hardware access, installation, Git operation or mutation of earlier frozen inputs.",
+  "firmware_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-drawer-smooth.c": "1dcde30a3e1b87a9e5be581a8683190e5e465f1e9c6128688209e3cd8edf6ac1",
+    "analysis/display-takeover/native-drawer-smooth-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "analysis/display-takeover/native-drawer-smooth.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/build-native-drawer-smooth.sh": "dd14c0d890ae33c9e1cf0df014c0b1be92d41abeaa8e78a32d63182db24af3b4",
+    "analysis/display-takeover/native-drawer-smooth.elf": "bcb3e1af28253aa5e149a982ff0e13620fab31d830ab59f54e1c91b7f6c8d232",
+    "analysis/display-takeover/native-drawer-smooth.bin": "5d4042305cffbe15731f06ea12a244809158e050a0c850f8e38eb69345061e9e",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c"
+  },
+  "review_basis": {
+    "analysis/display-takeover/native-drawer-independent-review-1.50.10.json": "f3ccf02b227cb5cdba90540efff775f095a53f3793d60da49d8db83c232421db",
+    "analysis/display-takeover/native-drawer-ease-independent-review-1.50.10.json": "02165212362244cd6128977afc3de73d5b24dcf749a8683e13f13e7698e97f24",
+    "analysis/display-takeover/drawer-ease-timing-review-1.50.10.json": "d5d0d98bd86759ecab15222200391f08c4b0d2074859127995807ab7810364e3"
+  },
+  "immutable_prior_variants": [
+    {
+      "freeze": "analysis/persistence/native-ui-broker-frozen-inputs.json",
+      "freeze_sha256": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+      "frozen_files_checked": 36,
+      "all_frozen_hashes_match": true
+    },
+    {
+      "freeze": "analysis/persistence/native-drawer-frozen-inputs.json",
+      "freeze_sha256": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+      "frozen_files_checked": 46,
+      "all_frozen_hashes_match": true
+    },
+    {
+      "freeze": "analysis/persistence/native-drawer-ease-frozen-inputs.json",
+      "freeze_sha256": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b",
+      "frozen_files_checked": 45,
+      "all_frozen_hashes_match": true
+    }
+  ],
+  "capacity": {
+    "runtime_start": "0x3804b108",
+    "reviewed_end_exclusive": "0x3804be70",
+    "container_bytes": 3432,
+    "BIN_bytes": 3368,
+    "runtime_BIN_end": "0x3804be30",
+    "remaining_bytes": 64,
+    "allocated_section_bytes": 3325,
+    "sections": [
+      {
+        "name": ".prefix",
+        "address": "0x3804b108",
+        "bytes": 449
+      },
+      {
+        "name": ".start",
+        "address": "0x3804b2f4",
+        "bytes": 4
+      },
+      {
+        "name": ".broker",
+        "address": "0x3804b2f8",
+        "bytes": 2872
+      }
+    ],
+    "data_BSS_bytes": 0,
+    "undefined_symbols": [],
+    "Thumb_entry": "0x3804b2f5",
+    "strict_build_flags": "-Wall -Wextra -Werror; fixed linker bounds and no undefined symbols",
+    "table_change": "No new builtin-table change. The prior disabled wifi_recorder diagnostic entry remains required; source does not re-enable it. Preserve helper at 0x3804be70 and later bytes. Writer page/table-byte preservation is independently reviewed by installer.",
+    "qualification": "Reuse the bound exact-image capacity audit for the 2960-byte diagnostic container plus 472-byte wifi_recorder worker. This is a bounded control-flow review, not a proof that arbitrary computed pointers never enter the overwritten region."
+  },
+  "source_review": {
+    "context": "animation_from remains byte164 (+0xa4); pending and phase append at byte168 (+0xa8) and byte172 (+0xac). Earlier context offsets remain unchanged.",
+    "origin": "begin chooses last valid admitted shown pose before background capture resets shown; otherwise logical cover. Origin phase0 is submitted first, and pending clears only after successful PAN and a fresh post-PAN CLOCK.",
+    "time_progress": "Subsequent candidate phase adds min(unsigned current clock minus previous anchor,30), clamped150. Phase/anchor commit only after successful PAN and fresh CLOCK. Ordinary phase anchor uses pre-render candidate time, so the next phase includes prior rendering cost; initial origin alone uses fresh post-PAN time.",
+    "failures": "Queue occupancy prevents proposal. Failed pre-frame CLOCK prevents interpolation. Failed PAN does not change shown, phase, pending or anchor. Failed post-PAN CLOCK leaves the admitted shown pose but preserves phase, pending and anchor; later monotonic recomputation re-admits an equal or later pose. Retarget uses admitted shown instead of any failed calculated cover.",
+    "rounding": "Every animated phase proposal is submitted even when integer rounding repeats the visible pose. This avoids a one-pixel transition stalling before phase150.",
+    "finger_follow": "While captured gesture.active is true, direct gesture cover is drawn without snap interpolation. Ordinary full-cover TAP only counts and dirties the counter; it does not create a pending overlay.",
+    "endpoint": "Endpoint phase150 must be successfully admitted and clock-committed. Owner handoff is attempted only on a later queue-drained GUI cycle with both release scans and the publisher-locked final input gate.",
+    "contact_ownership": "Existing whole-contact capture, other-stream guard, physical/virtual classification, and suppression of new contacts during snap remain unchanged. ABI state/continue offsets are +0x12/+0x13, list prev/next +0x80/+0x84.",
+    "display_lifetime": "Both compositor and snapshot allocations remain alive. Original TIMER runs outside broker mutex. Snapshot is made in the GUI thread after original TIMER and only with queue0. Stock PAN/UPDATEAREA submits are suppressed during mode or overlay; compositor writes only at queue0 before native PAN synchronous staging copy and queue publication.",
+    "services": "The short-lived bootstrap installs hooks then exits; original main runs once and stock UI/JS plus background services retain original lifecycle."
+  },
+  "arithmetic_review": {
+    "curve": "150ms smoothstep: from + signed_delta * t*t*(450-2*t)/3375000, t in [0,150]. Signed division truncates toward zero.",
+    "integer_cases": 96942,
+    "model_scope": "Independent bounded integer arithmetic proof; separate from ARM instruction execution and hardware.",
+    "monotonic_bounded_exact_endpoints": true,
+    "signed32_max_abs_product": 1080000000,
+    "signed32_safe": true,
+    "max_first_30ms_movement_pixels": 33,
+    "max_any_30ms_movement_pixels": 95,
+    "phase_cap_ms_per_admitted_progress_pose": 30,
+    "minimum_progress_submissions_for_nonzero_endpoint_distance": 5,
+    "quantization_limit": "Tiny moves may repeat pixel poses; five phase-progress submissions do not imply five distinct LCD-visible pictures.",
+    "unsigned_ms_wrap_check": true
+  },
+  "bound_ARM_model_result": {
+    "path": "analysis/display-takeover/drawer-smooth-arm-offline-result.json",
+    "sha256": "026c759ae3337fefaf0c5a0c54d75cf3a50bd97c8de7e0eb4f0e4c403219b1f3",
+    "test_inputs": {
+      "analysis/display-takeover/test_native_drawer_smooth_arm.py": "512c923505aa0d21d07f407c3bf11a2f71fec2c3edc5858030236da151d00ea2",
+      "analysis/display-takeover/test_native_drawer_arm.py": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+      "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408"
+    },
+    "reported_passed": true,
+    "reported_check_groups": 22,
+    "binding_matches_current_C_ELF": true,
+    "coverage": [
+      "new ELF preserves two input hooks, physical/virtual classification in either order and boot-held contact protection",
+      "150ms smoothstep admits origin plus five distinct capped poses in both directions, then commits owner",
+      "every5ms accepted pose is monotonic and bounded, including integer-rounded near-end frames",
+      "staleUP100ms, queued wait300ms and originPAN150ms all preserve last admitted40px origin; phase starts only after fresh post-origin clock",
+      "unavailable shown sentinel falls back to logical cover before snapshot resets shown",
+      "each300ms scheduling stall earns at most30ms phase, preserving five intermediate transitions rather than jumping to endpoint",
+      "20ms render/PAN plus5ms idle completes in seven transition submissions, counting previous render cost instead of stretching to thirty frames",
+      "CLOCK failure after admitted origin keeps pending and phase0; recovery re-admits origin and anchors freshly without ownership change",
+      "failedPAN does not admit a pose, consume phase or commit owner; later recovery receives only one capped phase increment",
+      "postPAN CLOCK failure records admitted pose but leaves phase/anchor unchanged; recovery re-admits same pose without moving backward",
+      "UINT32 clock wrap preserves capped phase progression and final endpoint",
+      "key retarget resets from actually admitted33px pose, never logical112px pose from failedPAN",
+      "held contact remains direct finger-follow even across300ms GUI gaps; upward release starts closing only afterward",
+      "one-pixel transition advances through rounded-identical admitted poses and reaches handoff instead of freezing phase",
+      "new contact during snap is swallowed untilUP and blocks owner handoff despite completed phase",
+      "ordinary physical tap counts once onUP without pendingoverlay; held/repeatedUP and virtual contacts do not count or animate",
+      "stock contacts below top band pass completely; delivered virtualDOWN prevents interception; cancelled horizontal contact remains swallowed",
+      "physical and virtual queued rings independently block final handoff, enclosed by both publisher mutexes",
+      "physical pressed byte, queued display frame and changed inode class retain independent final handoff guards",
+      "custom/overlay still suppresses both stock display paths; stock delegation and relocation rejection remain intact",
+      "closed native timer and bootstrap lifetime stay safe; originalmain runs once with exact status across allocation/thread failures",
+      "CLOCK failure at finalphase blocks owner commit until a valid fresh timer clock is restored"
+    ],
+    "separation": "Reviewed result and test source; the sibling executed actual linked ARM instructions with native APIs mocked. This review does not claim hardware execution or native IRQ/mutex/LCD cadence verification."
+  },
+  "diagnosis_basis": "Bound public ease timing summary is consistent with 1000 non-atomic samples: observed closing from shown233 to calculated114 with old elapsed25ms, and shown220 to calculated91 with old elapsed30ms. This supports a steep first displacement; it does not establish a fully expired 120ms animation or snap while finger held. No raw captures, identity or network configuration are reproduced here.",
+  "limits": [
+    "No hardware execution, installation, cold boot or Mi Home validation of this new variant is established by this review. Prior ease hardware success does not transfer automatically.",
+    "Native PAN admission and software shown do not prove physical LCD scanout cadence. IRQ concurrency, native mutex internals and complete serialization of every direct mmap writer are outside mocked tests.",
+    "Nominal150ms phase is paced by successful submissions with a30ms cap; actual wall duration adapts to rendering, queues and scheduling and is not a150ms deadline.",
+    "Installer must preserve exact old baseline and unrelated page/table bytes. This program review is distinct from writer review and hardware verification.",
+    "Changing bound C, ELF, BIN, headers, build or test inputs invalidates this review association."
+  ],
+  "independent_review_result": "No source, integer-capacity or unchanged final-handoff blocker found for the bound candidate. Hardware remains separately required."
+}

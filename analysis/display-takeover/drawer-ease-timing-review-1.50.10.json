@@ -1,0 +1,37 @@
+{
+  "scope": "Read-only generic MEM-AP sampling of installed native-drawer-ease UI timing; no halt, reset, target write or native call.",
+  "installed_program_sha256": "ae9632dc387290b001ba64066ba149a0fb6e7af0ec9fc06e809bba917b156cef",
+  "sample_count": 1000,
+  "observed_clock_span_ms": 18635,
+  "capture": "diagnostics/drawer-ease-timing.txt",
+  "sampling_config": "diagnostics/read-drawer-ease-timing.cfg",
+  "limitations": [
+    "Each context read and separate queue read is non-atomic; fields may span GUI updates.",
+    "shown means successful native PAN admission, not measured LCD scanout.",
+    "Sampling does not identify all GUI frames or correlate individual gestures to the user's visual classification."
+  ],
+  "observations": [
+    {
+      "sample": 216,
+      "direction": "closing",
+      "previous_shown_cover": 233,
+      "animation_from": 231,
+      "elapsed_from_old_origin_ms": 25,
+      "first_observed_calculated_cover": 114
+    },
+    {
+      "sample": 334,
+      "direction": "closing",
+      "previous_shown_cover": 220,
+      "animation_from": 216,
+      "elapsed_from_old_origin_ms": 30,
+      "first_observed_calculated_cover": 91
+    }
+  ],
+  "assessment": {
+    "supported": "The old previous-GUI timestamp and steep initial cubic ease-out can produce a large first calculated displacement before the first admitted animation pose.",
+    "not_established": "The observed samples do not establish that the entire 120 ms animation expired before its first pose, or that animation begins while the finger remains held.",
+    "proposed_change": "Anchor from the last valid admitted pose, start with a fresh clock after origin admission, then use 150 ms smoothstep with at most 30 ms phase progress per successfully admitted frame. Direct follow-finger movement remains unchanged.",
+    "tradeoff": "Animation wall time adapts to rendering and queue delays; this favors consistent intermediate poses over catching up to an absolute deadline."
+  }
+}

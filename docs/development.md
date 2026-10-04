@@ -137,7 +137,21 @@ python -X utf8 analysis/persistence/run_native_drawer_firmware.py install
 也恢复 broker v1。若要再回原 stock，先用 drawer 回 broker，再用 broker 回 stock。
 旧 counter/broker/drawer 的三个冻结集合不可互相覆盖，新功能仍须新建审查集合。
 
-当前使用独立 `native-drawer-ease` 版本（3264B，45项冻结）。构建脚本为
+之前的独立 `native-drawer-ease` 版本为3264B、45项冻结。构建脚本为
 build-native-drawer-ease.sh，模型为test_native_drawer_ease_arm.py，安装入口为
 Set-PanelNativeDrawerEase.ps1。无 --execute 的run_native_drawer_ease_firmware.py
 只核对材料。其restore先回首版drawer，再依次回broker和stock；每套冻结保留原字节。
+
+当前松手后首帧跳跃的优化使用独立 `native-drawer-smooth` 版本（3368B，47项冻结）。
+原ease的源码/ELF/安装输入仍冻结。新实际ARM模型22组与写入器41项Jim路径通过；
+各自验证动画进度/触摸交接和固定写入流程，不能代替LCD手感及完整断电观察。
+
+```powershell
+wsl.exe -d Ubuntu -- bash /mnt/c/Users/vilicvane/Projects/vilicvane/mi-panel/analysis/display-takeover/build-native-drawer-smooth.sh
+python -X utf8 analysis/display-takeover/test_native_drawer_smooth_arm.py
+python -X utf8 analysis/persistence/run_native_drawer_smooth_firmware.py install
+```
+
+最后一条没有 `--execute` 不访问设备；除了新冻结输入，它还核对broker、drawer、
+ease三个旧集合的全部材料。已经冻结后不要随意重建或更新测试摘要。
+`Set-PanelNativeDrawerSmooth.ps1 -Mode restore` 返回精确ease版本，再逐级回退。

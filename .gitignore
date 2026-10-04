@@ -103,3 +103,10 @@
 !/analysis/persistence/native-drawer-ease-installer-review-1.50.10.json
 !/analysis/persistence/native-drawer-ease-frozen-inputs.json
 !/analysis/persistence/native-drawer-ease-hardware-result.json
+!/analysis/display-takeover/drawer-ease-timing-review-1.50.10.json
+!/analysis/display-takeover/drawer-smooth-arm-offline-result.json
+!/analysis/display-takeover/native-drawer-smooth-independent-review-1.50.10.json
+!/analysis/persistence/native-drawer-smooth-patch-inputs-1.50.10.json
+!/analysis/persistence/native-drawer-smooth-installer-review-1.50.10.json
+!/analysis/persistence/native-drawer-smooth-frozen-inputs.json
+!/analysis/persistence/native-drawer-smooth-hardware-result.json

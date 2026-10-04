@@ -1,0 +1,47 @@
+{
+  "scope": "New smooth drawer 1.50.10 hardware evidence; safe UI state and hashes only. No identities, network configuration or raw captures.",
+  "program_bytes": 3368,
+  "program_sha256": "5d4042305cffbe15731f06ea12a244809158e050a0c850f8e38eb69345061e9e",
+  "elf_sha256": "bcb3e1af28253aa5e149a982ff0e13620fab31d830ab59f54e1c91b7f6c8d232",
+  "installed": true,
+  "install_capture": "analysis/persistence/native-drawer-smooth-install-session-20261004-235453",
+  "install_result": {
+    "mode": "install",
+    "capture": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\analysis\\persistence\\native-drawer-smooth-install-session-20261004-235453",
+    "passed": true,
+    "scope": "NOR sectors92b000/ccd000 only; native boot task; restore returns verified ease v1",
+    "read_only_connection_attempts": 2,
+    "code_sha256": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31",
+    "entry_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "entry": "0x3804b2f5",
+    "mcu_running": true
+  },
+  "warm_read_only": {
+    "context": "0x3864ed40",
+    "fields": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "count": 0,
+      "physical_driver_index": 1,
+      "overlay": 0,
+      "cover": 320,
+      "target": 320,
+      "shown": 320,
+      "gui_cycles": 1825,
+      "toggles": 0,
+      "last_present": 0,
+      "animation_from": 0,
+      "pending": 0,
+      "phase": 150
+    },
+    "frame_queue_empty": true
+  },
+  "user_observation": {
+    "motion_consistency": "pending user observation",
+    "cold_boot": "pending complete power removal test",
+    "mi_home_online_control": "pending user observation for this version"
+  },
+  "rollback": "Set-PanelNativeDrawerSmooth.ps1 -Mode restore returns exact verified ease v1; further restore uses each previous version-specific installer."
+}

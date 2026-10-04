@@ -1,0 +1,86 @@
+{
+  "offline_only": true,
+  "frozen": false,
+  "hardware_actions": 0,
+  "firmware": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "rollback": {
+    "kind": "native-ui-broker-v1",
+    "freeze": "analysis/persistence/native-ui-broker-frozen-inputs.json",
+    "freeze_sha256": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba"
+  },
+  "program": {
+    "path": "analysis/display-takeover/native-drawer.bin",
+    "elf": "analysis/display-takeover/native-drawer.elf",
+    "sha256": "d21bb482ef80b6b32cc002e934f9ef95e1287594726fcc7674969631143938e7",
+    "elf_sha256": "6b5ab507efbc18da6bb3c2d65d9a2ac638882e397dad591c1028de3656eed4f0",
+    "bytes": 3224,
+    "entry": "0x3804b2f5",
+    "start": "0x3804b108",
+    "container_end_exclusive": "0x3804be70",
+    "container_bytes": 3432,
+    "file_start": "0x92b10c"
+  },
+  "scope": "Replace the existing broker code span and audited unused wifi_recorder worker up to 0x3804be70; disable wifi_recorder builtin via -ENOSYS stub. Original means exact verified broker v1 rollback pages, not stock firmware. Preserve shared code at/after 0x3804be70, original vapp/NTP, all identity/config and every other NOR byte.",
+  "disabled_commands": {
+    "wifi_recorder": "-ENOSYS stub at 0x3804b109; replaces builtin 0x38048c41 at NOR 0xccdd2c so borrowed pthread worker 0x3804bc98 cannot be started by this command"
+  },
+  "install_baseline": "Exact native-ui-broker-v1 code and entry pages only. Stock and old counter require their separate reviewed flow first.",
+  "install_order": [
+    "code",
+    "entry"
+  ],
+  "restore_order": [
+    "entry",
+    "code"
+  ],
+  "sectors": {
+    "code": {
+      "offset": "0x92b000",
+      "mutations": [
+        {
+          "sector_offset": "0x10c",
+          "bytes": 3224
+        }
+      ],
+      "baseline_kind": "verified-native-ui-broker-v1",
+      "baseline_source": "analysis/display-takeover/native-ui-broker-patched-sector-92b000.bin",
+      "original": {
+        "path": "analysis/persistence/native-drawer-original-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-drawer-patched-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "5e7b9855ac4336d8e7404d75a39b0dae708bfed38910dcb4a144ed2b8d73e8ca"
+      }
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "mutations": [
+        {
+          "sector_offset": "0xd2c",
+          "bytes": 4,
+          "before": "0x38048c41",
+          "after": "0x3804b109"
+        }
+      ],
+      "baseline_kind": "verified-native-ui-broker-v1",
+      "baseline_source": "analysis/display-takeover/native-ui-broker-patched-sector-ccd000.bin",
+      "original": {
+        "path": "analysis/persistence/native-drawer-original-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-drawer-patched-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      }
+    }
+  }
+}

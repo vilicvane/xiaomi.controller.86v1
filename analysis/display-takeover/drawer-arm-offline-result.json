@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "hardware_operation": false,
+  "elf_sha256": "6b5ab507efbc18da6bb3c2d65d9a2ac638882e397dad591c1028de3656eed4f0",
+  "source_sha256": "2419a5d130123c68c1262089f2a23df3266fb7529cb2f3e6aa2baa8cc886521c",
+  "test_sha256": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+  "check_count": 16,
+  "checks": [
+    "installs both callbacks, classifies reversed physical/virtual ordering, and ignores boot-held contact",
+    "unknown physical publisher fails setup without partial callback installation",
+    "default custom startup opens through animation and bootstrap returns after GUI hook readiness",
+    "first top-edge DOWN is suppressed; actual pixels follow vertical displacement and release opens",
+    "stock contact starting below top band passes completely and never becomes a drawer gesture",
+    "horizontal cancellation remains captured through UP and returns stock without a stray tap",
+    "custom tap counts on UP exactly once; hold repeats do not count and upward drag closes without counting",
+    "virtual input never drives drawer/count; an already delivered virtual DOWN prevents truncating stock input",
+    "contact begun during snap is consumed fully and blocks final ownership handoff until release",
+    "queued native frame prevents both canvas mutation and snapshot/presentation; queue release permits redraw",
+    "either physical or virtual queued ring blocks final ownership; final PAN runs under both publisher mutexes",
+    "final handoff independently rejects physical pressed byte, display queue, and changed touch inode class",
+    "overlay suppresses both original display routes, settled stock restores both, and relocation remains rejected",
+    "closing native timer is not rearmed; foreign timer handle delegates to original callback",
+    "original main runs exactly once and preserves status through normal return, heap failures and thread-create failure",
+    "GUI-clock-driven key3 triple release opens without a worker; clock failure disarms gesture state"
+  ],
+  "limitations": "Actual ARM instructions execute; native APIs, IRQs, locks, LCD scanout and OS scheduling are mocked. No hardware accessed."
+}

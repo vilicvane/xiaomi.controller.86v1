@@ -1,0 +1,74 @@
+{
+  "scope": "Independent offline source and linked-ELF capacity review for a new 1.50.10 drawer ease variant. No hardware, installation, frozen-input mutation or inherited hardware claim.",
+  "firmware_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-drawer-ease.c": "96b5e675c340909f40fca0460b2781c4a8d81ab85cd118611b09df6def662c7d",
+    "analysis/display-takeover/native-drawer-ease-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "analysis/display-takeover/native-drawer-ease.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/build-native-drawer-ease.sh": "d62e40a02c33366ad5656f7c806c4bac39d795b69a8d508f11cd2f344fac8b56",
+    "analysis/display-takeover/native-drawer-ease.elf": "12d0e2a5aeaac1daca2bdcd2da97b1f7401ee2c4bd4b66cd7dd8d600cac21bde",
+    "analysis/display-takeover/native-drawer-ease.bin": "ae9632dc387290b001ba64066ba149a0fb6e7af0ec9fc06e809bba917b156cef",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c"
+  },
+  "immutable_first_drawer": {
+    "freeze": "analysis/persistence/native-drawer-frozen-inputs.json",
+    "frozen_files_checked": 46,
+    "all_original_frozen_hashes_match": true,
+    "C_sha256": "2419a5d130123c68c1262089f2a23df3266fb7529cb2f3e6aa2baa8cc886521c",
+    "capacity_review_sha256": "f3ccf02b227cb5cdba90540efff775f095a53f3793d60da49d8db83c232421db"
+  },
+  "capacity": {
+    "runtime_start": "0x3804b108",
+    "reviewed_end_exclusive": "0x3804be70",
+    "BIN_bytes": 3264,
+    "runtime_BIN_end": "0x3804bdc8",
+    "remaining_bytes": 168,
+    "allocated_section_bytes": 3221,
+    "sections": [
+      {
+        "name": ".prefix",
+        "address": "0x3804b108",
+        "bytes": 449
+      },
+      {
+        "name": ".start",
+        "address": "0x3804b2f4",
+        "bytes": 4
+      },
+      {
+        "name": ".broker",
+        "address": "0x3804b2f8",
+        "bytes": 2768
+      }
+    ],
+    "data_BSS_bytes": 0,
+    "undefined_symbols": [],
+    "table_change": "None relative to the first drawer; wifi_recorder remains disabled. Preserve shared helper at be70."
+  },
+  "easing": {
+    "curve": "Cubic ease-out over nominal 120 monotonic milliseconds; target - signed_delta * (120-elapsed)^3 / 1728000. elapsed >=120 snaps exactly to target.",
+    "integer_model_cases": 77682,
+    "model_scope": "Independent bounded arithmetic proof, not hardware animation or actual ELF execution.",
+    "signed32_product_max_abs": 552960000,
+    "monotonic_bounded_endpoints": true,
+    "monotonic_ms_wrap_check": true,
+    "GUI_sample_quantization": "Captured UP starts from preceding GUI clock_ms; fresh CLOCK after TIMER advances the first ease frame. Nominal timing can begin one GUI frame early, and observed frame rate depends on native queue and scheduling.",
+    "reversal": "A key request during an existing overlay starts from current cover with a fresh clock timestamp; no stale start endpoint.",
+    "follow_finger": "Gesture header and direct gesture.cover path are unchanged; easing runs only after gesture.active clears.",
+    "new_context_field": "animation_from appended at byte164 (+0xa4), preserving all prior runtime offsets."
+  },
+  "ownership_review": {
+    "touch_capture": "Whole-contact capture, other-stream admission check, animation-contact suppression and physical input classification remain unchanged.",
+    "final_commit": "Original two-GUI-scan release and publisher-locked two-ring / native display-queue-empty checks remain unchanged; final frame is successfully submitted before mode commit.",
+    "rendering_lifetime": "Compositor and snapshot allocations remain alive. No stock submit during overlay; compositor is rewritten only when native queue is zero, then native PAN copies to staging before queue publication.",
+    "endpoint": "The endpoint is drawn before final handoff on a subsequent drained-frame cycle; ease completion does not bypass the final input gate.",
+    "clock_failure": "If CLOCK fails, previous clock_ms remains; interpolation does not invent elapsed time. Key recognizer cancels its partial gesture as previously.",
+    "bootstrap": "Short-lived hook installer remains; original main is invoked once and core services retain original lifecycle."
+  },
+  "limits": [
+    "This review does not validate IRQ concurrency, native mutex implementation, all possible direct mmap writers or LCD scanout performance.",
+    "User observations for installed first drawer do not validate this new ELF/BIN, its easing feel or cold-boot behavior.",
+    "Source, ELF, BIN and review must continue to match the bound hashes; rebuilding invalidates this association."
+  ]
+}

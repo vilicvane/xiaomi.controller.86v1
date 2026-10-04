@@ -1,0 +1,48 @@
+{
+  "scope": "New ease drawer 1.50.10 hardware evidence. No Wi-Fi/device identities or raw memory/firmware data.",
+  "program_bytes": 3264,
+  "program_sha256": "ae9632dc387290b001ba64066ba149a0fb6e7af0ec9fc06e809bba917b156cef",
+  "elf_sha256": "12d0e2a5aeaac1daca2bdcd2da97b1f7401ee2c4bd4b66cd7dd8d600cac21bde",
+  "installed": true,
+  "install_capture": "analysis/persistence/native-drawer-ease-install-session-20261004-231116",
+  "install_result": {
+    "mode": "install",
+    "capture": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\analysis\\persistence\\native-drawer-ease-install-session-20261004-231116",
+    "passed": true,
+    "scope": "NOR sectors92b000/ccd000 only; native boot task; restore returns verified drawer v1",
+    "read_only_connection_attempts": 2,
+    "code_sha256": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+    "entry_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "entry": "0x3804b2f5",
+    "mcu_running": true
+  },
+  "warm_read_only": {
+    "context": "0x3864ed40",
+    "fields": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "dirty": 0,
+      "count": 0,
+      "physical_driver_index": 1,
+      "overlay": 0,
+      "cover": 320,
+      "target": 320,
+      "shown": 320,
+      "background_ready": 1,
+      "gui_cycles": 4496,
+      "toggles": 0,
+      "last_present": 0,
+      "animation_from": 0
+    },
+    "gui_active": true,
+    "frame_queue_empty": true
+  },
+  "user_observation": {
+    "ease": "pending",
+    "cold_boot": "pending",
+    "mi_home_online_control": "pending"
+  },
+  "rollback": "Set-PanelNativeDrawerEase.ps1 -Mode restore returns exact first drawer, which user has functionally tested. First drawer restore returns broker v1."
+}

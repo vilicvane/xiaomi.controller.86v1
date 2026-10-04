@@ -1,0 +1,48 @@
+{
+  "scope": "Installer and rollback review only for this panel 1.50.10; bounded new drawer inputs; no device access",
+  "offline_only": true,
+  "hardware_actions": 0,
+  "passed": true,
+  "checks": [
+    "All immutable broker v1 inputs retain their original exact bytes; stock NOR SHA is verified by preparation.",
+    "Original fixtures are the verified broker v1 full pages. Drawer code page differs only in the declared program span; entry page differs only in wifi_recorder word +0xd2c. Shared bytes at/after file offset 0x92be74 remain exact.",
+    "Inverse namespace/path and error-label normalization makes the new writer byte-for-byte equal to the frozen broker v1 writer. Native call, admitted addresses, watchdog, context/transport/status checks and sequencing are unchanged.",
+    "Both outer MCU session configs are exact frozen broker v1 clones after namespace/path normalization, retaining fresh BOOT stop, isolated A7, stop watchdog, native reader, completion gate and suppressed GLOBAL on uncertain native execution.",
+    "Generated stage inputs retain the exact reviewed 168-byte one-call ARM payload. Only fixed full-page broker rollback/drawer install fixtures change.",
+    "All 38 current-payload Jim cases pass, covering matched broker/drawer success, stock/counter/unknown/mixed refusal before native execution, full-page readback, BP/QE, watchdog races, fault/reset/timeout and no stale replay. Simulated instruction execution is not hardware evidence.",
+    "Freeze refuses overwrite, binds immutable broker rollback, full stock backup, exact current ELF/BIN/page hashes, capacity review, two independent review artifacts, current ELF model and 38-case writer summary; recursively includes local C headers. Freeze itself grants no approval."
+  ],
+  "reviewed_inputs": {
+    "analysis/persistence/native-drawer-patch-inputs-1.50.10.json": "5077e89e07dec539c50a84da08ad623c0004845a7366f0ba67bcc88afa44b100",
+    "analysis/persistence/prepare_native_drawer_inputs.py": "4cb43e7447657263a75f031326264143f35618f126951062d9bf54e5062a8fd4",
+    "analysis/persistence/run_native_drawer_firmware.py": "f107c9067301a08efb143fb7307fc58e576f9526e735b4ca5d8e6b474d517516",
+    "analysis/persistence/freeze_native_drawer_inputs.py": "a32ac4864423b4d7ee946b2525bd1c1937d548a0bfac65eac524e6f2d6e4136f",
+    "analysis/persistence/test_native_drawer_runner_offline.py": "d33d19ec4e0532a0fb96d50c5811538ccf5bf16af38784d29cd6ee27188c64ec",
+    "analysis/persistence/native-drawer-writer-preparation.json": "75e7095d28cbebecdeb0fc564373a42cac73a3b7387b284e78d9dd101d1e78d8",
+    "diagnostics/boot-nor-native-drawer-runner.cfg": "5d294d4eeeb724d7e7892c70301aa5378c8b2b1038e6dacac58e53cfd0a6ef9d",
+    "diagnostics/boot-nor-native-drawer-stage-inputs.cfg": "2d3a4af8b53e0142b1d1bf00a045f168e0f8c40c839ffa6fd79606be3ff392d7",
+    "diagnostics/mcu-native-drawer-install-session.cfg": "dc4f7146de4ddf43e9f3f29197184de0fae7abd1f9256b19e11e69c150b47915",
+    "diagnostics/mcu-native-drawer-restore-session.cfg": "1e470bc9aecbd795a3dafd0f341d93ce1457e2c90ef0760e54e6d4c9d7d0e18d",
+    "diagnostics/read-native-drawer-state.cfg": "151e2ecdc9d3baa37e0b9fae0d6fb0c17e79099941522ccb648971237193d7f6",
+    "scripts/Set-PanelNativeDrawer.ps1": "95a05929ed7c4fb4e74b90e34e9116bd0332c748cb433b08507405512f1a6419",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/offline-native-drawer-runner/run-1/summary.json": "ba13342c794e869502c66e69954be8f698bd006501288efcc9773daf4a315ab2",
+    "analysis/display-takeover/native-drawer.bin": "d21bb482ef80b6b32cc002e934f9ef95e1287594726fcc7674969631143938e7",
+    "analysis/display-takeover/native-drawer.elf": "6b5ab507efbc18da6bb3c2d65d9a2ac638882e397dad591c1028de3656eed4f0",
+    "analysis/display-takeover/native-ui-broker-patched-sector-92b000.bin": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "analysis/persistence/native-drawer-original-sector-92b000.bin": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "analysis/persistence/native-drawer-patched-sector-92b000.bin": "5e7b9855ac4336d8e7404d75a39b0dae708bfed38910dcb4a144ed2b8d73e8ca",
+    "analysis/display-takeover/native-ui-broker-patched-sector-ccd000.bin": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916",
+    "analysis/persistence/native-drawer-original-sector-ccd000.bin": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916",
+    "analysis/persistence/native-drawer-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+  },
+  "native_payload_sha256": "abed88ffa44ddd05eeb547178c981bf784f6ca492d1ecf21613af8fb3cb94c32",
+  "program_bytes": 3224,
+  "writer_mock_cases": 38,
+  "rollback": "Exact verified native UI broker v1, not stock firmware",
+  "limitations": [
+    "Program behavior and borrowed wifi_recorder worker reachability require independent core/capacity review.",
+    "No new installer hardware execution, display interaction, power-cycle or cloud behavior was verified here.",
+    "The existing immutable BOOT recovery flow was proven under healthy MAIN; this review does not demonstrate arbitrary damaged-MAIN recovery."
+  ]
+}

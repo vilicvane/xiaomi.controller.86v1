@@ -1,0 +1,816 @@
+{
+  "scope": "Independent offline exact-image capacity and source-level interaction review. No hardware access or installation; not dynamic verification.",
+  "firmware_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-drawer.c": "2419a5d130123c68c1262089f2a23df3266fb7529cb2f3e6aa2baa8cc886521c",
+    "analysis/display-takeover/native-drawer.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/native-drawer-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "analysis/display-takeover/native-drawer.bin": "d21bb482ef80b6b32cc002e934f9ef95e1287594726fcc7674969631143938e7",
+    "analysis/display-takeover/native-drawer.elf": "6b5ab507efbc18da6bb3c2d65d9a2ac638882e397dad591c1028de3656eed4f0",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c",
+    "analysis/display-takeover/build-native-drawer.sh": "c9df8fbf585e3e0d8f58b14caedf9841f4423ed5a4cc7c5736224140fe11d173"
+  },
+  "capacity": {
+    "original_broker_range": [
+      "0x3804b108",
+      "0x3804bc98"
+    ],
+    "additional_function": "wifi_recorder pthread worker",
+    "additional_range": [
+      "0x3804bc98",
+      "0x3804be70"
+    ],
+    "additional_bytes": 472,
+    "additional_NOR_range": [
+      "0x92bc9c",
+      "0x92be74"
+    ],
+    "extended_range": [
+      "0x3804b108",
+      "0x3804be70"
+    ],
+    "extended_bytes": 3432,
+    "BIN_bytes": 3224,
+    "BIN_runtime_end": "0x3804bda0",
+    "remaining_bytes": 208,
+    "NOR_sector": "0x92b000..0x92c000",
+    "qualification": "Disable wifi_recorder builtin before any normal startup can call its overwritten pthread worker. Preserve neighboring shared helper from runtime3804be70 / NOR92be74 onward."
+  },
+  "worker_entry_references": [
+    {
+      "mode": "Thumb",
+      "movw_offset": "0x928c8c",
+      "movt_offset": "0x928c9e",
+      "register": 2,
+      "pointer": "0x3804bc99",
+      "target": "wifi_recorder_worker+0x0",
+      "limit": "Pair reconstructed syntactically; validate nearby instructions for register clobbers."
+    },
+    {
+      "mode": "Thumb",
+      "movw_offset": "0x928d0c",
+      "movt_offset": "0x928d12",
+      "register": 6,
+      "pointer": "0x3804bc99",
+      "target": "wifi_recorder_worker+0x0",
+      "limit": "Pair reconstructed syntactically; validate nearby instructions for register clobbers."
+    }
+  ],
+  "worker_literal_references": [],
+  "direct_branch_candidates": [
+    {
+      "mode": "ARM",
+      "target": "wifi_recorder_worker+0x160",
+      "target_address": "0x3804bdf8",
+      "address": "0x3801c190",
+      "file_offset": "0x8fc194",
+      "bytes": "18bf002a",
+      "mnemonic": "bhs",
+      "operands": "#0x3804bdf8"
+    },
+    {
+      "mode": "ARM",
+      "target": "wifi_recorder_worker+0x5c",
+      "target_address": "0x3804bcf4",
+      "address": "0x38033a00",
+      "file_offset": "0x913a04",
+      "bytes": "bb60002b",
+      "mnemonic": "blhs",
+      "operands": "#0x3804bcf4"
+    },
+    {
+      "mode": "ARM",
+      "target": "wifi_recorder_worker+0x150",
+      "target_address": "0x3804bde8",
+      "address": "0x380448fc",
+      "file_offset": "0x924900",
+      "bytes": "391d00eb",
+      "mnemonic": "bl",
+      "operands": "#0x3804bde8"
+    }
+  ],
+  "ARM_false_positive_resolution": {
+    "0x3801c190": "Actual Thumb ITNE/CMPNE; not ARM BHS.",
+    "0x38033a00": "Actual Thumb STR/CMP; not ARM BLHS.",
+    "0x380448fc": "Actual Thumb ADDS followed by first half of ADD.W; not ARM BL."
+  },
+  "builtin_disable": {
+    "descriptor_NOR": "0xccdd20",
+    "descriptor_original_words": [
+      "0x383eda24",
+      "0x64",
+      "0x14000",
+      "0x38048c41",
+      "0x0"
+    ],
+    "entry_NOR": "0xccdd2c",
+    "entry_runtime": "0x383edd28",
+    "original_callable": "0x38048c41",
+    "required_new_callable": "0x3804b109",
+    "stub_behavior": "Existing shared negative diagnostic stub returns -38.",
+    "startup_rcS_uses": 0,
+    "A7_name_occurrences": 1,
+    "lost_functionality": "The optional wifi_recorder shell diagnostic cannot start. Wi-Fi services/drivers and shared neighboring messaging helpers are preserved."
+  },
+  "source_review": {
+    "bootstrap": "A short-lived native pthread only waits for GUI timer hook installation, then exits; it does not own a touch subscription or draw pixels.",
+    "physical_classification": "Class-checked GUI file.inode.private upper pointer compared to live physical handle WORD384f50b0; list order is not assumed.",
+    "decoder_ABI": "GUI x32/y32 +0/+4, state byte+0x12, continue byte+0x13. Raw original decoder always runs to drain original subscriber.",
+    "captured_contact": "Physical top-band contact is captured from initial DOWN and retained through eventual UP, including horizontal cancellation. Stock contact starting outside top band stays unclaimed. A delivered virtual press blocks new stock capture.",
+    "animation_contacts": "New contacts while snap animation is active are fully suppressed until original decoder reports their UP; final release/ring gate prevents their replay into the next owner.",
+    "key_start": "Key-requested animation starts after two GUI release scans and raw physical release. Undelivered queued contacts are suppressed whole; already delivered press prevents animation start.",
+    "handoff": "Only the final owner commit uses the distinct touch upper publisher mutexes. It checks both GUI rings, both decoder release states, raw physical release and native display queue zero; no obsolete third subscriber exists.",
+    "composition": "Background captured in GUI thread after original TIMER completes and old display queue is empty. Stock PAN and UPDATEAREA are suppressed during overlay. Separate long-lived snapshot and compositor allocations prevent normal stock repaint from altering animation background.",
+    "native_source": "Native PAN rotates/copies synchronously before publishing native staging queue; source allocation remains alive. Compositor is rewritten only with queue count zero.",
+    "tap": "Counter increments on completed unmoved contact; upward dismiss and horizontal drags do not accidentally count as taps.",
+    "legacy_guards": "Fixed 1.50.10 format, buffer identity, callback identity, closed timer and original-once/main lifetime guards remain; no native queue or staging metadata is modified."
+  },
+  "code_windows": {
+    "worker_start": [
+      {
+        "address": "0x3804bc98",
+        "file_offset": "0x92bc9c",
+        "bytes": "2de9f04f",
+        "mnemonic": "push.w",
+        "operands": "{r4, r5, r6, r7, r8, sb, sl, fp, lr}"
+      },
+      {
+        "address": "0x3804bc9c",
+        "file_offset": "0x92bca0",
+        "bytes": "0026",
+        "mnemonic": "movs",
+        "operands": "r6, #0"
+      },
+      {
+        "address": "0x3804bc9e",
+        "file_offset": "0x92bca2",
+        "bytes": "2ded028b",
+        "mnemonic": "vpush",
+        "operands": "{d8}"
+      },
+      {
+        "address": "0x3804bca2",
+        "file_offset": "0x92bca6",
+        "bytes": "93b0",
+        "mnemonic": "sub",
+        "operands": "sp, #0x4c"
+      },
+      {
+        "address": "0x3804bca4",
+        "file_offset": "0x92bca8",
+        "bytes": "714b",
+        "mnemonic": "ldr",
+        "operands": "r3, [pc, #0x1c4]"
+      },
+      {
+        "address": "0x3804bca6",
+        "file_offset": "0x92bcaa",
+        "bytes": "02af",
+        "mnemonic": "add",
+        "operands": "r7, sp, #8"
+      },
+      {
+        "address": "0x3804bca8",
+        "file_offset": "0x92bcac",
+        "bytes": "0446",
+        "mnemonic": "mov",
+        "operands": "r4, r0"
+      },
+      {
+        "address": "0x3804bcaa",
+        "file_offset": "0x92bcae",
+        "bytes": "3246",
+        "mnemonic": "mov",
+        "operands": "r2, r6"
+      },
+      {
+        "address": "0x3804bcac",
+        "file_offset": "0x92bcb0",
+        "bytes": "7e61",
+        "mnemonic": "str",
+        "operands": "r6, [r7, #0x14]"
+      },
+      {
+        "address": "0x3804bcae",
+        "file_offset": "0x92bcb2",
+        "bytes": "0121",
+        "mnemonic": "movs",
+        "operands": "r1, #1"
+      },
+      {
+        "address": "0x3804bcb0",
+        "file_offset": "0x92bcb4",
+        "bytes": "1b68",
+        "mnemonic": "ldr",
+        "operands": "r3, [r3]"
+      },
+      {
+        "address": "0x3804bcb2",
+        "file_offset": "0x92bcb6",
+        "bytes": "fb63",
+        "mnemonic": "str",
+        "operands": "r3, [r7, #0x3c]"
+      },
+      {
+        "address": "0x3804bcb4",
+        "file_offset": "0x92bcb8",
+        "bytes": "4ff00003",
+        "mnemonic": "mov.w",
+        "operands": "r3, #0"
+      },
+      {
+        "address": "0x3804bcb8",
+        "file_offset": "0x92bcbc",
+        "bytes": "0220",
+        "mnemonic": "movs",
+        "operands": "r0, #2"
+      },
+      {
+        "address": "0x3804bcba",
+        "file_offset": "0x92bcbe",
+        "bytes": "dff735fc",
+        "mnemonic": "bl",
+        "operands": "#0x3802b528"
+      },
+      {
+        "address": "0x3804bcbe",
+        "file_offset": "0x92bcc2",
+        "bytes": "051e",
+        "mnemonic": "subs",
+        "operands": "r5, r0, #0"
+      }
+    ],
+    "worker_end_and_next_function": [
+      {
+        "address": "0x3804be60",
+        "file_offset": "0x92be64",
+        "bytes": "5b42",
+        "mnemonic": "rsbs",
+        "operands": "r3, r3, #0"
+      },
+      {
+        "address": "0x3804be62",
+        "file_offset": "0x92be66",
+        "bytes": "0360",
+        "mnemonic": "str",
+        "operands": "r3, [r0]"
+      },
+      {
+        "address": "0x3804be64",
+        "file_offset": "0x92be68",
+        "bytes": "eae7",
+        "mnemonic": "b",
+        "operands": "#0x3804be3c"
+      },
+      {
+        "address": "0x3804be66",
+        "file_offset": "0x92be6a",
+        "bytes": "ccf7e3fe",
+        "mnemonic": "bl",
+        "operands": "#0x38018c30"
+      },
+      {
+        "address": "0x3804be6a",
+        "file_offset": "0x92be6e",
+        "bytes": "00bf",
+        "mnemonic": "nop",
+        "operands": ""
+      },
+      {
+        "address": "0x3804be6c",
+        "file_offset": "0x92be70",
+        "bytes": "b08a",
+        "mnemonic": "ldrh",
+        "operands": "r0, [r6, #0x14]"
+      },
+      {
+        "address": "0x3804be6e",
+        "file_offset": "0x92be72",
+        "bytes": "4b38",
+        "mnemonic": "subs",
+        "operands": "r0, #0x4b"
+      },
+      {
+        "address": "0x3804be70",
+        "file_offset": "0x92be74",
+        "bytes": "2de9f043",
+        "mnemonic": "push.w",
+        "operands": "{r4, r5, r6, r7, r8, sb, lr}"
+      },
+      {
+        "address": "0x3804be74",
+        "file_offset": "0x92be78",
+        "bytes": "9db0",
+        "mnemonic": "sub",
+        "operands": "sp, #0x74"
+      },
+      {
+        "address": "0x3804be76",
+        "file_offset": "0x92be7a",
+        "bytes": "0d46",
+        "mnemonic": "mov",
+        "operands": "r5, r1"
+      },
+      {
+        "address": "0x3804be78",
+        "file_offset": "0x92be7c",
+        "bytes": "02af",
+        "mnemonic": "add",
+        "operands": "r7, sp, #8"
+      },
+      {
+        "address": "0x3804be7a",
+        "file_offset": "0x92be7e",
+        "bytes": "3749",
+        "mnemonic": "ldr",
+        "operands": "r1, [pc, #0xdc]"
+      },
+      {
+        "address": "0x3804be7c",
+        "file_offset": "0x92be80",
+        "bytes": "8046",
+        "mnemonic": "mov",
+        "operands": "r8, r0"
+      },
+      {
+        "address": "0x3804be7e",
+        "file_offset": "0x92be82",
+        "bytes": "0092",
+        "mnemonic": "str",
+        "operands": "r2, [sp]"
+      }
+    ],
+    "creator_thread0": [
+      {
+        "address": "0x38048c74",
+        "file_offset": "0x928c78",
+        "bytes": "4ef2b821",
+        "mnemonic": "movw",
+        "operands": "r1, #0xe2b8"
+      },
+      {
+        "address": "0x38048c78",
+        "file_offset": "0x928c7c",
+        "bytes": "1022",
+        "mnemonic": "movs",
+        "operands": "r2, #0x10"
+      },
+      {
+        "address": "0x38048c7a",
+        "file_offset": "0x928c7e",
+        "bytes": "c3f63e01",
+        "mnemonic": "movt",
+        "operands": "r1, #0x383e"
+      },
+      {
+        "address": "0x38048c7e",
+        "file_offset": "0x928c82",
+        "bytes": "07f12c00",
+        "mnemonic": "add.w",
+        "operands": "r0, r7, #0x2c"
+      },
+      {
+        "address": "0x38048c82",
+        "file_offset": "0x928c86",
+        "bytes": "8ff31eef",
+        "mnemonic": "blx",
+        "operands": "#0x383d8ac0"
+      },
+      {
+        "address": "0x38048c86",
+        "file_offset": "0x928c8a",
+        "bytes": "fc23",
+        "mnemonic": "movs",
+        "operands": "r3, #0xfc"
+      },
+      {
+        "address": "0x38048c88",
+        "file_offset": "0x928c8c",
+        "bytes": "4bf69942",
+        "mnemonic": "movw",
+        "operands": "r2, #0xbc99"
+      },
+      {
+        "address": "0x38048c8c",
+        "file_offset": "0x928c90",
+        "bytes": "87f82c30",
+        "mnemonic": "strb.w",
+        "operands": "r3, [r7, #0x2c]"
+      },
+      {
+        "address": "0x38048c90",
+        "file_offset": "0x928c94",
+        "bytes": "4ff48053",
+        "mnemonic": "mov.w",
+        "operands": "r3, #0x1000"
+      },
+      {
+        "address": "0x38048c94",
+        "file_offset": "0x928c98",
+        "bytes": "bb63",
+        "mnemonic": "str",
+        "operands": "r3, [r7, #0x38]"
+      },
+      {
+        "address": "0x38048c96",
+        "file_offset": "0x928c9a",
+        "bytes": "07f12c01",
+        "mnemonic": "add.w",
+        "operands": "r1, r7, #0x2c"
+      },
+      {
+        "address": "0x38048c9a",
+        "file_offset": "0x928c9e",
+        "bytes": "c3f60402",
+        "mnemonic": "movt",
+        "operands": "r2, #0x3804"
+      },
+      {
+        "address": "0x38048c9e",
+        "file_offset": "0x928ca2",
+        "bytes": "0023",
+        "mnemonic": "movs",
+        "operands": "r3, #0"
+      },
+      {
+        "address": "0x38048ca0",
+        "file_offset": "0x928ca4",
+        "bytes": "381d",
+        "mnemonic": "adds",
+        "operands": "r0, r7, #4"
+      },
+      {
+        "address": "0x38048ca2",
+        "file_offset": "0x928ca6",
+        "bytes": "63f3afff",
+        "mnemonic": "bl",
+        "operands": "#0x383acc04"
+      },
+      {
+        "address": "0x38048ca6",
+        "file_offset": "0x928caa",
+        "bytes": "4ff0",
+        "mnemonic": ".byte",
+        "operands": "0x4f, 0xf0"
+      }
+    ],
+    "creator_threadsN": [
+      {
+        "address": "0x38048cf8",
+        "file_offset": "0x928cfc",
+        "bytes": "fc23",
+        "mnemonic": "movs",
+        "operands": "r3, #0xfc"
+      },
+      {
+        "address": "0x38048cfa",
+        "file_offset": "0x928cfe",
+        "bytes": "87f82c30",
+        "mnemonic": "strb.w",
+        "operands": "r3, [r7, #0x2c]"
+      },
+      {
+        "address": "0x38048cfe",
+        "file_offset": "0x928d02",
+        "bytes": "4ff48053",
+        "mnemonic": "mov.w",
+        "operands": "r3, #0x1000"
+      },
+      {
+        "address": "0x38048d02",
+        "file_offset": "0x928d06",
+        "bytes": "bb63",
+        "mnemonic": "str",
+        "operands": "r3, [r7, #0x38]"
+      },
+      {
+        "address": "0x38048d04",
+        "file_offset": "0x928d08",
+        "bytes": "002d",
+        "mnemonic": "cmp",
+        "operands": "r5, #0"
+      },
+      {
+        "address": "0x38048d06",
+        "file_offset": "0x928d0a",
+        "bytes": "ced0",
+        "mnemonic": "beq",
+        "operands": "#0x38048ca6"
+      },
+      {
+        "address": "0x38048d08",
+        "file_offset": "0x928d0c",
+        "bytes": "4bf69946",
+        "mnemonic": "movw",
+        "operands": "r6, #0xbc99"
+      },
+      {
+        "address": "0x38048d0c",
+        "file_offset": "0x928d10",
+        "bytes": "0024",
+        "mnemonic": "movs",
+        "operands": "r4, #0"
+      },
+      {
+        "address": "0x38048d0e",
+        "file_offset": "0x928d12",
+        "bytes": "c3f60406",
+        "mnemonic": "movt",
+        "operands": "r6, #0x3804"
+      },
+      {
+        "address": "0x38048d12",
+        "file_offset": "0x928d16",
+        "bytes": "2346",
+        "mnemonic": "mov",
+        "operands": "r3, r4"
+      },
+      {
+        "address": "0x38048d14",
+        "file_offset": "0x928d18",
+        "bytes": "3246",
+        "mnemonic": "mov",
+        "operands": "r2, r6"
+      },
+      {
+        "address": "0x38048d16",
+        "file_offset": "0x928d1a",
+        "bytes": "07f12c01",
+        "mnemonic": "add.w",
+        "operands": "r1, r7, #0x2c"
+      },
+      {
+        "address": "0x38048d1a",
+        "file_offset": "0x928d1e",
+        "bytes": "381d",
+        "mnemonic": "adds",
+        "operands": "r0, r7, #4"
+      },
+      {
+        "address": "0x38048d1c",
+        "file_offset": "0x928d20",
+        "bytes": "0134",
+        "mnemonic": "adds",
+        "operands": "r4, #1"
+      },
+      {
+        "address": "0x38048d1e",
+        "file_offset": "0x928d22",
+        "bytes": "63f371ff",
+        "mnemonic": "bl",
+        "operands": "#0x383acc04"
+      },
+      {
+        "address": "0x38048d22",
+        "file_offset": "0x928d26",
+        "bytes": "ac42",
+        "mnemonic": "cmp",
+        "operands": "r4, r5"
+      },
+      {
+        "address": "0x38048d24",
+        "file_offset": "0x928d28",
+        "bytes": "f5d1",
+        "mnemonic": "bne",
+        "operands": "#0x38048d12"
+      },
+      {
+        "address": "0x38048d26",
+        "file_offset": "0x928d2a",
+        "bytes": "bee7",
+        "mnemonic": "b",
+        "operands": "#0x38048ca6"
+      },
+      {
+        "address": "0x38048d28",
+        "file_offset": "0x928d2c",
+        "bytes": "a068",
+        "mnemonic": "ldr",
+        "operands": "r0, [r4, #8]"
+      },
+      {
+        "address": "0x38048d2a",
+        "file_offset": "0x928d2e",
+        "bytes": "0a22",
+        "mnemonic": "movs",
+        "operands": "r2, #0xa"
+      }
+    ],
+    "false_positive_3801c190": [
+      {
+        "address": "0x3801c188",
+        "file_offset": "0x8fc18c",
+        "bytes": "002a",
+        "mnemonic": "cmp",
+        "operands": "r2, #0"
+      },
+      {
+        "address": "0x3801c18a",
+        "file_offset": "0x8fc18e",
+        "bytes": "95d1",
+        "mnemonic": "bne",
+        "operands": "#0x3801c0b8"
+      },
+      {
+        "address": "0x3801c18c",
+        "file_offset": "0x8fc190",
+        "bytes": "7a6c",
+        "mnemonic": "ldr",
+        "operands": "r2, [r7, #0x44]"
+      },
+      {
+        "address": "0x3801c18e",
+        "file_offset": "0x8fc192",
+        "bytes": "9342",
+        "mnemonic": "cmp",
+        "operands": "r3, r2"
+      },
+      {
+        "address": "0x3801c190",
+        "file_offset": "0x8fc194",
+        "bytes": "18bf",
+        "mnemonic": "it",
+        "operands": "ne"
+      },
+      {
+        "address": "0x3801c192",
+        "file_offset": "0x8fc196",
+        "bytes": "002a",
+        "mnemonic": "cmpne",
+        "operands": "r2, #0"
+      },
+      {
+        "address": "0x3801c194",
+        "file_offset": "0x8fc198",
+        "bytes": "90d1",
+        "mnemonic": "bne",
+        "operands": "#0x3801c0b8"
+      },
+      {
+        "address": "0x3801c196",
+        "file_offset": "0x8fc19a",
+        "bytes": "fa6b",
+        "mnemonic": "ldr",
+        "operands": "r2, [r7, #0x3c]"
+      },
+      {
+        "address": "0x3801c198",
+        "file_offset": "0x8fc19c",
+        "bytes": "c8f80020",
+        "mnemonic": "str.w",
+        "operands": "r2, [r8]"
+      },
+      {
+        "address": "0x3801c19c",
+        "file_offset": "0x8fc1a0",
+        "bytes": "7a6b",
+        "mnemonic": "ldr",
+        "operands": "r2, [r7, #0x34]"
+      },
+      {
+        "address": "0x3801c19e",
+        "file_offset": "0x8fc1a2",
+        "bytes": "c8e9",
+        "mnemonic": ".byte",
+        "operands": "0xc8, 0xe9"
+      }
+    ],
+    "false_positive_38033a00": [
+      {
+        "address": "0x380339f8",
+        "file_offset": "0x9139fc",
+        "bytes": "002b",
+        "mnemonic": "cmp",
+        "operands": "r3, #0"
+      },
+      {
+        "address": "0x380339fa",
+        "file_offset": "0x9139fe",
+        "bytes": "00f0c380",
+        "mnemonic": "beq.w",
+        "operands": "#0x38033b84"
+      },
+      {
+        "address": "0x380339fe",
+        "file_offset": "0x913a02",
+        "bytes": "9b69",
+        "mnemonic": "ldr",
+        "operands": "r3, [r3, #0x18]"
+      },
+      {
+        "address": "0x38033a00",
+        "file_offset": "0x913a04",
+        "bytes": "bb60",
+        "mnemonic": "str",
+        "operands": "r3, [r7, #8]"
+      },
+      {
+        "address": "0x38033a02",
+        "file_offset": "0x913a06",
+        "bytes": "002b",
+        "mnemonic": "cmp",
+        "operands": "r3, #0"
+      },
+      {
+        "address": "0x38033a04",
+        "file_offset": "0x913a08",
+        "bytes": "00f0c780",
+        "mnemonic": "beq.w",
+        "operands": "#0x38033b96"
+      },
+      {
+        "address": "0x38033a08",
+        "file_offset": "0x913a0c",
+        "bytes": "be68",
+        "mnemonic": "ldr",
+        "operands": "r6, [r7, #8]"
+      },
+      {
+        "address": "0x38033a0a",
+        "file_offset": "0x913a0e",
+        "bytes": "9246",
+        "mnemonic": "mov",
+        "operands": "sl, r2"
+      },
+      {
+        "address": "0x38033a0c",
+        "file_offset": "0x913a10",
+        "bytes": "3046",
+        "mnemonic": "mov",
+        "operands": "r0, r6"
+      },
+      {
+        "address": "0x38033a0e",
+        "file_offset": "0x913a12",
+        "bytes": "d8f7",
+        "mnemonic": ".byte",
+        "operands": "0xd8, 0xf7"
+      }
+    ],
+    "false_positive_380448fc": [
+      {
+        "address": "0x380448f4",
+        "file_offset": "0x9248f8",
+        "bytes": "fc00",
+        "mnemonic": "lsls",
+        "operands": "r4, r7, #3"
+      },
+      {
+        "address": "0x380448f6",
+        "file_offset": "0x9248fa",
+        "bytes": "1022",
+        "mnemonic": "movs",
+        "operands": "r2, #0x10"
+      },
+      {
+        "address": "0x380448f8",
+        "file_offset": "0x9248fc",
+        "bytes": "c3f64f00",
+        "mnemonic": "movt",
+        "operands": "r0, #0x384f"
+      },
+      {
+        "address": "0x380448fc",
+        "file_offset": "0x924900",
+        "bytes": "391d",
+        "mnemonic": "adds",
+        "operands": "r1, r7, #4"
+      },
+      {
+        "address": "0x380448fe",
+        "file_offset": "0x924902",
+        "bytes": "00eb0910",
+        "mnemonic": "add.w",
+        "operands": "r0, r0, sb, lsl #4"
+      },
+      {
+        "address": "0x38044902",
+        "file_offset": "0x924906",
+        "bytes": "94f3dee8",
+        "mnemonic": "blx",
+        "operands": "#0x383d8ac0"
+      },
+      {
+        "address": "0x38044906",
+        "file_offset": "0x92490a",
+        "bytes": "86f80080",
+        "mnemonic": "strb.w",
+        "operands": "r8, [r6]"
+      },
+      {
+        "address": "0x3804490a",
+        "file_offset": "0x92490e",
+        "bytes": "4af2",
+        "mnemonic": ".byte",
+        "operands": "0x4a, 0xf2"
+      }
+    ]
+  },
+  "limits": [
+    "Syntactic incoming-pointer/branch scans do not prove absence of every arbitrary computed pointer.",
+    "Static GUI-thread snapshot placement does not prove all possible mmap writers or DMA producers are serialized.",
+    "Physical top-edge coordinate correspondence, animation latency, gesture feel and full cold-boot recovery require hardware/user verification.",
+    "Capacity/source review is bound to listed input hashes; rebuild or source edit invalidates that association."
+  ]
+}

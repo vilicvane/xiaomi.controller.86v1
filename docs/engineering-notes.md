@@ -156,3 +156,35 @@ broker；ntpcstatus表值不变但命令返回-38，NTPdaemon主代码保留。
 硬件安装读回、customowner状态、用户反复往返、完整断电自动启动及米家控制
 均通过。冷启动后再次核对两个完整扇区和运行状态，结果见
 native-ui-broker-hardware-result.json。模拟结果和这些实测分别记录。
+
+## 下拉覆盖层新版本
+
+3224B 的 native drawer 独立冻结，安装基线和回退目标为上面的 broker v1。
+它增加顶边 20px 起手、80px 展开/收起阈值、跟手合成及按时间回弹。
+计数改为无明显位移的 UP 时加一，避免上滑退出也计数。默认仍展开计数器。
+
+仅保留启动安装代理的小 bootstrap pthread，ready 后退出。稳态的按键、触摸、
+合成均在原 GUI 线程；不再增加第三触摸订阅。实体 input0 必须通过 upper 指针
+匹配，不能假定 LVGL 列表第一个就是物理输入。GUI 输出坐标是 int32 @+0/+4，
+不能把 raw sample 的 i16 @+10/+12 用到 read callback 输出上。
+
+顶边从第一 DOWN 起截获完整接触。另一虚拟输入已有按下时不截取新的顶边手势；
+动画中新接触全部消费到释放。结束时仍锁两 upper publisher，核对两个 ring、
+原始释放和显示队列后才提交 owner。队列为空才改合成源。原缓冲区快照在 GUI
+回调返回后的边界获取，但所有其他 mmap 写者均串行尚未证明，需观察背景撕裂。
+
+借用额外 wifi_recorder worker 472B（3804bc98..3804be70），并将 builtin NOR
+ccdd2c 改为 -38 stub，防止启动已替换代码；它不是 Wi-Fi 驱动或启动服务。
+be70 起共享消息 helper 及其他扇区字节保留。完整容器3432B，目前余208B。
+
+12项手势 host/ASan/UBSan、16组真实ARM ELF模型及38项写入器Jim mock通过，
+源码/容量及安装器两份独立审查闭合，46项新输入冻结。硬件安装、两页完整读回、
+暖启动 custom owner 和 GUI 活跃检查通过。用户手势及全断电结果独立记录在
+native-drawer-hardware-result.json，不能引用旧 broker 结果替代。
+
+用户已验证首版下拉、收起、取消、点击和三击均正常，反馈速度稍慢且缺少缓动。
+后续3264B ease版仅改松手曲线为名义120ms cubic ease-out，手指按住时直接跟随。
+它另有45项冻结输入，19组ARM模型与39项写入器mock及两份独立审查通过。
+两版本共用相同入口页，ease回退目标为首版drawer；不能跨版本套用安装器。
+ease暖启动完整页读回、GUI活跃/已展开通过，其用户观察和冷启动另见
+native-drawer-ease-hardware-result.json。

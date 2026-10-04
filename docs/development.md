@@ -118,3 +118,26 @@ broker公共流程只接受完整original/original或broker/broker，不处理�
 
 新的实际实验要保存独立 capture 目录，记录源码/二进制 hash、读回、恢复状态
 和用户观察。更新总结时区分旧结果、新结果和静态假设，不覆盖旧证据。
+
+## 下拉覆盖层独立版本
+
+源码与行为说明见 `analysis/display-takeover/native-drawer.md`。构建只操作本地文件：
+
+```powershell
+wsl.exe -d Ubuntu -- bash /mnt/c/Users/vilicvane/Projects/vilicvane/mi-panel/analysis/display-takeover/build-native-drawer.sh
+wsl.exe -d Ubuntu -- bash /mnt/c/Users/vilicvane/Projects/vilicvane/mi-panel/analysis/display-takeover/test-drawer-gesture.sh
+python -X utf8 analysis/display-takeover/test_native_drawer_arm.py
+python -X utf8 analysis/persistence/run_native_drawer_firmware.py install
+```
+
+最后一条没有 `--execute` 时只核对46项冻结输入。3224B程序通过12项host手势测试、
+16组实际ARM模型、38项Jim写入器路径；模型不证明SMP/IRQ、真实动画帧率及冷启动。
+
+这套安装器只接受精确 broker v1 两页，`Set-PanelNativeDrawer.ps1 -Mode restore`
+也恢复 broker v1。若要再回原 stock，先用 drawer 回 broker，再用 broker 回 stock。
+旧 counter/broker/drawer 的三个冻结集合不可互相覆盖，新功能仍须新建审查集合。
+
+当前使用独立 `native-drawer-ease` 版本（3264B，45项冻结）。构建脚本为
+build-native-drawer-ease.sh，模型为test_native_drawer_ease_arm.py，安装入口为
+Set-PanelNativeDrawerEase.ps1。无 --execute 的run_native_drawer_ease_firmware.py
+只核对材料。其restore先回首版drawer，再依次回broker和stock；每套冻结保留原字节。

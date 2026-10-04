@@ -11,6 +11,7 @@
 !/analysis/**/*.sh
 !/analysis/**/*.c
 !/analysis/display-takeover/key3-gesture.h
+!/analysis/display-takeover/drawer-gesture.h
 !/analysis/**/*.S
 !/analysis/**/*.ld
 !/analysis/**/*.tcl
@@ -89,3 +90,16 @@
 !/analysis/persistence/native-ui-broker-installer-review-1.50.10.json
 !/analysis/persistence/native-ui-broker-frozen-inputs.json
 !/analysis/persistence/native-ui-broker-hardware-result.json
+!/analysis/display-takeover/drawer-gesture-offline-result.json
+!/analysis/display-takeover/drawer-arm-offline-result.json
+!/analysis/display-takeover/native-drawer-independent-review-1.50.10.json
+!/analysis/persistence/native-drawer-patch-inputs-1.50.10.json
+!/analysis/persistence/native-drawer-installer-review-1.50.10.json
+!/analysis/persistence/native-drawer-frozen-inputs.json
+!/analysis/persistence/native-drawer-hardware-result.json
+!/analysis/display-takeover/drawer-ease-arm-offline-result.json
+!/analysis/display-takeover/native-drawer-ease-independent-review-1.50.10.json
+!/analysis/persistence/native-drawer-ease-patch-inputs-1.50.10.json
+!/analysis/persistence/native-drawer-ease-installer-review-1.50.10.json
+!/analysis/persistence/native-drawer-ease-frozen-inputs.json
+!/analysis/persistence/native-drawer-ease-hardware-result.json

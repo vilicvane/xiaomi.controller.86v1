@@ -1,0 +1,49 @@
+{
+  "scope": "Ease installer and rollback review only for this panel 1.50.10; no device access",
+  "offline_only": true,
+  "hardware_actions": 0,
+  "passed": true,
+  "checks": [
+    "Both previous broker and drawer v1 frozen input sets retain their exact bytes; stock NOR provenance remains SHA-checked.",
+    "Rollback fixtures are the exact drawer v1 full pages. Ease code page differs only inside the declared program span; every builtin entry remains byte-identical. Shared bytes at/after 0x92be74 are untouched.",
+    "Inverse namespace/path and error-label normalization makes the ease writer exactly equal to the frozen drawer v1 writer. Native call, admitted addresses, watchdog, context/transport/status checks and sequencing are unchanged.",
+    "Both outer MCU session configs are exact frozen drawer v1 clones after namespace/path normalization, retaining fresh BOOT, isolated A7, watchdog stop, verified reader, completion gate and suppressed GLOBAL on uncertain native execution.",
+    "Generated stage inputs retain the exact 168-byte reviewed one-call ARM payload. Only fixed full-page drawer-v1 rollback/ease install fixtures change.",
+    "All 39 current-payload Jim cases pass, including matched drawer/ease success, broker/stock/counter/unknown refusal, full-page readback, BP/QE, watchdog races, fault/reset/timeout and no stale replay. Equal drawer/ease entry pages cannot distinguish these versions, so mixed-pair tests were replaced with distinct broker fixtures.",
+    "Ease freeze refuses overwrite, verifies both immutable prior sets, binds drawer-v1 rollback, stock NOR, exact ELF/BIN/pages, capacity/core/installer reviews, current ELF model and writer summary; local quoted C headers are bound transitively. Freeze grants no approval."
+  ],
+  "reviewed_inputs": {
+    "analysis/persistence/native-drawer-ease-patch-inputs-1.50.10.json": "a7dc1da91691efba4618a1a20ae5733853724d9a98d0d959cbf5e39b0dcd07f9",
+    "analysis/persistence/prepare_native_drawer_ease_inputs.py": "1dae9edec5fbf921e33852940ae781b4ca11c7bc693f5ae14820e3a75b295450",
+    "analysis/persistence/run_native_drawer_ease_firmware.py": "e81be096959110a78c75be0572eca481c97d90343c873e791cab40a2372d6134",
+    "analysis/persistence/freeze_native_drawer_ease_inputs.py": "4930327977f4c0ac635e948504200e7c78116924d5365473410a8dcdd981910b",
+    "analysis/persistence/test_native_drawer_ease_runner_offline.py": "7a715cb19ab316268dd399c9c8b49523d0c310707b6d915dba007fe0b206fef2",
+    "analysis/persistence/native-drawer-ease-writer-preparation.json": "a1658f791e9aca664a163154a69d6bddbf891239b6b2be3eea8de92ee2195a42",
+    "diagnostics/boot-nor-native-drawer-ease-runner.cfg": "8942c53b3e35980b5e754549cb85c7fc8cd4d137e7f7f7703092aeb3ce8a1e01",
+    "diagnostics/boot-nor-native-drawer-ease-stage-inputs.cfg": "efa7dee200fd70d70ee56b4012789dc6abd88aa9582e5e47ad314cdb4dcf4106",
+    "diagnostics/mcu-native-drawer-ease-install-session.cfg": "4f85b3ce15d69a81d800105448058e2629d38cb69c213204900af4a75853c5c8",
+    "diagnostics/mcu-native-drawer-ease-restore-session.cfg": "507075a11e85e7146e2a39e6f4a452f5b9283bde41436e967b4c134fd0f8641e",
+    "diagnostics/read-native-drawer-ease-state.cfg": "2c302e0c14bfaaf5e469bb43f9c4dad1106b9ff8e948e2747fae22360bfb5516",
+    "scripts/Set-PanelNativeDrawerEase.ps1": "bcce616e4a8bf87f635e6e9b1090592742d8109bb583b631b37186189ec0f84b",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/native-drawer-frozen-inputs.json": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+    "analysis/persistence/offline-native-drawer-ease-runner/run-1/summary.json": "f2adaf602e52b576a21f89d6e18123cad67f12aa1f440c0215d54648999c8b1a",
+    "analysis/display-takeover/native-drawer-ease.bin": "ae9632dc387290b001ba64066ba149a0fb6e7af0ec9fc06e809bba917b156cef",
+    "analysis/display-takeover/native-drawer-ease.elf": "12d0e2a5aeaac1daca2bdcd2da97b1f7401ee2c4bd4b66cd7dd8d600cac21bde",
+    "analysis/persistence/native-drawer-patched-sector-92b000.bin": "5e7b9855ac4336d8e7404d75a39b0dae708bfed38910dcb4a144ed2b8d73e8ca",
+    "analysis/persistence/native-drawer-ease-original-sector-92b000.bin": "5e7b9855ac4336d8e7404d75a39b0dae708bfed38910dcb4a144ed2b8d73e8ca",
+    "analysis/persistence/native-drawer-ease-patched-sector-92b000.bin": "a5bb775248681b356a8696c5712e66161222a55aa82ff64a99b4b7a3e6cdb29e",
+    "analysis/persistence/native-drawer-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-drawer-ease-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-drawer-ease-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+  },
+  "native_payload_sha256": "abed88ffa44ddd05eeb547178c981bf784f6ca492d1ecf21613af8fb3cb94c32",
+  "program_bytes": 3264,
+  "writer_mock_cases": 39,
+  "rollback": "Exact verified native drawer v1, not broker or stock firmware",
+  "limitations": [
+    "Animation/core behavior requires independent program review and actual ELF model matching this ELF.",
+    "No ease installer hardware execution, display interaction, power-cycle or cloud behavior was verified here.",
+    "Existing BOOT recovery was proven under healthy MAIN; this review does not demonstrate arbitrary damaged-MAIN recovery."
+  ]
+}

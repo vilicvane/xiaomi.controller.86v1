@@ -16,12 +16,19 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is the native UI broker (2652-byte BIN, 1.50.10).
-  Flash/readback, live custom-owner state, repeated user round trips and full
-  power-cycle startup passed; Mi Home online/control passed by user report.
-  Read native-ui-broker-hardware-result.json for evidence. The old white counter
-  freeze remains a separate immutable set.
-- Broker restore uses Set-PanelNativeUiBroker.ps1; do not use the old counter
-  writer against a broker baseline. Do not silently regenerate either freeze.
+- Current installed UI is the native drawer ease (3264-byte BIN, 1.50.10).
+  Full-page Flash/readback and live custom-owner/GUI state passed. User gesture
+  and full power-cycle observations are recorded separately in
+  native-drawer-ease-hardware-result.json; do not infer them from earlier results.
+  First drawer (3224B) user gesture round trips passed; its cold boot is separate.
+  Broker v1 (2652B) cold boot, round trips and Mi Home controls passed earlier.
+  Both older frozen sets remain immutable.
+- Ease restore uses Set-PanelNativeDrawerEase.ps1 and returns first drawer;
+  Set-PanelNativeDrawer.ps1 then returns broker v1. Only then use
+  Set-PanelNativeUiBroker.ps1 to restore stock. Do not use another
+  version's writer against the installed baseline or regenerate frozen inputs.
+- Drawer additionally borrows wifi_recorder worker 0x3804bc98..0x3804be70;
+  its diagnostic builtin NOR 0xccdd2c is disabled. Keep shared helper at be70
+  intact. This is not the Wi-Fi driver or a startup service.
 - ABI offsets must be written unambiguously: LVGL state/continue are +0x12/+0x13,
   list node prev/next are +0x80/+0x84. Validate both physical and virtual touch.

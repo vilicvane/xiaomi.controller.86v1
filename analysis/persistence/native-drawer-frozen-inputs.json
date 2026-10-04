@@ -1,0 +1,97 @@
+{
+  "scope": "Exact independently reviewed 1.50.10 native drawer, verified broker-v1/drawer baselines only; two NOR sectors; restore broker v1",
+  "review_artifacts": [
+    {
+      "path": "analysis/display-takeover/native-drawer-independent-review-1.50.10.json",
+      "sha256": "f3ccf02b227cb5cdba90540efff775f095a53f3793d60da49d8db83c232421db"
+    },
+    {
+      "path": "analysis/persistence/native-drawer-installer-review-1.50.10.json",
+      "sha256": "6890d25531744da05209d61208010efc5ebf19a2655f91344b8a6eb74c852387"
+    },
+    {
+      "path": "analysis/persistence/offline-native-drawer-runner/run-1/summary.json",
+      "sha256": "ba13342c794e869502c66e69954be8f698bd006501288efcc9773daf4a315ab2"
+    },
+    {
+      "path": "analysis/display-takeover/drawer-arm-offline-result.json",
+      "sha256": "bfc0cca16c6dc39c2fdd4828308f78f0ed79ad564efb52673b0b50ae6013ae97"
+    },
+    {
+      "path": "analysis/display-takeover/native-drawer-independent-review-1.50.10.json",
+      "sha256": "f3ccf02b227cb5cdba90540efff775f095a53f3793d60da49d8db83c232421db"
+    },
+    {
+      "path": "analysis/display-takeover/test-drawer-gesture.c",
+      "sha256": "eb40af21d8803ec6e3a3d900a9bf88ea076b33628f71b00118579a276be33341"
+    },
+    {
+      "path": "analysis/display-takeover/test-drawer-gesture.sh",
+      "sha256": "733c3aa9ef27749e62573ee0f8afa005734dc106c943186db9ba446897cb767e"
+    },
+    {
+      "path": "analysis/display-takeover/drawer-gesture-offline-result.json",
+      "sha256": "dff1953fbd01a6aa1229263551296c3582dc74120873446d6534c36573408f06"
+    },
+    {
+      "path": "analysis/display-takeover/test_ui_broker_arm.py",
+      "sha256": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408"
+    },
+    {
+      "path": "analysis/display-takeover/review_native_drawer_capacity.py",
+      "sha256": "e74ef39aee00ea3252db3361747f113f6d55d86b2c4adb13fc9421a579ecaaf5"
+    },
+    {
+      "path": "diagnostics/read-native-drawer-runtime.cfg",
+      "sha256": "52c55d18079a435707db5f4d12c3456e5b723d88c74017df45bc3563b669da5c"
+    }
+  ],
+  "sha256": {
+    "analysis/persistence/native-drawer-patch-inputs-1.50.10.json": "5077e89e07dec539c50a84da08ad623c0004845a7366f0ba67bcc88afa44b100",
+    "analysis/display-takeover/native-drawer.c": "2419a5d130123c68c1262089f2a23df3266fb7529cb2f3e6aa2baa8cc886521c",
+    "analysis/display-takeover/native-drawer-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "analysis/display-takeover/native-drawer.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/build-native-drawer.sh": "c9df8fbf585e3e0d8f58b14caedf9841f4423ed5a4cc7c5736224140fe11d173",
+    "analysis/display-takeover/native-drawer.elf": "6b5ab507efbc18da6bb3c2d65d9a2ac638882e397dad591c1028de3656eed4f0",
+    "analysis/display-takeover/native-drawer.bin": "d21bb482ef80b6b32cc002e934f9ef95e1287594726fcc7674969631143938e7",
+    "analysis/persistence/prepare_native_drawer_inputs.py": "4cb43e7447657263a75f031326264143f35618f126951062d9bf54e5062a8fd4",
+    "analysis/persistence/run_native_drawer_firmware.py": "f107c9067301a08efb143fb7307fc58e576f9526e735b4ca5d8e6b474d517516",
+    "analysis/persistence/freeze_native_drawer_inputs.py": "a32ac4864423b4d7ee946b2525bd1c1937d548a0bfac65eac524e6f2d6e4136f",
+    "diagnostics/swd-memory.cfg": "8e1e707483009a25d8a77752512a4afad9839b0a2f88c75656b21e7dc195a6a2",
+    "diagnostics/swd-dap.cfg": "de1b441878f71ac2985deae1c694d9790c2b386e35bdaac8787759f08416b8f5",
+    "diagnostics/boot-watchdog-stop.cfg": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+    "diagnostics/boot-nor-read-runner.cfg": "1bd3b194645e755753b0253c9d0f0cab5a3b3cb189c83451cc522130d9560742",
+    "analysis/persistence/boot-nor-read-runner-data.cfg": "a52e7a38a7735ff5d8f2974057a013ce2329cb55cbc00071cce7ac5cd9c5e656",
+    "diagnostics/boot-nor-native-drawer-runner.cfg": "5d294d4eeeb724d7e7892c70301aa5378c8b2b1038e6dacac58e53cfd0a6ef9d",
+    "diagnostics/boot-nor-native-drawer-stage-inputs.cfg": "2d3a4af8b53e0142b1d1bf00a045f168e0f8c40c839ffa6fd79606be3ff392d7",
+    "diagnostics/mcu-native-drawer-install-session.cfg": "dc4f7146de4ddf43e9f3f29197184de0fae7abd1f9256b19e11e69c150b47915",
+    "diagnostics/mcu-native-drawer-restore-session.cfg": "1e470bc9aecbd795a3dafd0f341d93ce1457e2c90ef0760e54e6d4c9d7d0e18d",
+    "diagnostics/read-native-drawer-state.cfg": "151e2ecdc9d3baa37e0b9fae0d6fb0c17e79099941522ccb648971237193d7f6",
+    "analysis/persistence/native-drawer-writer-preparation.json": "75e7095d28cbebecdeb0fc564373a42cac73a3b7387b284e78d9dd101d1e78d8",
+    "analysis/persistence/test_native_drawer_runner_offline.py": "d33d19ec4e0532a0fb96d50c5811538ccf5bf16af38784d29cd6ee27188c64ec",
+    "analysis/persistence/mock_boot_read_runner.tcl": "c32714c553cf8277901e8dd6f46827c08f9ab469f32176905a27c30d1ae93396",
+    "scripts/Set-PanelNativeDrawer.ps1": "95a05929ed7c4fb4e74b90e34e9116bd0332c748cb433b08507405512f1a6419",
+    "tools/xpack-openocd-0.12.0-7/bin/openocd.exe": "10567f01d37c66a0975537960d66e61f7b4e2a17eb2c9637e2c2cbc569f70c79",
+    "backups/mi-panel-flash-16m-1.50.10-20261004.bin": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/display-takeover/test_native_drawer_arm.py": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+    "analysis/display-takeover/native-ui-broker-patched-sector-92b000.bin": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "analysis/persistence/native-drawer-original-sector-92b000.bin": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "analysis/persistence/native-drawer-patched-sector-92b000.bin": "5e7b9855ac4336d8e7404d75a39b0dae708bfed38910dcb4a144ed2b8d73e8ca",
+    "analysis/display-takeover/native-ui-broker-patched-sector-ccd000.bin": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916",
+    "analysis/persistence/native-drawer-original-sector-ccd000.bin": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916",
+    "analysis/persistence/native-drawer-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/display-takeover/native-drawer-independent-review-1.50.10.json": "f3ccf02b227cb5cdba90540efff775f095a53f3793d60da49d8db83c232421db",
+    "analysis/persistence/native-drawer-installer-review-1.50.10.json": "6890d25531744da05209d61208010efc5ebf19a2655f91344b8a6eb74c852387",
+    "analysis/persistence/offline-native-drawer-runner/run-1/summary.json": "ba13342c794e869502c66e69954be8f698bd006501288efcc9773daf4a315ab2",
+    "analysis/display-takeover/drawer-arm-offline-result.json": "bfc0cca16c6dc39c2fdd4828308f78f0ed79ad564efb52673b0b50ae6013ae97",
+    "analysis/display-takeover/test-drawer-gesture.c": "eb40af21d8803ec6e3a3d900a9bf88ea076b33628f71b00118579a276be33341",
+    "analysis/display-takeover/test-drawer-gesture.sh": "733c3aa9ef27749e62573ee0f8afa005734dc106c943186db9ba446897cb767e",
+    "analysis/display-takeover/drawer-gesture-offline-result.json": "dff1953fbd01a6aa1229263551296c3582dc74120873446d6534c36573408f06",
+    "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408",
+    "analysis/display-takeover/review_native_drawer_capacity.py": "e74ef39aee00ea3252db3361747f113f6d55d86b2c4adb13fc9421a579ecaaf5",
+    "diagnostics/read-native-drawer-runtime.cfg": "52c55d18079a435707db5f4d12c3456e5b723d88c74017df45bc3563b669da5c",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c"
+  }
+}

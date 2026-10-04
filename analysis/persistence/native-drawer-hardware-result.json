@@ -1,0 +1,47 @@
+{
+  "scope": "New drawer 1.50.10 hardware evidence. No Wi-Fi/device identities, raw memory or firmware bytes.",
+  "program_bytes": 3224,
+  "program_sha256": "d21bb482ef80b6b32cc002e934f9ef95e1287594726fcc7674969631143938e7",
+  "elf_sha256": "6b5ab507efbc18da6bb3c2d65d9a2ac638882e397dad591c1028de3656eed4f0",
+  "installed": true,
+  "install_capture": "analysis/persistence/native-drawer-install-session-20261004-225351",
+  "install_result": {
+    "mode": "install",
+    "capture": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\analysis\\persistence\\native-drawer-install-session-20261004-225351",
+    "passed": true,
+    "scope": "NOR sectors92b000/ccd000 only; native boot task; restore returns verified broker v1",
+    "read_only_connection_attempts": 2,
+    "code_sha256": "5e7b9855ac4336d8e7404d75a39b0dae708bfed38910dcb4a144ed2b8d73e8ca",
+    "entry_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "entry": "0x3804b2f5",
+    "mcu_running": true
+  },
+  "warm_read_only": {
+    "context": "0x3864ed40",
+    "fields": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "dirty": 0,
+      "count": 0,
+      "physical_driver_index": 1,
+      "overlay": 0,
+      "cover": 320,
+      "target": 320,
+      "shown": 320,
+      "background_ready": 1,
+      "gui_cycles": 3281,
+      "toggles": 0,
+      "last_present": 0
+    },
+    "gui_active": true,
+    "frame_queue_empty": true
+  },
+  "user_observation": {
+    "gestures": "passed: tap, upward dismiss, top-edge follow/reveal, short-pull cancellation and key3 roundtrip. User reports animation slightly slow and lacking easing.",
+    "cold_boot": "pending",
+    "mi_home_online_control": "pending"
+  },
+  "rollback": "Set-PanelNativeDrawer.ps1 -Mode restore returns exact broker v1; that broker has separate earlier verified cold-boot evidence."
+}

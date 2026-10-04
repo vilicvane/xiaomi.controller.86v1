@@ -1,0 +1,63 @@
+{
+  "firmware": "1.50.10",
+  "bin_sha256": "8929b02509c2aeff438da8ae8cec41103c9dc7457e209627029de6f192e2f8cf",
+  "install_readback_passed": true,
+  "install_capture": "analysis/persistence/native-ui-broker-install-session-20261004-215206",
+  "sectors": {
+    "code_sha256": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "entry_sha256": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916"
+  },
+  "hardware_runtime": {
+    "alive": 1,
+    "ready": 1,
+    "mode": 1,
+    "wanted": 1,
+    "count": 28,
+    "gpio": 802158547,
+    "clock_ms": 185110,
+    "worker_cycles": 9021,
+    "gui_cycles": 37343,
+    "toggles": 6,
+    "last_present": 0
+  },
+  "original_gui_and_broker_progress_confirmed": true,
+  "user_round_trip": {
+    "status": "passed",
+    "user_report": "Both directions work; original UI touch andcustomcounter counting work.",
+    "device_toggle_count": 6,
+    "observed_round_trips": 3,
+    "counter_value_after_test": 28,
+    "reboots_for_switching": 0
+  },
+  "cold_boot": {
+    "status": "passed",
+    "user_report": "Normal: automaticcounterstartup, triplekeyroundtrip andMiHomeonline/control.",
+    "whole_sectors_match": true,
+    "no_scripts_during_user_boot": true,
+    "entry": "0x3804b2f5",
+    "alive": 1,
+    "ready": 1,
+    "mode": 1,
+    "wanted": 1,
+    "count": 5,
+    "worker_cycles": 6632,
+    "gui_cycles": 28380,
+    "toggles": 10,
+    "last_present": 0,
+    "context": "0x3864cde0",
+    "capture_state": "diagnostics/ui-broker-cold-boot-state-20261004.txt",
+    "capture_runtime": "diagnostics/ui-broker-cold-boot-runtime-20261004.txt"
+  },
+  "scope": "two4KiB NOR sectors92b000/ccd000; threebuiltinentrywords; no identity/data/config writes",
+  "intentional_effects": [
+    "startup showlogo omitted",
+    "faclvgl andshowlogo return-zero stub",
+    "ntpcstatus returns-38; NTPdaemon preserved"
+  ],
+  "limits": [
+    "Switchcommit meansnativeframe enqueued; screen/displaycompletion confirmedbyuserobservation, not modeledscanoutack.",
+    "Original MCU key notifications notfiltered; key3 currentlyunbound.",
+    "NOR rescue hasnotbeentestedafterdeliberate MAINcorruption."
+  ],
+  "mi_home_control_after_cold_boot": "passed_user_report"
+}

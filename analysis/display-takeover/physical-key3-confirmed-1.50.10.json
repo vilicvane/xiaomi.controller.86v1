@@ -1,0 +1,55 @@
+{
+  "scope": "Offline interpretation of root-owned read-only manualcapture; thisagent didnotaccesshardware.",
+  "firmware_version": "1.50.10",
+  "firmware_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "capture_path": "diagnostics\\physical-key3-manual.txt",
+  "capture_sha256": "f2000586e27904d023613ead58f3c50300768fcef6943a6630ff19526d7854eb",
+  "physical_key": 3,
+  "pin": "P3_1",
+  "gpio_input_address": "0x40081050",
+  "gpio_bit": 25,
+  "gpio_mask": "0x02000000",
+  "active_level": 0,
+  "logical_key_mask": "0x08",
+  "observed_presses": 3,
+  "observed_releases": 3,
+  "hal_callback_word": "0x2007e734",
+  "observed_hal_callback": "0x0c1b77ad",
+  "sampled_existing_consumers": {
+    "0x34053e28": "0 atinitialcapture",
+    "0x34059d7c": "0 atinitialcapture",
+    "limit": "Initialzeros donotprove permanentabsenceofotherconsumers."
+  },
+  "samples": [
+    {
+      "tick": 0,
+      "selected_bits25_27": "0x0e000000"
+    },
+    {
+      "tick": 38,
+      "selected_bits25_27": "0x0c000000"
+    },
+    {
+      "tick": 57,
+      "selected_bits25_27": "0x0e000000"
+    },
+    {
+      "tick": 110,
+      "selected_bits25_27": "0x0c000000"
+    },
+    {
+      "tick": 132,
+      "selected_bits25_27": "0x0e000000"
+    },
+    {
+      "tick": 197,
+      "selected_bits25_27": "0x0c000000"
+    },
+    {
+      "tick": 218,
+      "selected_bits25_27": "0x0e000000"
+    }
+  ],
+  "user_statement": "Thirdcustomkeyhasnoassignedaction. Firstswitchprototype mayuseA7rawGPIOgesture; preservingotherbindingsisnotpartofthisinitialapproach.",
+  "scope_limit": "No genericclaimthat originalfirmwarecannotdispatchanunassignedkey or that allfuturebindingsaresuppressed; earlieroriginaleventrouteevidence remains relevant."
+}

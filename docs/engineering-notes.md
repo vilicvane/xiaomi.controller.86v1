@@ -12,13 +12,13 @@
 | 原固件配网恢复 | 1.48.5 的身份缓存异常经限定 RAM 验证后恢复；完全断电后原身份、云连接及控制正常 |
 | 官方升级 | 用户已完成升级到 1.50.10，并保存该版本 16 MiB NOR 备份 |
 | 显示与触摸 | 设备端 A7 程序直接使用 `/dev/fb0` 和 `/dev/input0`；点击加一，长按/拖动只计一次 |
-| 持久化 | 粉色计数版本已由用户确认完整断电后自动启动、触摸正常 |
-| 白色文字 | 已安装，整扇区读回、暖启动及像素颜色检查通过；相对粉色版仅一条 4 字节颜色指令改变 |
+| 持久化 | 粉色旧计数器与当前 broker 均完成完全断电自动启动、触摸正常 |
+| 白色文字 | 旧966B版通过暖启动与颜色核对；当前2652B broker已通过完整断电启动 |
 | 回退 | 安装白色版之前，两个扇区成功恢复成精确原值并读回验证 |
-| 原界面热切换 | 有生命周期和资源使用权的静态证据，尚未实现或完成设备往返测试 |
+| 原界面热切换 | 第三键三击不重启切换，用户反复往返及冷启动后米家控制均正常 |
 
-白色版不应被描述为已经单独完成了全断电测试：现有完整断电观察对应此前粉色版。
-详细结果见 `analysis/persistence/native-counter-hardware-result.json`。
+旧966字节白色counter的独立全断电观察仍未补做；当前broker的冷启动结果单独记录。
+旧结果见 `native-counter-hardware-result.json`，新结果见 `native-ui-broker-hardware-result.json`。
 
 ## 硬件与供电
 
@@ -117,27 +117,42 @@ SHA-256：`777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b`。
   精确匹配后，用新只读验证确认成功，没有重复刷写。
 - OpenOCD `-l` 路径使用正斜杠，避免 Tcl 对 Windows 反斜杠的转义。
 
-## 不重启切换：下一阶段
+## 不重启切换：设备端 broker
 
-用户指定第三个自定义物理按键**三击切换**；从自定义 UI 到原界面和从原界面
-返回，都应在设备上完成。实体第三键与 GPIO/事件的对应尚未验证；目前 P3_1、
-P3_2、P3_3 与 key mask 8、2、4 是候选表，不直接等同于从左到右的按键顺序。
+第三物理键通过用户三次按下/释放采样确认为 P3_1，bit25、低电平按下；当前
+没有米家动作绑定。GPIO watcher 不过滤原 MCU key 服务通知，因此后续绑定动作
+需要单独做路由过滤。三击窗口以原固件的 monotonic clock 计算，不能把“每次
+sleep20ms”当作真实经过时间；调度延迟可能使长按被误判为短按。
 
-原 UI 不是单一线程：主任务运行 GUI/render loop，还有单独的 App/JS 线程。
-暂停主任务不能保证整个界面和输入停止。原框架有异步协作 stop、run-return、
-destroy 生命周期；第一版目标是串行退出、清理后重建另一个 UI，可能返回原首页。
-保留原页面和 JS 状态的 suspend/resume 还没有证据。
+新原型只进入原 vapp 一次，保留其 GUI/render 和 App/JS 线程，切换显示/触摸
+owner。避免原 Framework 退出后 signal2 handler 悬挂和重复初始化问题。原界面
+照常在后台绘图，但自定义模式阻止 PAN 与 UPDATEAREA 两条提交路径。
+UPDATEAREA 内部直接调用原 PAN，所以仅替换 PAN 的 vtable slot 不完整。
 
-触摸驱动向所有打开者广播，当前没有 exclusive grab；framebuffer 也是不区分
-生产者的全局队列。因此不能简单让两个 UI 并行工作，也不能靠后台触摸 watcher
-阻止原界面误触。物理三击同样要审核原按键服务是否已经触发单击/双击控制，
-明确三击窗口、去抖、长按处理和事件拦截位置。
+两原 GUI 输入均照常读取并排空，替换输出 state 为 release，而不阻断读取。
+mode 交接在 GUI 定时器回调内执行：释放两 GUI 输入和自有输入、排空旧显示帧，
+锁两 touch upper 的 publisher mutex 后核对三条 ring，再提交新源并改 owner。
+subscriber mutex 不锁 publisher；只看原始 pressed=0 也不能证明 ring 没有隐藏
+期间的 DOWN/UP。不要从 watcher 线程追半初始化或已经释放的 GUI 节点。
 
-原主函数退出后清全局 Framework 指针；其 signal2 handler 在已检查路径未恢复，
-且直接解引用全局指针。重复进入之前要处理任务/信号归属与生命周期竞态。
-框架事件 3/4 可通向 stop，但它们不是 OS signal 3/4，也不能对未初始化或已销毁
-的 Framework 随意调用 stop。
+原界面的板级 mmap 为50000000，在 live 对象及新程序启动 guard 中核对。返回
+原界面用 zero-plane PAN 重提交该持久缓冲，不保存临时绘图 source。不释放仍在
+队列/回调中的画布；直接调用原 PAN 避免持 broker 锁又 IOCTL 进入代理导致递归锁。
+原 PAN 含 SMP spin/WFE 和可能调度，不能保证固定毫秒的严格执行上界。
 
-实施前验证：按键映射 → 设备端三击识别 → 原任务协作退出并确认所有资源释放 →
-原/自定义往返和重复进入 → 明确容量与回退后持久化。不能把静态可行性报告写成
-已安装、已完成热切换。
+具体易错 ABI：LVGL data 的 state/continue 是 **+0x12/+0x13（18/19字节）**；
+list 数据节点大小0x80，prev +0x80，next **+0x84**。初次仅按head非NULL读取会
+撞到 allocator先发布、后初始化的窗口；现由 GUI 线程内安装并持 broker mutex
+发布 drivers/四个回调slot/ready。原 GUI 定时器会重新注册自身，proxy返回后仅
+CAS原callback到proxy，并检查closing/type/fbfd，不重启已关闭的timer。
+
+2652字节的新程序借用ntpcstatus/faclvgl/showlogo容器，仍只改92b000/ccd000两扇区。
+原showlogo的open/query/mmap/绘图不是板初始化；省略它后仍保留boardinit及rcS
+中的panel_fb_switch迁移。faclvgl/showlogo入口改为成功stub，防止工厂命令再次启动
+broker；ntpcstatus表值不变但命令返回-38，NTPdaemon主代码保留。
+
+新freeze绑定36项，和旧counter的21项完全分离；公共回退拒绝混合、未知及旧counter
+基线。手势host/ASan/UBSan、9项实际ARM ELF模拟、33项Jim写入故障路径通过。
+硬件安装读回、customowner状态、用户反复往返、完整断电自动启动及米家控制
+均通过。冷启动后再次核对两个完整扇区和运行状态，结果见
+native-ui-broker-hardware-result.json。模拟结果和这些实测分别记录。

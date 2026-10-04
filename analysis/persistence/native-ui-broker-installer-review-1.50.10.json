@@ -1,0 +1,77 @@
+{
+  "offline_only": true,
+  "hardware_actions": 0,
+  "passed": true,
+  "scope": "Independent whole-sector broker payload and frozen-writer differential review; no hardware or freeze.",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-ui-broker-patch-inputs-1.50.10.json": "dbd5ed1e6f32a71d21baf80020c32245ac6908bb42078ba0c2080b050efbec57",
+    "analysis/display-takeover/native-ui-broker.bin": "8929b02509c2aeff438da8ae8cec41103c9dc7457e209627029de6f192e2f8cf",
+    "analysis/display-takeover/native-ui-broker.elf": "bd8225a088d5c6fca1c213d6af12544e7fb5e5981a85423deeb18bdd99c334db",
+    "analysis/persistence/offline-native-ui-broker-runner/run-3/summary.json": "aa7840d09c799d72ecfefa6283eb52963e575eccb1a57736052c19c6a1f40921",
+    "analysis/persistence/native-counter-frozen-inputs.json": "b9619a62ea8613eca200aa29b9e466df76194b90e637534c03937176deb2fad2",
+    "analysis/persistence/review_native_ui_broker_installer.py": "b604d16e3337c744a2351f2fd0e857b695247e88e7b73aed7030ea21355074ca",
+    "analysis/persistence/prepare_native_ui_broker_inputs.py": "c448c232a634a8f1a4d5000aae0036520687797509e2391fa22755b1c42549e7",
+    "analysis/persistence/freeze_native_ui_broker_inputs.py": "9b1d30228068d7f37b8d147c789f43b4a09a4093f0b593cc2ef4f7e281664dd7",
+    "analysis/persistence/run_native_ui_broker_firmware.py": "7fc7683eb5faacdddd29726b099dc958f2ef783029902900274807c612484f5c",
+    "analysis/persistence/test_native_ui_broker_runner_offline.py": "7a22518071d40229fb78fb9ff60c17508b00a653d8b3357b6726ff8f27cc4829",
+    "diagnostics/read-native-ui-broker-state.cfg": "61e4d166041e067a37299e6727c37c606d40f068d1aebd178d90315d20aa0f42",
+    "analysis/display-takeover/native-ui-broker-original-sector-92b000.bin": "8c6d7fd8a60c6445cc88086f0f88f70abc6973ea8743321df0483a784cfcfa56",
+    "analysis/display-takeover/native-ui-broker-patched-sector-92b000.bin": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "analysis/display-takeover/native-ui-broker-original-sector-ccd000.bin": "b9206c93037f422f618fc481d22d46082a8e6ef61b0c951e93742f9bf24837a0",
+    "analysis/display-takeover/native-ui-broker-patched-sector-ccd000.bin": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916",
+    "diagnostics/boot-nor-native-ui-broker-runner.cfg": "16ede0302b05be1208dac176c3ee6b8f92e459c7dfee91a27a0d74324053c3b8",
+    "diagnostics/boot-nor-native-ui-broker-stage-inputs.cfg": "9b6f6788b276d78b4faa305a1d529862b76c0e2594dae16e7a6965611361b114",
+    "analysis/persistence/boot-nor-one-call.bin": "abed88ffa44ddd05eeb547178c981bf784f6ca492d1ecf21613af8fb3cb94c32",
+    "diagnostics/mcu-native-ui-broker-install-session.cfg": "ff8aad2b26cc28037ea7d60903a680c38ccb6f0a00405c9b9d1612b138dd5cd6",
+    "diagnostics/mcu-native-ui-broker-restore-session.cfg": "b0e8032239f14cacd260301d1beeb5c8327ee789aa0ff3a2941ce4e13d2ed91a"
+  },
+  "old_counter_frozen_inputs_preserved": 21,
+  "normalized_writer_diff": "Exact match after namespace/source filename reversal and reverting only stricter coupled restore gate.",
+  "normalized_session_diff": "Both exact old reviewed install/restore sessions after namespace/source/capture filename reversal.",
+  "stage_inputs": "Exact independent four whole-sector binaries and identical168B caller; stage functions unchanged after namespace reversal.",
+  "table_words": [
+    {
+      "sector_offset": "0xcc8",
+      "original": "0x3818f9fd",
+      "patched": "0x3804b2f5"
+    },
+    {
+      "sector_offset": "0xebc",
+      "original": "0x3804b2f5",
+      "patched": "0x3804b111"
+    },
+    {
+      "sector_offset": "0xf20",
+      "original": "0x3804b87d",
+      "patched": "0x3804b111"
+    }
+  ],
+  "duplicate_gui_prevention": "faclvgl registry now returns-zero stub, so its former entry cannot launch broker again.",
+  "whole_sector_changes": {
+    "code_changed_byte_count": 2609,
+    "entry_changed_byte_count": 7,
+    "entry_changed_offsets": [
+      "0xcc8",
+      "0xcc9",
+      "0xcca",
+      "0xebc",
+      "0xebd",
+      "0xf20",
+      "0xf21"
+    ]
+  },
+  "offline_mock_cases": 33,
+  "all_mock_cases_passed": true,
+  "offline_summary": "analysis/persistence/offline-native-ui-broker-runner/run-3/summary.json",
+  "inherited_guards": [
+    "Live id0 controller40148000 only;40140000 never dereferenced",
+    "Fresh BOOT halt and same-process reader",
+    "A7/WF/BT held reset",
+    "Stopped watchdog at entry/prerun/final",
+    "Exact scratch/core/dualalias return closure",
+    "WIP/WEL0 and BP/QE stable-status restoration",
+    "Code whole4Kverified before registryerase;restore registry first",
+    "No retry/nextstage/stale context/GLOBAL after unclosed calls; outer requires complete and safe"
+  ],
+  "limits": "Mock ARM calls do not prove hardware display/input/scheduling/coldboot or recovery from deliberately corrupted MAIN."
+}

@@ -10,6 +10,7 @@
 !/analysis/**/*.py
 !/analysis/**/*.sh
 !/analysis/**/*.c
+!/analysis/display-takeover/key3-gesture.h
 !/analysis/**/*.S
 !/analysis/**/*.ld
 !/analysis/**/*.tcl
@@ -77,3 +78,14 @@
 !/analysis/pinout/a7-peripherals-1.50.10.json
 !/analysis/pinout/a7-touch-input-route-1.50.10.json
 !/analysis/pinout/a7-sdmmc-evidence.json
+!/analysis/display-takeover/physical-key3-confirmed-1.50.10.json
+!/analysis/display-takeover/a7-clock-gettime-abi-1.50.10.json
+!/analysis/display-takeover/key3-gesture-offline-result.json
+!/analysis/display-takeover/ui-broker-arm-offline-result.json
+!/analysis/display-takeover/ui-background-broker-review-1.50.10.json
+!/analysis/display-takeover/native-ui-broker-independent-review-1.50.10.json
+!/analysis/display-takeover/native-ui-broker-final-ownership-review-1.50.10.json
+!/analysis/display-takeover/native-ui-broker-patch-inputs-1.50.10.json
+!/analysis/persistence/native-ui-broker-installer-review-1.50.10.json
+!/analysis/persistence/native-ui-broker-frozen-inputs.json
+!/analysis/persistence/native-ui-broker-hardware-result.json

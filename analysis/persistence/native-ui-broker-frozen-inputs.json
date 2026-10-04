@@ -1,0 +1,55 @@
+{
+  "scope": "Exact independently reviewed 1.50.10 native UI broker, original/broker baselines only; two NOR sectors",
+  "review_artifacts": [
+    {
+      "path": "analysis/display-takeover/native-ui-broker-independent-review-1.50.10.json",
+      "sha256": "3235ecf9ac3d1d2e02300e327481822f0419b1f4d15d34b2b46e8622af83dd75"
+    },
+    {
+      "path": "analysis/persistence/native-ui-broker-installer-review-1.50.10.json",
+      "sha256": "9687a6298f3875f44cf6445eddf4400dd400222cba83aa6554664f5f7f4a1932"
+    },
+    {
+      "path": "analysis/persistence/offline-native-ui-broker-runner/run-3/summary.json",
+      "sha256": "aa7840d09c799d72ecfefa6283eb52963e575eccb1a57736052c19c6a1f40921"
+    }
+  ],
+  "sha256": {
+    "analysis/display-takeover/native-ui-broker-patch-inputs-1.50.10.json": "dbd5ed1e6f32a71d21baf80020c32245ac6908bb42078ba0c2080b050efbec57",
+    "analysis/display-takeover/native-ui-broker.c": "d531f938c61158480851fd35e035b3de2ed1c996a65d49c4753d0d9aff315c9c",
+    "analysis/display-takeover/native-ui-broker-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "analysis/display-takeover/native-ui-broker.ld": "5919d3fac2b43adc20d86bd920346e8548d3083eb45cdad868c248a34a7bbdc4",
+    "analysis/display-takeover/build-native-ui-broker.sh": "30a9c27959453a3f1fcb656beab4c5835f76115b76d16ea11fd5727154abccd1",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c",
+    "analysis/display-takeover/test-key3-gesture.c": "e0f345840ec300267019c555102c5bd70b3d956aa1042edcd49357f606e06012",
+    "analysis/display-takeover/key3-gesture-offline-result.json": "ec0e5021a5d5b21704009d197ad477dae7ea511b6201e72a0b30b7e82dfb0f0a",
+    "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408",
+    "analysis/display-takeover/ui-broker-arm-offline-result.json": "3b8bc3078a7284a306ba344c2b6daf2d896bb2ee0ece0ed023358770049ad3bd",
+    "analysis/display-takeover/native-ui-broker.elf": "bd8225a088d5c6fca1c213d6af12544e7fb5e5981a85423deeb18bdd99c334db",
+    "analysis/display-takeover/native-ui-broker.bin": "8929b02509c2aeff438da8ae8cec41103c9dc7457e209627029de6f192e2f8cf",
+    "analysis/persistence/prepare_native_ui_broker_inputs.py": "c448c232a634a8f1a4d5000aae0036520687797509e2391fa22755b1c42549e7",
+    "analysis/persistence/run_native_ui_broker_firmware.py": "7fc7683eb5faacdddd29726b099dc958f2ef783029902900274807c612484f5c",
+    "diagnostics/swd-memory.cfg": "8e1e707483009a25d8a77752512a4afad9839b0a2f88c75656b21e7dc195a6a2",
+    "diagnostics/swd-dap.cfg": "de1b441878f71ac2985deae1c694d9790c2b386e35bdaac8787759f08416b8f5",
+    "diagnostics/boot-watchdog-stop.cfg": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+    "diagnostics/boot-nor-read-runner.cfg": "1bd3b194645e755753b0253c9d0f0cab5a3b3cb189c83451cc522130d9560742",
+    "analysis/persistence/boot-nor-read-runner-data.cfg": "a52e7a38a7735ff5d8f2974057a013ce2329cb55cbc00071cce7ac5cd9c5e656",
+    "diagnostics/boot-nor-native-ui-broker-runner.cfg": "16ede0302b05be1208dac176c3ee6b8f92e459c7dfee91a27a0d74324053c3b8",
+    "diagnostics/boot-nor-native-ui-broker-stage-inputs.cfg": "9b6f6788b276d78b4faa305a1d529862b76c0e2594dae16e7a6965611361b114",
+    "diagnostics/mcu-native-ui-broker-install-session.cfg": "ff8aad2b26cc28037ea7d60903a680c38ccb6f0a00405c9b9d1612b138dd5cd6",
+    "diagnostics/mcu-native-ui-broker-restore-session.cfg": "b0e8032239f14cacd260301d1beeb5c8327ee789aa0ff3a2941ce4e13d2ed91a",
+    "diagnostics/read-native-ui-broker-state.cfg": "61e4d166041e067a37299e6727c37c606d40f068d1aebd178d90315d20aa0f42",
+    "analysis/persistence/native-ui-broker-writer-preparation.json": "57220f73dcfe11db842921e73e5543a416c0629f57d391c43d8db54e7895e3dc",
+    "analysis/persistence/test_native_ui_broker_runner_offline.py": "7a22518071d40229fb78fb9ff60c17508b00a653d8b3357b6726ff8f27cc4829",
+    "analysis/persistence/mock_boot_read_runner.tcl": "c32714c553cf8277901e8dd6f46827c08f9ab469f32176905a27c30d1ae93396",
+    "tools/xpack-openocd-0.12.0-7/bin/openocd.exe": "10567f01d37c66a0975537960d66e61f7b4e2a17eb2c9637e2c2cbc569f70c79",
+    "backups/mi-panel-flash-16m-1.50.10-20261004.bin": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+    "analysis/display-takeover/native-ui-broker-original-sector-92b000.bin": "8c6d7fd8a60c6445cc88086f0f88f70abc6973ea8743321df0483a784cfcfa56",
+    "analysis/display-takeover/native-ui-broker-patched-sector-92b000.bin": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d",
+    "analysis/display-takeover/native-ui-broker-original-sector-ccd000.bin": "b9206c93037f422f618fc481d22d46082a8e6ef61b0c951e93742f9bf24837a0",
+    "analysis/display-takeover/native-ui-broker-patched-sector-ccd000.bin": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916",
+    "analysis/display-takeover/native-ui-broker-independent-review-1.50.10.json": "3235ecf9ac3d1d2e02300e327481822f0419b1f4d15d34b2b46e8622af83dd75",
+    "analysis/persistence/native-ui-broker-installer-review-1.50.10.json": "9687a6298f3875f44cf6445eddf4400dd400222cba83aa6554664f5f7f4a1932",
+    "analysis/persistence/offline-native-ui-broker-runner/run-3/summary.json": "aa7840d09c799d72ecfefa6283eb52963e575eccb1a57736052c19c6a1f40921"
+  }
+}

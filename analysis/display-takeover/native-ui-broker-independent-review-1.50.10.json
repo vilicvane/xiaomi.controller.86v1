@@ -1,0 +1,286 @@
+{
+  "scope": "Independent offline exact1.50.10 broker layout/entry/clock/GPIO/startup review. No hardware, payload or frozen-input edits. Does not approve unreviewed installer inputs.",
+  "firmware_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "reviewed_inputs": {
+    "native-ui-broker.c": "d531f938c61158480851fd35e035b3de2ed1c996a65d49c4753d0d9aff315c9c",
+    "native-ui-broker.ld": "5919d3fac2b43adc20d86bd920346e8548d3083eb45cdad868c248a34a7bbdc4",
+    "native-ui-broker-entry.S": "882133deb3129e218c1b0ce9f0f058a07b2f41dd7a5af4749df413dc04fa5541",
+    "native-ui-broker.elf": "bd8225a088d5c6fca1c213d6af12544e7fb5e5981a85423deeb18bdd99c334db",
+    "native-ui-broker.bin": "8929b02509c2aeff438da8ae8cec41103c9dc7457e209627029de6f192e2f8cf",
+    "key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c"
+  },
+  "evidence_refs": {
+    "key3-gesture-offline-result.json": "ec0e5021a5d5b21704009d197ad477dae7ea511b6201e72a0b30b7e82dfb0f0a",
+    "a7-clock-gettime-abi-1.50.10.json": "69815b0c228bc400f972f652f9eed406ce04a423d64879017e11831fc4fe177f",
+    "a7-signal-action-abi-review-1.50.10.json": "167c342a06fdab855de44e37bac44bbb519f7d58b2fa16fa5ee3d7aea442041b",
+    "startup-broker-abi-container-review-1.50.10.json": "bbc5118edfbe8ff37aa0b67a87126be1943194864de858453d29c94497d2af54",
+    "a7-broker-extra-container-review-1.50.10.json": "68fac2d43e0a96649132a159699fd119066f9623143c252196c2250167d75103",
+    "ui-background-broker-review-1.50.10.json": "3af14bda55b840d1c16e33c268b6972e1e1c8b438d62758d5f3f81107fa4886f"
+  },
+  "layout": {
+    "entry_Thumb": "0x3804b2f5",
+    "raw_bin_bytes": 2652,
+    "allocated_section_bytes": 2629,
+    "raw_range_exclusive": [
+      "0x3804b108",
+      "0x3804bb64"
+    ],
+    "approved_container_range_exclusive": [
+      "0x3804b108",
+      "0x3804bc98"
+    ],
+    "unused_container_tail_bytes": 308,
+    "raw_equals_ELF_allocated_sections_with_zero_gaps": true,
+    "writable_allocated_sections": [],
+    "undefined_symbols": [],
+    "sections": [
+      {
+        "name": ".prefix",
+        "type": 1,
+        "flags": 54,
+        "address": 939831560,
+        "offset": 45320,
+        "size": 469,
+        "link": 0,
+        "align": 4,
+        "entrysize": 0
+      },
+      {
+        "name": ".start",
+        "type": 1,
+        "flags": 6,
+        "address": 939832052,
+        "offset": 45812,
+        "size": 4,
+        "link": 0,
+        "align": 4,
+        "entrysize": 0
+      },
+      {
+        "name": ".broker",
+        "type": 1,
+        "flags": 54,
+        "address": 939832056,
+        "offset": 45816,
+        "size": 2156,
+        "link": 0,
+        "align": 8,
+        "entrysize": 0
+      }
+    ],
+    "symbols": {
+      "worker": {
+        "value": "0x3804b3ed",
+        "size": 748,
+        "kind": 2
+      },
+      "paint": {
+        "value": "0x3804b115",
+        "size": 300,
+        "kind": 2
+      },
+      "arm_timer": {
+        "value": "0x3804b6d9",
+        "size": 80,
+        "kind": 2
+      },
+      "prefix": {
+        "value": "0x3804b253",
+        "size": 12,
+        "kind": 1
+      },
+      "font": {
+        "value": "0x3804b25f",
+        "size": 126,
+        "kind": 1
+      },
+      "alphabet": {
+        "value": "0x3804b240",
+        "size": 19,
+        "kind": 1
+      },
+      "timer": {
+        "value": "0x3804b729",
+        "size": 768,
+        "kind": 2
+      },
+      "touch": {
+        "value": "0x3804ba29",
+        "size": 116,
+        "kind": 2
+      },
+      "pan": {
+        "value": "0x3804ba9d",
+        "size": 92,
+        "kind": 2
+      },
+      "area": {
+        "value": "0x3804baf9",
+        "size": 80,
+        "kind": 2
+      },
+      "broker_ntpcstatus_disabled": {
+        "value": "0x3804b109",
+        "size": 6,
+        "kind": 2
+      },
+      "broker_showlogo_disabled": {
+        "value": "0x3804b111",
+        "size": 4,
+        "kind": 2
+      },
+      "broker_start": {
+        "value": "0x3804b2f5",
+        "size": 4,
+        "kind": 2
+      },
+      "broker_main": {
+        "value": "0x3804b2f9",
+        "size": 244,
+        "kind": 2
+      }
+    },
+    "compiled_prologue_stack_bytes": {
+      "worker": 136,
+      "paint": 72,
+      "timer": 104,
+      "broker_main": 40
+    }
+  },
+  "entry_checks": {
+    "branch_bytes": "00f000b8",
+    "branch": "ThumbB.W3804b2f4->3804b2f8, not main atnon-entryhalfword",
+    "ntpcstatus": "Thumb3804b109 returns-38; existingregistrypointer preserved",
+    "showlogo": "Thumb3804b111 returns0; requiresregistryentrychange before overwrittenoriginalshowlogocanexecute"
+  },
+  "required_registry_values": [
+    {
+      "name": "vapp",
+      "NOR_offset": "0xccdcc8",
+      "A7_address": "0x383edcc4",
+      "original_Thumb": "0x3818f9fd",
+      "new_Thumb": "0x3804b2f5",
+      "new_bytes": "f5b20438"
+    },
+    {
+      "name": "showlogo",
+      "NOR_offset": "0xccdf20",
+      "A7_address": "0x383edf1c",
+      "original_Thumb": "0x3804b87d",
+      "new_Thumb": "0x3804b111",
+      "new_bytes": "11b10438"
+    },
+    {
+      "name": "faclvgl",
+      "NOR_offset": "0xccdebc",
+      "A7_address": "0x383edeb8",
+      "original_Thumb": "0x3804b2f5",
+      "new_Thumb": "0x3804b111",
+      "new_bytes": "11b10438"
+    },
+    {
+      "name": "ntpcstatus",
+      "NOR_offset": "0xccde80",
+      "A7_address": "0x383ede7c",
+      "original_Thumb": "0x3804b109",
+      "new_Thumb": "0x3804b109",
+      "new_bytes": "09b10438"
+    }
+  ],
+  "intentional_effects": [
+    "Originalshowlogo builtin isdisabledincludingnormalstartupbootlogo. Physicalboardframebufferinitialization andlaterpanel_fb_switch remainownedby originalstartup, notshowlogo.",
+    "ntpcstatus diagnostic now returns-38; NTP daemon code outside the container is untouched.",
+    "faclvgl factory diagnostic entry must become the same success no-op as showlogo; preserving its original b2f5 entry would allow a second broker launch.",
+    "Originalvappbody3818f9fd ispreservedandcalledexactlyoncebybroker; originalJS/businessservicescontinuetorunwhilecustommodefiltersGUIframe/touch."
+  ],
+  "C_review": {
+    "ctx": "Heapstate only; private384fc864 pointerpublishedbeforepthread_create withDMB; separatectx.tid outputavoidsclobberingpointer.",
+    "startup": "Workeropensindependentnonblockinginput0fd, obtainsfile*, initializesowned614400Bcanvas/paint beforeitsfirstarm_timer publication. Parentdoesnotpublishtimerproxy.",
+    "thread": "NULLpthreadattrdefault4096Bstack; compiledprologueframes recordedunderlayout, before nativecalldepths. Fullnativecalldepthisnotstaticallyboundedhere.",
+    "clock": "CLOCKThumb38004c39,id1;16B8-alignedtimespec;seconds castto32bitsbefore1000multiply,nanosecondsdivide1000000; codechecksreturn0,cancelsgestureonfailure.",
+    "GPIO": "Rawreadonly40081050 isalsoactualA7ARMHALgetteraddress, notjustMCUdebugalias; P3_1bit25active-low, otherkeysbits26/27cancelgesture.",
+    "admission": "GUI-thread installation takes broker mutex and requires exactly two native touch callbacks, original PAN/AREA slots, cleared one-shot migration flag, matching GUI mmap/defaultfbmem50000000, fblen614400, format13, 480x320 video, stride1920 and bpp32.",
+    "gesture": "Sharedreviewedheader implements40msdebounce,600msreleasedshorttap,500msgap; nofalsecountfromrepeatrelease; actualmonotonicelapsedtime.",
+    "pixels": "Countmaxuint32 needs10digits plus11prefix chars:21charsfits22Btext; renderx/yremainwithin480x320;whiteglyphffffffff.",
+    "exit": "Wrapperdoesnotchange signals or stop/destroy/reenteroriginal;alive0 thenrestoresstaticPAN/AREA underbrokermutex;ctx/canvasarenotfreed. Pollinterval20ms isnotahardthreadexitdeadline.",
+    "resource_failure": "Allocation/createfailuresfallbacktooriginal;workerinputfailureleavesoriginalunhooked but retainsheapallocation. No automaticretry/restart."
+  },
+  "GPIO_instruction_evidence": [
+    {
+      "address": "0x383d49f8",
+      "file_offset": "0xcb49fc",
+      "bytes": "1f0050e3",
+      "mnemonic": "cmp",
+      "operands": "r0, #0x1f"
+    },
+    {
+      "address": "0x383d49fc",
+      "file_offset": "0xcb4a00",
+      "bytes": "0700008a",
+      "mnemonic": "bhi",
+      "operands": "#0x383d4a20"
+    },
+    {
+      "address": "0x383d4a00",
+      "file_offset": "0xcb4a04",
+      "bytes": "013aa0e3",
+      "mnemonic": "mov",
+      "operands": "r3, #0x1000"
+    },
+    {
+      "address": "0x383d4a04",
+      "file_offset": "0xcb4a08",
+      "bytes": "0120a0e3",
+      "mnemonic": "mov",
+      "operands": "r2, #1"
+    },
+    {
+      "address": "0x383d4a08",
+      "file_offset": "0xcb4a0c",
+      "bytes": "083044e3",
+      "mnemonic": "movt",
+      "operands": "r3, #0x4008"
+    },
+    {
+      "address": "0x383d4a0c",
+      "file_offset": "0xcb4a10",
+      "bytes": "503093e5",
+      "mnemonic": "ldr",
+      "operands": "r3, [r3, #0x50]"
+    },
+    {
+      "address": "0x383d4a10",
+      "file_offset": "0xcb4a14",
+      "bytes": "123003e0",
+      "mnemonic": "and",
+      "operands": "r3, r3, r2, lsl r0"
+    },
+    {
+      "address": "0x383d4a14",
+      "file_offset": "0xcb4a18",
+      "bytes": "3300a0e1",
+      "mnemonic": "lsr",
+      "operands": "r0, r3, r0"
+    },
+    {
+      "address": "0x383d4a18",
+      "file_offset": "0xcb4a1c",
+      "bytes": "7000efe6",
+      "mnemonic": "uxtb",
+      "operands": "r0, r0"
+    },
+    {
+      "address": "0x383d4a1c",
+      "file_offset": "0xcb4a20",
+      "bytes": "1eff2fe1",
+      "mnemonic": "bx",
+      "operands": "lr"
+    }
+  ],
+  "limits": [
+    "Hardwarehotswitchroundtrip, publisherfreeze/PANlockinteractions, GUIcompleteframeonreturn andinputfilteringremainruntimevalidationrequirements.",
+    "Thisreportcheckscompiledlayoutanddeclaredregistryvalues; rootmustindependentlycomparewholenewtwo-sectorinputsandinstallbaseline.",
+    "Originalapplicationexit/signalhandlerlifecycleproblemisunchanged; retainedallocationspreventnewallocationUAFbutdonotrepairoriginalframeworkteardown.",
+    "The raw GPIO watcher does not suppress original MCU key notifications. The user reports key3 currently unbound; adding a stock binding later can still trigger its original action on each tap."
+  ]
+}

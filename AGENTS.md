@@ -16,6 +16,12 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is the white native counter. The current goal is physical
-  key 3 triple-click switching without reboot; no switching implementation has
-  been validated at this checkpoint. Preserve that distinction in reporting.
+- Current installed UI is the native UI broker (2652-byte BIN, 1.50.10).
+  Flash/readback, live custom-owner state, repeated user round trips and full
+  power-cycle startup passed; Mi Home online/control passed by user report.
+  Read native-ui-broker-hardware-result.json for evidence. The old white counter
+  freeze remains a separate immutable set.
+- Broker restore uses Set-PanelNativeUiBroker.ps1; do not use the old counter
+  writer against a broker baseline. Do not silently regenerate either freeze.
+- ABI offsets must be written unambiguously: LVGL state/continue are +0x12/+0x13,
+  list node prev/next are +0x80/+0x84. Validate both physical and virtual touch.

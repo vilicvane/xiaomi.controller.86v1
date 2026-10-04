@@ -1,0 +1,98 @@
+{
+  "scope": "Focused final offline C/ELF ownership review. No hardware access, original NOR modification, frozen runner edit or old hardware proof changes.",
+  "review_result": "No material static blocker found in this exact final build for its stated once-started normal-GUI prototype. This is not hardware or full NuttX/SMP/IRQ validation.",
+  "inputs_sha256": {
+    "source": "d531f938c61158480851fd35e035b3de2ed1c996a65d49c4753d0d9aff315c9c",
+    "elf": "bd8225a088d5c6fca1c213d6af12544e7fb5e5981a85423deeb18bdd99c334db",
+    "binary": "8929b02509c2aeff438da8ae8cec41103c9dc7457e209627029de6f192e2f8cf"
+  },
+  "elf": {
+    "entry": "0x3804b2f5",
+    "allocated_bytes": 2629,
+    "raw_binary_bytes": 2652,
+    "sections": [
+      {
+        "name": ".prefix",
+        "start": "0x3804b108",
+        "end_exclusive": "0x3804b2dd",
+        "size": 469,
+        "writable": false
+      },
+      {
+        "name": ".start",
+        "start": "0x3804b2f4",
+        "end_exclusive": "0x3804b2f8",
+        "size": 4,
+        "writable": false
+      },
+      {
+        "name": ".broker",
+        "start": "0x3804b2f8",
+        "end_exclusive": "0x3804bb64",
+        "size": 2156,
+        "writable": false
+      }
+    ],
+    "container_end_exclusive": "0x3804bc98",
+    "remaining_tail_bytes": 308,
+    "no_RW_BSS": true,
+    "no_relocations": true,
+    "no_undefined_symbols": true,
+    "raw_binary_exact_allocated_sections_with_zero_gaps": true,
+    "ntpcstatus_stub": "Thumb3804b109 returns-38",
+    "showlogo_stub": "Thumb3804b111 returns0",
+    "wrapper": "Thumb3804b2f5 branches main3804b2f9"
+  },
+  "frame_owner": {
+    "routes": "PAN slot384ef87c and updatearea slot384ef854 are both replaced; original AREA internally calls raw PAN, so both are required.",
+    "normal_mode": "Forward original ABI under broker mutex; sourceFFFFFFFF rejected because it relocates/frees default fbmem.",
+    "custom_mode": "Both stock submission routes return0 without native submit. Counter writes only its owned614400B canvas, never stock mmap memory.",
+    "handover": "After original GUI timer runs with broker mutex released, transition acquires broker mutex, gates released contacts/empty queue/three rings, invokes raw native PAN directly, then commitsmode only on success. Source0 obtains current board-owned stock framebuffer; customsource owns heap allocation.",
+    "queue": "Existing accepted IRQ-driven frames are allowed to drain; no queue/staging flags are edited or freed. Mode commit occurs on successful enqueue, not a verified physical scanout completion.",
+    "canvas": "Worker paint and GUI native-copy submission take same broker mutex. Original/default allocation and customcanvas remain live; no stale arbitrary original PAN pointer is retained."
+  },
+  "input_owner": {
+    "metadata_chain": "GUI driver+c userdata→fd→GETFILE; file+10 inode; inode+10 must equal common touchfops384b621c; inode+18 upper; file+14 subscriber.",
+    "publisher_proof": "Nativepublisher3801450c locks upper+4 via3800c1f9; Thumb383d9a7d writes ring without subscriber mutex; publisher unlock3801455c via3800bb3d.",
+    "transaction": "Fixed GUI physical/virtual upper order, equal-upper deduplication, ownphysicalupper must match one GUIupper. Lock both distinct upper+4 before all three subscriber head8/tailc comparisons, including counter ownring; no accepted stale ring replay at the publication boundary.",
+    "consumer": "NativeREAD uses subscriber+2c and releases before TOUCH wrapper acquiresbroker. Worker READ already hasbroker; GUItransaction already hasbroker before upper locks. No recursive broker locking: rawPAN used in transaction/dirtypresent, originalTIMER invoked unlocked.",
+    "decoder": "Both original GUI callbacks continue draining; only outputstate byte0x12 is forced released in custommode, byte0x13 continuation and earlier18 outputbytes preserved.",
+    "contact": "Require both cached GUIreleased states, workerpressed0, physicalstate!=1, two release scans, three rings empty and framequeue0. New events published after upperunlock belong to newowner."
+  },
+  "lifecycle": {
+    "startup": "Original main called exactlyonce. Fully initialized heapctx is published withDMB beforeworkercreate. Worker initializes canvas and itsfile before bootstrap callbackCAS. GUIthread installs two input andtwoframecallbacks onlyunderbroker mutex.",
+    "list": "Indevnodedata0x80; prev+80,next+84. Requireexactlytwo registered original readcallbacks. Worker never traverses GUI heapnodes.",
+    "timer": "Only static expectedhandle384fce28 is handled. OriginalTIMER alwayscalled unlocked and selfregisters originalcallback; broker CAS original→proxy onlywhenalive,type13,flags&3==0,fbfd>=0. CAS code contains DMB/LDREX/STREX; it doesnot create/rearmclosed timer.",
+    "exit": "After originalreturn alive0 preventsfurther GUI-node/present use; savednative PAN/AREA restored underbroker mutex. Worker exits andcloses ownfd. Heapctx/canvas intentionallyremainallocated, avoidingqueued-source UAF; not a reusable framework destroy/recreate implementation.",
+    "failure": "Allocation/create/bootstrap input-open failures fall backto onceoriginalmain without installedhooks. Present class/lock/queuedinput/PAN failuredoesnotcommitnewmode; locks acquired bypresent areunwound."
+  },
+  "runtime_geometry_admission": {
+    "default_fbmem": "gdevfbmem384ef8a0 must50000000, equalstock B+2a4 mmap; B+2d0 must0.",
+    "layout": "gdevvideo word384ef898=01e0000d, low16 at384ef89c=320; fblen384ef8a4=614400; (plane word384ef8a8 &ff00ffff)=20000780 validatesbpp32/stride1920.",
+    "callbacks": "PAN andAREA muststilloriginalvalues beforeinstallation. Preserved board init/panel_fb_switch establishmigration; showlogo disabled separately."
+  },
+  "offline_tests": {
+    "parent_actual_ELF_result_path": "analysis/display-takeover/ui-broker-arm-offline-result.json",
+    "parent_checks": [
+      "actual linked next+0x84 setup installs both input callbacks",
+      "default custom transition requires release and native frame admission",
+      "custom input suppresses only state byte18; continues draining byte19",
+      "both stock frame submission routes suppressed in custom mode",
+      "owned/virtual queued touch and queued old frame prevent stock return",
+      "stock submission restored; relocating framebuffer source rejected",
+      "closing timer is not rearmed by broker",
+      "compiled worker counts one per press and triple GPIO release requests toggle",
+      "original main called once; wrapper returns original status and stops worker"
+    ],
+    "parent_passed": true,
+    "independent_additional_case": "Positive GUIphysical ring backlogblocksstockreturn/nativePAN, thenexacttailcatchup admitsreturn; allnative/brokerlocks released andrecursive-lock detector active. Passed onthisexactlinkedELF.",
+    "scope": "Native APIs/lockbehavior/IRQs/OSscheduling arestubbed. This testsrealARMcode ABI/control-flow, notactualnative driver timing."
+  },
+  "limits": [
+    "No device or complete cold-boot/hot-switch hardware validation performed by this reviewer.",
+    "Only the admitted normal flag0/50000000/480x320 RGB32 driver layout is supported. No original Framework restart or repeated broker installation is claimed.",
+    "Upper locks may delay touchpublication during full-frame rotation; nativePAN hasSMP spin/WFE andcritical-leave scheduling. Strict bounded latency andallIRQlockdependencies are notproved.",
+    "Physicaldisplay ownership switches afterqueuednewframe ispresented; thiscode commitsinput mode atsuccessfulenqueue. Presentationlatency mustbe observed ondevice.",
+    "Business/UIbehavior, unchangedremotephysicalkeyeffects, hiddenalternateoverlay/MMIOproducers andresourcegrowth underlong repeated use are notproven bytheoffline model."
+  ]
+}

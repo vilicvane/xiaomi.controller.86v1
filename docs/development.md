@@ -20,7 +20,7 @@
 
 缺少材料时应报告缺失，不用不完整的数据绕过 SHA 检查。
 
-## 构建原生程序（不连接设备）
+## 构建旧计数原型（不连接设备）
 
 在本机现有 WSL Ubuntu + LLVM18 环境：
 
@@ -34,7 +34,7 @@ python -X utf8 analysis/display-takeover/prepare_native_counter_sectors.py
 第二条命令从本地基线生成补丁扇区，因此需要完整备份。
 这些路径对应当前机器；其他工作目录应按实际位置调整 WSL 路径。
 
-当前白色计数程序：966 字节，BIN SHA-256
+旧白色计数程序：966 字节，BIN SHA-256
 `80a92ac659f795546258b24b31780fae353f0dd5e543a97c0d47b8b139ecae9d`。
 
 当前补丁 manifest SHA-256：
@@ -60,9 +60,42 @@ python -X utf8 analysis/persistence/run_native_counter_firmware.py install
 
 Python 源码可通过 AST 编译检查语法；不要为了提交而连接设备或重复刷写。
 
-## 设备写入入口
+## 常驻切换程序与设备入口
 
-已审核的现有原生计数安装/回退：
+当前 broker 用独立源码、输入集合和写入入口；旧 counter 的冻结材料仍保留原字节。
+不要在已装 broker 的设备上调用旧 counter 安装/回退命令。
+
+```powershell
+wsl.exe -d Ubuntu -- bash /mnt/c/Users/vilicvane/Projects/vilicvane/mi-panel/analysis/display-takeover/build-native-ui-broker.sh
+python -X utf8 analysis/display-takeover/test_ui_broker_arm.py
+python -X utf8 analysis/persistence/prepare_native_ui_broker_inputs.py
+python -X utf8 analysis/persistence/test_native_ui_broker_runner_offline.py
+python -X utf8 analysis/persistence/run_native_ui_broker_firmware.py install
+```
+
+前四条只构建/模拟/准备；最后一条只核对冻结输入，**没有 `--execute` 不访问设备**。
+ARM 模型需要本地 `tools/python-ui-broker/` 的 Unicorn、pyelftools；原生 API/IRQ/调度
+使用 stub。不得把模拟结果当作真实驱动/显示/触摸证明。
+
+BIN 为2652字节（ELF allocated 2629，另外23字节为地址空隙），无新增.data/.bss。
+新 freeze 36项还绑定key3-gesture.h、实际ELF模型结果及33路径Jim测试摘要。
+freeze工具需要明确的manifest hash、至少两个独立review artifact hash及当前测试摘要；
+它只冻结已经审查的输入。已经冻结的列表不可覆盖，新版本应使用新的审核集合。
+
+已审核的新设备入口：
+
+```powershell
+.\scripts\Set-PanelNativeUiBroker.ps1 -Mode install
+.\scripts\Set-PanelNativeUiBroker.ps1 -Mode restore
+```
+
+同样会暂停到BOOT恢复上下文、写两扇区并重启；恢复原界面后才能再安装旧counter。
+broker公共流程只接受完整original/original或broker/broker，不处理半写表/未知基线。
+实机状态见native-ui-broker-hardware-result.json，流程/副作用见native-ui-broker.md。
+
+## 旧计数原型的设备入口
+
+以下仅用于原始/旧counter基线：
 
 ```powershell
 .\scripts\Set-PanelNativeCounter.ps1 -Mode install

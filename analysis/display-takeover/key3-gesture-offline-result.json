@@ -1,0 +1,37 @@
+{
+  "scope": "Offline host gesture implementation/tests only; no hardware, firmware installation or frozen-input modifications.",
+  "header_sha256": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c",
+  "test_sha256": "e0f345840ec300267019c555102c5bd70b3d956aa1042edcd49357f606e06012",
+  "policy": {
+    "pin": "P3_1 active-low GPIO25",
+    "sample_period_ms": 20,
+    "debounce_ms": 40,
+    "short_tap_max_ms": 600,
+    "release_to_next_press_max_ms": 500,
+    "toggle": "third completed debounced release",
+    "timing": "Use actual monotonic milliseconds, raw onset of final debounced level, uint32 modulo arithmetic",
+    "cancellation": "Other key, long hold, expired gap cancel partial sequence; require quiet debounced release after combination/hold/initialization/toggle",
+    "retoggle": "Three fresh short taps required; repeated release and bounce cannot duplicate toggle. No additional fixed cooldown."
+  },
+  "compiler": "WSL Ubuntu GCC -std=c11 -O2 -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined",
+  "result": "All host scenarios passed, exit0; ASan and UBSan reported no issue.",
+  "scenarios": [
+    "three short taps",
+    "no duplicate repeated-release toggle",
+    "three fresh taps needed for second toggle",
+    "press/release bounce",
+    "expired gap",
+    "exact500ms gap accepted",
+    "520ms gap resets",
+    "exact600ms short tap accepted",
+    "620ms hold cancels",
+    "640ms delayed scheduling sample cancels long hold",
+    "other-key combination and lingering key3",
+    "other-key release requires quiet release",
+    "boot-held key ignored",
+    "uint32 clock wrap",
+    "active-low GPIO adapter"
+  ],
+  "target_limit": "This is deterministic offline logic validation. Device-side MMIO access, scheduling, callback ownership and hot-switching are not hardware-verified by these tests.",
+  "clock_ABI_evidence": "analysis/display-takeover/a7-clock-gettime-abi-1.50.10.json"
+}

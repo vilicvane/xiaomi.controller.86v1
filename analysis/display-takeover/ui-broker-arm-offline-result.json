@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "elf_sha256": "bd8225a088d5c6fca1c213d6af12544e7fb5e5981a85423deeb18bdd99c334db",
+  "checks": [
+    "actual linked next+0x84 setup installs both input callbacks",
+    "default custom transition requires release and native frame admission",
+    "custom input suppresses only state byte18; continues draining byte19",
+    "both stock frame submission routes suppressed in custom mode",
+    "owned/virtual queued touch and queued old frame prevent stock return",
+    "stock submission restored; relocating framebuffer source rejected",
+    "closing timer is not rearmed by broker",
+    "compiled worker counts one per press and triple GPIO release requests toggle",
+    "original main called once; wrapper returns original status and stops worker"
+  ],
+  "limitations": "Native APIs, IRQs, locks and OS scheduling are mocked; no hardware accessed."
+}

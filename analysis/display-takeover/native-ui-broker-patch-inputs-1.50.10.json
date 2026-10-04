@@ -1,0 +1,90 @@
+{
+  "offline_only": true,
+  "frozen": false,
+  "hardware_actions": 0,
+  "firmware": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "program": {
+    "path": "analysis/display-takeover/native-ui-broker.bin",
+    "elf": "analysis/display-takeover/native-ui-broker.elf",
+    "sha256": "8929b02509c2aeff438da8ae8cec41103c9dc7457e209627029de6f192e2f8cf",
+    "elf_sha256": "bd8225a088d5c6fca1c213d6af12544e7fb5e5981a85423deeb18bdd99c334db",
+    "bytes": 2652,
+    "entry": "0x3804b2f5",
+    "start": "0x3804b108",
+    "container_end_exclusive": "0x3804bc98",
+    "container_bytes": 2960,
+    "file_start": "0x92b10c"
+  },
+  "scope": "Only ntpcstatus/faclvgl/showlogo code containers and vapp/faclvgl/showlogo builtin entry words. Preserve original vapp, NTP daemon, all data/identity/config and every other NOR byte.",
+  "disabled_commands": {
+    "ntpcstatus": "-ENOSYS stub at 0x3804b109",
+    "showlogo": "return-zero stub at 0x3804b111",
+    "faclvgl": "return-zero stub at 0x3804b111 prevents a second broker launch"
+  },
+  "install_order": [
+    "code",
+    "entry"
+  ],
+  "restore_order": [
+    "entry",
+    "code"
+  ],
+  "sectors": {
+    "code": {
+      "offset": "0x92b000",
+      "mutations": [
+        {
+          "sector_offset": "0x10c",
+          "bytes": 2652
+        }
+      ],
+      "original": {
+        "path": "analysis/display-takeover/native-ui-broker-original-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "8c6d7fd8a60c6445cc88086f0f88f70abc6973ea8743321df0483a784cfcfa56"
+      },
+      "patched": {
+        "path": "analysis/display-takeover/native-ui-broker-patched-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "59552c638d1c590449e540f3fd103729f414f2998ced519e8fe18b65ab5a136d"
+      }
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "mutations": [
+        {
+          "sector_offset": "0xcc8",
+          "bytes": 4,
+          "before": "0x3818f9fd",
+          "after": "0x3804b2f5"
+        },
+        {
+          "sector_offset": "0xebc",
+          "bytes": 4,
+          "before": "0x3804b2f5",
+          "after": "0x3804b111"
+        },
+        {
+          "sector_offset": "0xf20",
+          "bytes": 4,
+          "before": "0x3804b87d",
+          "after": "0x3804b111"
+        }
+      ],
+      "original": {
+        "path": "analysis/display-takeover/native-ui-broker-original-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "b9206c93037f422f618fc481d22d46082a8e6ef61b0c951e93742f9bf24837a0"
+      },
+      "patched": {
+        "path": "analysis/display-takeover/native-ui-broker-patched-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "3e640058142473156b76d160be85a9543d07385a03828d887d4deeeb1c362916"
+      }
+    }
+  }
+}

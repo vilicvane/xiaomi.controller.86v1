@@ -39,8 +39,8 @@
     "frame_queue_empty": true
   },
   "user_observation": {
-    "motion_consistency": "pending user observation",
-    "cold_boot": "pending complete power removal test",
+    "motion_consistency": "passed by user report: new version feels good",
+    "cold_boot": "skipped at explicit user request; not claimed as verified",
     "mi_home_online_control": "pending user observation for this version"
   },
   "rollback": "Set-PanelNativeDrawerSmooth.ps1 -Mode restore returns exact verified ease v1; further restore uses each previous version-specific installer."

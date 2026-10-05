@@ -1,0 +1,63 @@
+{
+  "scope": "GitHub card installer and smooth-v1 rollback only for this panel 1.50.10; no device access",
+  "offline_only": true,
+  "hardware_actions": 0,
+  "passed": true,
+  "checks": [
+    "All four relevant previous frozen input sets retain their exact bytes; stock NOR provenance remains SHA-checked.",
+    "Rollback fixtures are exact smooth v1 full pages. Card code changes only inside its declared span; every builtin entry remains byte-identical. Shared bytes at/after 0x92be74 are untouched.",
+    "Inverse namespace/path and error-label normalization makes the card writer exactly equal to the frozen smooth v1 writer. All native call, allowlist, watchdog, context, transport, status and sequencing checks remain unchanged.",
+    "Both outer MCU sessions are exact frozen smooth v1 clones after namespace/path normalization, including fresh BOOT, isolated A7, watchdog stop, verified reader, completion gate and suppressed GLOBAL after uncertain native execution.",
+    "The exact reviewed 168-byte one-call ARM payload remains intact. Only fixed full-page smooth rollback/card install fixtures change.",
+    "Current Jim cases pass, covering smooth/card success, ease/first-drawer/broker/stock/counter/unknown refusal, full-page readback, BP/QE, watchdog races, fault/reset/timeout and no stale replay. Equal entry pages cannot identify the drawer variant; the code page must match.",
+    "Freeze rejects overwrites and binds all prior freezes, exact smooth rollback, stock NOR, current ELF/BIN/pages, reviews, current ELF model, writer summary and local headers. The public runner rechecks all merged prior catalogs before any hardware access, including zero-execute mode."
+  ],
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "reviewed_inputs": {
+    "analysis/persistence/native-github-card-patch-inputs-1.50.10.json": "363356fd0fb5f0ed7f1a9e085f595fbb158e5b28a1d6f0399afdf02f7e2816b9",
+    "analysis/persistence/offline-native-github-card-runner/run-1/summary.json": "7996e16e92cf7e7c35ebf0e2eb1196482d6194e89727ab392ee863cae9a32d26",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/native-drawer-frozen-inputs.json": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+    "analysis/persistence/native-drawer-ease-frozen-inputs.json": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b",
+    "analysis/persistence/native-drawer-smooth-frozen-inputs.json": "c464db59ec74849396d6ea2bcd3c0aa9d2110f7766068c6f08a23a82522aa392",
+    "analysis/persistence/prepare_native_github_card_inputs.py": "8f04a0b55cbe5bd05d857f8ca2d6fdbe0775de9c688db5a1d190fb2dfc171b13",
+    "analysis/persistence/run_native_github_card_firmware.py": "d89b1633c01e44d02ea92ee44b68b8bae6cba4a12038e332731853ef86698eb3",
+    "analysis/persistence/freeze_native_github_card_inputs.py": "376e7e03b200f99cd98c6392543e65232296e4c6590278f706360cbec94e59c4",
+    "analysis/persistence/test_native_github_card_runner_offline.py": "be5a81d571c99d636bc5756b60207c161a857091e005ec7212db80515bade635",
+    "analysis/persistence/review_native_github_card_installer.py": "977d6d4e6743ca24ba2c6843c7c85083aeb73f8bb55b2c15b8313c3729e6f6d0",
+    "analysis/persistence/native-github-card-writer-preparation.json": "6df5c14b544a42d1c2580bbd4a42e9f7b61eab35046d770d51a347a183dc2dde",
+    "diagnostics/boot-nor-native-github-card-runner.cfg": "9bc8faf960b37962647f3336532edb82a36b5da9e18674ef320d95dc13d8cfd8",
+    "diagnostics/boot-nor-native-github-card-stage-inputs.cfg": "af8ef9cccc0fd4076578561048d4dad675181526cd7aca1d34903b1d936b2faf",
+    "diagnostics/mcu-native-github-card-install-session.cfg": "569b4e5de2c46ac031f815e99e22733741d30ebe3568090663a71624e875d5e5",
+    "diagnostics/mcu-native-github-card-restore-session.cfg": "937fa73201a1abe2b354ca77d0ef98e33b39448040c15acc3b6c62439f5ccaf8",
+    "diagnostics/read-native-github-card-state.cfg": "3300fe413e36f83fa2b1ff2752b014caf4d3617085f70ec8ca6dc4a229b6484b",
+    "diagnostics/read-native-github-card-runtime.cfg": "a2cbdb4399b5facfd24c9246529c0d5e16f34c9b88cd18ff367718d52791d8f4",
+    "scripts/Set-PanelNativeGitHubCard.ps1": "a82903a66a260a2f08436a0c6cddf08e4fee1fc06d049115c712634d1b175912",
+    "analysis/display-takeover/native-github-card.c": "c8b9c73e8ad7a5aba3a05043b4e3e5290d047c2ba4680060578482f9d02aab41",
+    "analysis/display-takeover/native-github-card-entry.S": "5434a44f07ac05411996510f2fb7d74ec6e5ce1ae6741f4d932a31bc45a91f7a",
+    "analysis/display-takeover/native-github-card.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/build-native-github-card.sh": "f3d17a0a13ee87c7229f3258d1fe340eab7d8d86cada52d7fc14a15b71e04ecc",
+    "analysis/display-takeover/github-card-logo.h": "b5549c598115b23298913bdce00b948bda27996f320c7b3e1f374e52261824b9",
+    "analysis/display-takeover/render_github_card_reference.py": "a470a5f9c1d357c4587ad645089c50e92da3cf3c8d5b0089e4dca290ffffb72f",
+    "analysis/display-takeover/native-github-card.bin": "1823d184caf190df4080f2aa1c5d8f23524716f3fb0878af63b933ec07e7c7cb",
+    "analysis/display-takeover/native-github-card.elf": "677e5a8de909fa288cb3f887c733059e9777ff0ace24eacbae46c000e9fd6cd6",
+    "analysis/persistence/native-drawer-smooth-patched-sector-92b000.bin": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31",
+    "analysis/persistence/native-github-card-original-sector-92b000.bin": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31",
+    "analysis/persistence/native-github-card-patched-sector-92b000.bin": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265",
+    "analysis/persistence/native-drawer-smooth-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-card-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-card-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+  },
+  "native_payload_sha256": "abed88ffa44ddd05eeb547178c981bf784f6ca492d1ecf21613af8fb3cb94c32",
+  "program_bytes": 3432,
+  "writer_mock_cases": 43,
+  "rollback": "Exact verified smooth v1, not ease, first drawer, broker or stock",
+  "limitations": [
+    "Core animation behavior requires independent program review and actual ELF model matching this ELF.",
+    "No card installation, display, power-cycle or cloud behavior is verified by this offline review.",
+    "The existing BOOT flow was tested under healthy MAIN; arbitrary damaged-MAIN recovery is not demonstrated."
+  ]
+}

@@ -212,3 +212,25 @@ smooth版3368B已安装，结束于3804be30，距共享helper还有64B。
 新增context字段pending/phase为byte168/172，旧animation_from仍是byte164。
 实机写入闭包、两页完整读回及暖启动custom owner、pending0/phase150通过。
 用户手感及完整断电结果仍单独记录，不借用上一个ease版本的冷启动结论。
+
+用户随后确认 smooth 新版手感良好，并明确跳过完整断电测试。接着将计数文字
+替换为独立 `native-github-card` 信息卡：官方白色 GitHub 标志、用户名、完整项目名，
+以及金色五角星和 `Star on GitHub` 提示；显示时没有电脑绘图循环。
+
+卡片 BIN3432B，ELF allocated3428B加4B地址空隙，恰好用满既有容器；末端是
+3804be70 exclusive，共享 helper 保留原字节。官方 PNG 的 alpha 边界裁切、LANCZOS
+缩到24×24后 threshold128，按2倍显示。packed5列字形与私有 Thumb 绘图节省空间，
+两个私有函数都用40B保存帧保持8B栈对齐；它们没有引入新的原固件ABI。
+context176B、begin/clock及pan之后的核心与smooth一致，唯一调用变化是绘图函数
+改为 `paint(pixels,cover)`，不再使用计数来决定文字。
+
+新模型27组通过：保留22组smooth行为，另外核对全部321个cover的完整画布、
+独立原始行位图参考、前后红区、R4–R11/SP恢复和逐指令栈对齐。43项Jim写入器
+路径、独立源码容量/安装器审查通过，51项输入另行冻结，旧四套集合保持原字节。
+新安装基线和回退目标都是精确smooth两页；入口页仍字节相同，仅代码页指定范围变化。
+
+实机安装闭包、两页完整SHA读回及正常重启后custom owner/ready、GUI活跃、
+cover320/pending0/phase150通过。实屏排版、颜色和手势另见
+native-github-card-hardware-result.json；用户确认显示及三种手势均正常。
+当前及smooth的完整断电测试按用户要求跳过，
+不能借用更早ease或broker的断电/米家控制结果作为这两版的通过证明。

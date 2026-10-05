@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "offline_only": true,
+  "hardware_operation": false,
+  "reviewer": "root independent review of renderer-agent source, linked sections and bound actual ARM model evidence",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-github-card.c": "c8b9c73e8ad7a5aba3a05043b4e3e5290d047c2ba4680060578482f9d02aab41",
+    "analysis/display-takeover/native-github-card-entry.S": "5434a44f07ac05411996510f2fb7d74ec6e5ce1ae6741f4d932a31bc45a91f7a",
+    "analysis/display-takeover/native-github-card.ld": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce",
+    "analysis/display-takeover/build-native-github-card.sh": "f3d17a0a13ee87c7229f3258d1fe340eab7d8d86cada52d7fc14a15b71e04ecc",
+    "analysis/display-takeover/native-github-card.elf": "677e5a8de909fa288cb3f887c733059e9777ff0ace24eacbae46c000e9fd6cd6",
+    "analysis/display-takeover/native-github-card.bin": "1823d184caf190df4080f2aa1c5d8f23524716f3fb0878af63b933ec07e7c7cb",
+    "analysis/display-takeover/github-card-logo.h": "b5549c598115b23298913bdce00b948bda27996f320c7b3e1f374e52261824b9",
+    "analysis/display-takeover/render_github_card_reference.py": "a470a5f9c1d357c4587ad645089c50e92da3cf3c8d5b0089e4dca290ffffb72f",
+    "analysis/display-takeover/test_native_github_card_arm.py": "c47a4267057bdbde3645b9edbb1e90d367e693000130adb94b65e9e5a8dc3d40",
+    "analysis/display-takeover/github-card-arm-offline-result.json": "265665efbb6a739809b2ce59f1ad21a66c042acc4f809b43dc9be59dc76941e9"
+  },
+  "capacity": {
+    "bin_bytes": 3432,
+    "allocated_bytes": 3428,
+    "gap_bytes": 4,
+    "container_start": "0x3804b108",
+    "end_exclusive": "0x3804be70",
+    "remaining_container_bytes": 0,
+    "shared_helper_untouched": true,
+    "sections": [
+      {
+        "name": ".prefix",
+        "address": "0x3804b108",
+        "bytes": 488,
+        "end_exclusive": "0x3804b2f0"
+      },
+      {
+        "name": ".start",
+        "address": "0x3804b2f4",
+        "bytes": 4,
+        "end_exclusive": "0x3804b2f8"
+      },
+      {
+        "name": ".broker",
+        "address": "0x3804b2f8",
+        "bytes": 2936,
+        "end_exclusive": "0x3804be70"
+      }
+    ]
+  },
+  "checks": [
+    "Independent ELF32 ARM section parser reconstructs exact BIN, confirms fixed Thumb entry, no writable/BSS and no section or byte reaches shared helper at be70",
+    "Original disabled builtin stubs and fixed 4-byte entry branch retain exact bytes; linked allocated3428B plus4B gap fills3432B container",
+    "176-byte context definition and begin/clock helpers are exact frozen smooth source; pan/touch/owner/timer/key/handoff/animation core exact after only private paint call normalization",
+    "Private Thumb paint and stamp save r4-r11/LR in40-byte frames; both retain8-byte alignment and nested calls restore renderer control registers",
+    "Packed styles use bounded x9/y8/scale2/tag1/color2 fields: scales2/3, palette0..2 and glyph indexes0..22, all horizontal pixel bounds fit480",
+    "Logo24 columns with bits0..23 map independent original24 raster rows; width/height48 and x216/y66 remain clipped above cover for every0..320 pose",
+    "Unsigned row<320 rejects signed-negative rows before any framebuffer store; reviewed text spans fit480 and complete pixel buffers/redzones are compared by actual ARM model",
+    "Glyph stream decodes exact username vilicvane, complete22-character project xiaomi.controller.86v1 and gold five-point star plus Star on GitHub",
+    "Actual ARM27 checks are tied to current ELF/C/test/header/oracle hashes; model covers all321 clipping poses and callee-save/SP alignment as well as all22 prior smooth behavior groups",
+    "Graphics reuse only private code/data: no new original-firmware ABI, driver, touch subscription, GPIO service, thread or persistence location",
+    "Official white PNG provenance and LANCZOS fit24/alpha threshold are recorded in public header; ZIP/PNG/raw framebuffer/BIN/ELF remain ignored"
+  ],
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "limitations": [
+    "This independent source/ELF/model review does not verify real LCD scanout, colors, touch gestures, scheduling or power-cycle behavior. Hardware evidence must be recorded separately."
+  ]
+}

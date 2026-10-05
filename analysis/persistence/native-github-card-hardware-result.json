@@ -1,0 +1,54 @@
+{
+  "scope": "GitHub card1.50.10 safe UI state and hashes only; no identities, network configuration or raw captures",
+  "installed": true,
+  "program_bytes": 3432,
+  "program_sha256": "1823d184caf190df4080f2aa1c5d8f23524716f3fb0878af63b933ec07e7c7cb",
+  "elf_sha256": "677e5a8de909fa288cb3f887c733059e9777ff0ace24eacbae46c000e9fd6cd6",
+  "freeze_sha256": "7bd88c1f217fd53219a054bf3c24ef197ee5666133d45f1557bfd8173c4c41db",
+  "install_capture": "analysis/persistence/native-github-card-install-session-20261005-092326",
+  "install_result": {
+    "mode": "install",
+    "capture": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\analysis\\persistence\\native-github-card-install-session-20261005-092326",
+    "passed": true,
+    "cold_poweroff_verification": {
+      "status": "skipped_by_user_request",
+      "requested": false
+    },
+    "scope": "NOR sectors92b000/ccd000 only; native boot task; restore returns verified smooth v1",
+    "read_only_connection_attempts": 2,
+    "code_sha256": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265",
+    "entry_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "entry": "0x3804b2f5",
+    "mcu_running": true
+  },
+  "warm_read_only": {
+    "context": "0x3864ed40",
+    "fields": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "count": 0,
+      "physical_driver_index": 1,
+      "overlay": 0,
+      "cover": 320,
+      "target": 320,
+      "shown": 320,
+      "gui_cycles": 10661,
+      "toggles": 0,
+      "last_present": 0,
+      "animation_from": 0,
+      "pending": 0,
+      "phase": 150
+    },
+    "frame_queue_empty": true,
+    "private_renderer": "paint(pixels,cover); real program keeps smooth ownership/touch/key/animation core"
+  },
+  "user_observation": {
+    "layout_and_colors": "passed by user report: logo, username, complete project name and gold Star on GitHub display normally",
+    "gesture_round_trips": "passed by user report: upward dismiss, top-edge pull down and physical key3 triple-click all normal",
+    "cold_boot": "skipped at explicit user request; not claimed as verified",
+    "mi_home_online_control": "not checked for this new variant"
+  },
+  "rollback": "Set-PanelNativeGitHubCard.ps1 -Mode restore returns exact verified smooth v1; each previous version then uses its own reviewed restore flow"
+}

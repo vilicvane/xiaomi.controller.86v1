@@ -16,16 +16,20 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is native drawer smooth (3368-byte BIN, 1.50.10).
+- Current installed UI is native GitHub card (3432-byte BIN, 1.50.10).
   Full-page Flash/readback and warm custom-owner/phase150 state passed;
-  user motion and complete power-cycle acceptance are recorded separately in
-  native-drawer-smooth-hardware-result.json. Check that current evidence.
+  user layout/gesture observations are recorded separately in
+  native-github-card-hardware-result.json. Complete power-cycle testing was
+  skipped at the user's explicit request; do not claim it passed or ask again.
+  The card fills the reviewed container exactly through 0x3804be70 exclusive.
+  Smooth (3368B) user motion passed; its full power-cycle was also user-skipped.
   Prior ease (3264B) user gestures, cold boot and Mi Home controls passed;
   those results do not establish the new variant's acceptance.
   First drawer (3224B) user gesture round trips passed; its cold boot is separate.
   Broker v1 (2652B) cold boot, round trips and Mi Home controls passed earlier.
-  Both older frozen sets remain immutable.
-- Smooth restore uses Set-PanelNativeDrawerSmooth.ps1 and returns exact ease.
+  All older frozen sets remain immutable.
+- GitHub card restore uses Set-PanelNativeGitHubCard.ps1 and returns exact smooth.
+  Smooth restore uses Set-PanelNativeDrawerSmooth.ps1 and returns exact ease.
   Ease restore uses Set-PanelNativeDrawerEase.ps1 and returns first drawer;
   Set-PanelNativeDrawer.ps1 then returns broker v1. Only then use
   Set-PanelNativeUiBroker.ps1 to restore stock. Do not use another

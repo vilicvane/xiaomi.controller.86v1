@@ -155,3 +155,26 @@ python -X utf8 analysis/persistence/run_native_drawer_smooth_firmware.py install
 最后一条没有 `--execute` 不访问设备；除了新冻结输入，它还核对broker、drawer、
 ease三个旧集合的全部材料。已经冻结后不要随意重建或更新测试摘要。
 `Set-PanelNativeDrawerSmooth.ps1 -Mode restore` 返回精确ease版本，再逐级回退。
+
+## GitHub 信息卡独立版本
+
+`native-github-card` 将自定义界面的计数文字换成 GitHub 标志、用户名、项目名称
+和 `Star on GitHub` 提示。说明及资源来源见
+`analysis/display-takeover/native-github-card.md`。它沿用 smooth 的手势和所有权交接，
+使用新的源码、像素参考、ARM 模型和安装材料，不改写任何历史冻结集合。
+
+```powershell
+wsl.exe -d Ubuntu -- bash /mnt/c/Users/vilicvane/Projects/vilicvane/mi-panel/analysis/display-takeover/build-native-github-card.sh
+python -X utf8 analysis/display-takeover/test_native_github_card_arm.py
+python -X utf8 analysis/persistence/run_native_github_card_firmware.py install
+```
+
+最后一条没有 `--execute` 只核对新冻结及 broker、drawer、ease、smooth 四套旧材料。
+新安装只接受完整、精确的 smooth 两页；`Set-PanelNativeGitHubCard.ps1 -Mode restore`
+返回 exact smooth，然后才能使用 smooth 的回退入口。不能在 card 上直接运行旧 writer。
+参考图和真实 ARM framebuffer 的逐像素核对只验证绘图，不代替实机显示及手势观察。
+本次用户明确跳过完整断电测试，证据中须记录跳过，不能写成通过。
+
+card 的两个生成 session cfg 含从旧模板复制的原厂 BOOT 校验页数据，因此仅在本地
+保留并精确忽略，冻结列表保存其哈希。不要将它们或 stage inputs 的固件 word 数组
+加入 Git。第一方准备器、runner 和独立审查记录仍提交；完整本地材料不可由 clone 代替。

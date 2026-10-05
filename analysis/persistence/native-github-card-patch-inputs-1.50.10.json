@@ -1,0 +1,83 @@
+{
+  "offline_only": true,
+  "frozen": false,
+  "hardware_actions": 0,
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "firmware": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "rollback": {
+    "kind": "native-drawer-smooth-v1",
+    "freeze": "analysis/persistence/native-drawer-smooth-frozen-inputs.json",
+    "freeze_sha256": "c464db59ec74849396d6ea2bcd3c0aa9d2110f7766068c6f08a23a82522aa392"
+  },
+  "program": {
+    "path": "analysis/display-takeover/native-github-card.bin",
+    "elf": "analysis/display-takeover/native-github-card.elf",
+    "sha256": "1823d184caf190df4080f2aa1c5d8f23524716f3fb0878af63b933ec07e7c7cb",
+    "elf_sha256": "677e5a8de909fa288cb3f887c733059e9777ff0ace24eacbae46c000e9fd6cd6",
+    "bytes": 3432,
+    "entry": "0x3804b2f5",
+    "start": "0x3804b108",
+    "container_end_exclusive": "0x3804be70",
+    "container_bytes": 3432,
+    "file_start": "0x92b10c"
+  },
+  "scope": "Replace only the existing smooth v1 code span with the static GitHub information card, preserving smooth gesture ownership. Original means exact verified smooth v1 rollback pages, not stock firmware. All builtin entries remain unchanged, including disabled wifi_recorder. Preserve shared code at/after 0x3804be70 and every other NOR byte.",
+  "disabled_commands": {
+    "wifi_recorder": "-ENOSYS stub at 0x3804b109 retained from smooth v1; no new entry mutation"
+  },
+  "install_baseline": "Exact native-drawer-smooth-v1 code and entry pages only. Ease, first drawer, broker, stock and old counter require their separate reviewed flow first.",
+  "install_order": [
+    "code",
+    "entry"
+  ],
+  "restore_order": [
+    "entry",
+    "code"
+  ],
+  "sectors": {
+    "code": {
+      "offset": "0x92b000",
+      "mutations": [
+        {
+          "sector_offset": "0x10c",
+          "bytes": 3432
+        }
+      ],
+      "baseline_kind": "verified-native-drawer-smooth-v1",
+      "baseline_source": "analysis/persistence/native-drawer-smooth-patched-sector-92b000.bin",
+      "original": {
+        "path": "analysis/persistence/native-github-card-original-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "2dd9c29734f67fea598973f3f44b843f3d25de28d70ecc37da56df0f6b18ec31"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-github-card-patched-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265"
+      }
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "mutations": [],
+      "baseline_kind": "verified-native-drawer-smooth-v1",
+      "baseline_source": "analysis/persistence/native-drawer-smooth-patched-sector-ccd000.bin",
+      "original": {
+        "path": "analysis/persistence/native-github-card-original-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-github-card-patched-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      }
+    }
+  }
+}

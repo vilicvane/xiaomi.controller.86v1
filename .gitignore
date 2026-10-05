@@ -12,6 +12,7 @@
 !/analysis/**/*.c
 !/analysis/display-takeover/key3-gesture.h
 !/analysis/display-takeover/drawer-gesture.h
+!/analysis/display-takeover/github-card-logo.h
 !/analysis/**/*.S
 !/analysis/**/*.ld
 !/analysis/**/*.tcl
@@ -110,3 +111,11 @@
 !/analysis/persistence/native-drawer-smooth-installer-review-1.50.10.json
 !/analysis/persistence/native-drawer-smooth-frozen-inputs.json
 !/analysis/persistence/native-drawer-smooth-hardware-result.json
+!/analysis/display-takeover/github-card-arm-offline-result.json
+!/analysis/display-takeover/native-github-card-independent-review-1.50.10.json
+!/analysis/persistence/native-github-card-patch-inputs-1.50.10.json
+!/analysis/persistence/native-github-card-installer-review-1.50.10.json
+!/analysis/persistence/native-github-card-frozen-inputs.json
+!/analysis/persistence/native-github-card-hardware-result.json
+/diagnostics/mcu-native-github-card-install-session.cfg
+/diagnostics/mcu-native-github-card-restore-session.cfg

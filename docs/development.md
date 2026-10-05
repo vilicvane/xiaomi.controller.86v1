@@ -178,3 +178,35 @@ python -X utf8 analysis/persistence/run_native_github_card_firmware.py install
 card 的两个生成 session cfg 含从旧模板复制的原厂 BOOT 校验页数据，因此仅在本地
 保留并精确忽略，冻结列表保存其哈希。不要将它们或 stage inputs 的固件 word 数组
 加入 Git。第一方准备器、runner 和独立审查记录仍提交；完整本地材料不可由 clone 代替。
+
+## GitHub 卡片的临时点击反馈
+
+`native-github-tap` 是另一套独立材料，行为说明见
+`analysis/display-takeover/native-github-tap.md`。主 BIN3392B、辅助 BIN291B，
+实际 ELF 使用两个不连续地址范围，不能生成含中间地址洞的单一平铺 BIN。
+184B context 的新字段为 feedback_ms/+176、feedback_pending/+180。
+
+```powershell
+python -X utf8 analysis/persistence/run_native_github_tap_firmware.py install
+```
+
+没有 `--execute` 时只检查材料。40组当前 ARM ELF 模型和65项三页写入器 Jim mock
+通过；程序/辅助槽与写入器分别经过独立审查，作者自检另行标注。模型和 mock
+不能代替实屏观察。已经冻结后不要重建、重新 prepare 或更新测试摘要。
+
+该版本只接受精确 GitHub card 的代码/入口页和已只读核对的原始辅助页。
+安装依次写 NOR95a000、92b000、ccd000；辅助页完整核对后才更新引用它的主代码。
+回退顺序为入口、主代码、辅助页，返回精确 card。辅助代码只能占
+`3807a764..3807a920` 内的原工厂 socket worker；相邻背光回调、JSON helper 和
+主代码共享 helper/be70 保留。辅助 worker 的旧工厂入口已被替换，不能据此
+借用整个工厂线程区域。第三页原始内容、完整扇区备份和调用 capture 留在本地。
+
+```powershell
+.\scripts\Set-PanelNativeGitHubTap.ps1 -Mode restore
+```
+
+这会中断服务并重启一次；之后才可用 card 的 restore 回 smooth，再逐级回退。
+两个 tap session cfg 同样含原厂 BOOT 校验字节，必须保持精确文件、仅本地存放。
+不要 force-add stage inputs、session、BIN/ELF、扇区或运行内存。
+暖启动及用户观察记录在新的 native-github-tap-hardware-result.json；完整断电按
+用户要求跳过，不能借用旧版断电或米家控制结果。

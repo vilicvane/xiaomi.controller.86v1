@@ -1,0 +1,258 @@
+{
+  "status": "Offline aggregate statistics of exact stock 1.50.10 backup; no device operations.",
+  "input": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "reviewed_evidence": [
+    {
+      "path": "analysis/persistence/boot-hook-review-1.50.10.json",
+      "sha256": "f5e51df3adf3a138d3e534a88a7ac4e8368976f9d4a00deb92983ccd70dfea16",
+      "use": "Six known NOR partition records; exact image SHA matches."
+    },
+    {
+      "path": "analysis/persistence/cold-recovery-review.json",
+      "use": "First-stage boot extent [0,0x40000)."
+    },
+    {
+      "path": "analysis/pinout/a7-sdmmc-evidence.json",
+      "use": "1.50.10 A7 header payload extent [0x8e0004,0xdd3fe4)."
+    },
+    {
+      "path": "docs/engineering-notes.md",
+      "use": "16 MiB NOR does not include writable /data supplied by audio MMC/RPMsgFS."
+    },
+    {
+      "path": "analysis/flash-layout-survey.json",
+      "survey_image_sha256": "5f4f06293b81da5e4ab2bc2f2c24aeb357b0dc7be7498194e1ed244ea88986c1",
+      "same_as_current_input": false,
+      "use": "Historical 1.48.5 survey; not used for current numerical statistics or filesystem identification."
+    }
+  ],
+  "whole_stock_NOR": {
+    "span_bytes": 16777216,
+    "span_MiB": 16.0,
+    "non_FF_bytes": 13935018,
+    "FF_bytes": 2842198,
+    "FF_pattern_percent": 16.94082,
+    "fully_FF_4KiB_sector_count": 659,
+    "fully_FF_4KiB_bytes": 2699264,
+    "fully_FF_4KiB_MiB": 2.57421875,
+    "fully_FF_4KiB_percent": 16.088867,
+    "trailing_FF_byte_count": 0
+  },
+  "regions": [
+    {
+      "name": "boot",
+      "start": "0x0",
+      "end_exclusive": "0x40000",
+      "extent_kind": "known first-stage boot range; not one of six table records",
+      "span_bytes": 262144,
+      "span_MiB": 0.25,
+      "non_FF_bytes": 103524,
+      "FF_bytes": 158620,
+      "FF_pattern_percent": 60.508728,
+      "fully_FF_4KiB_sector_count": 38,
+      "fully_FF_4KiB_bytes": 155648,
+      "fully_FF_4KiB_MiB": 0.1484375,
+      "fully_FF_4KiB_percent": 59.375,
+      "trailing_FF_byte_count": 156716
+    },
+    {
+      "name": "ota_b",
+      "start": "0x40000",
+      "end_exclusive": "0xc0000",
+      "extent_kind": "partition table allocated extent",
+      "table_record_NOR_offset": "0x6257ec",
+      "span_bytes": 524288,
+      "span_MiB": 0.5,
+      "non_FF_bytes": 511523,
+      "FF_bytes": 12765,
+      "FF_pattern_percent": 2.434731,
+      "fully_FF_4KiB_sector_count": 1,
+      "fully_FF_4KiB_bytes": 4096,
+      "fully_FF_4KiB_MiB": 0.00390625,
+      "fully_FF_4KiB_percent": 0.78125,
+      "trailing_FF_byte_count": 5720
+    },
+    {
+      "name": "ota",
+      "start": "0xc0000",
+      "end_exclusive": "0x140000",
+      "extent_kind": "partition table allocated extent",
+      "table_record_NOR_offset": "0x625860",
+      "span_bytes": 524288,
+      "span_MiB": 0.5,
+      "non_FF_bytes": 511523,
+      "FF_bytes": 12765,
+      "FF_pattern_percent": 2.434731,
+      "fully_FF_4KiB_sector_count": 1,
+      "fully_FF_4KiB_bytes": 4096,
+      "fully_FF_4KiB_MiB": 0.00390625,
+      "fully_FF_4KiB_percent": 0.78125,
+      "trailing_FF_byte_count": 5720
+    },
+    {
+      "name": "ota_info",
+      "start": "0x140000",
+      "end_exclusive": "0x150000",
+      "extent_kind": "partition table allocated extent",
+      "table_record_NOR_offset": "0x6258d4",
+      "span_bytes": 65536,
+      "span_MiB": 0.0625,
+      "non_FF_bytes": 4,
+      "FF_bytes": 65532,
+      "FF_pattern_percent": 99.993896,
+      "fully_FF_4KiB_sector_count": 15,
+      "fully_FF_4KiB_bytes": 61440,
+      "fully_FF_4KiB_MiB": 0.05859375,
+      "fully_FF_4KiB_percent": 93.75,
+      "trailing_FF_byte_count": 65528
+    },
+    {
+      "name": "ap",
+      "start": "0x150000",
+      "end_exclusive": "0x8e0000",
+      "extent_kind": "partition table allocated extent",
+      "table_record_NOR_offset": "0x625948",
+      "span_bytes": 7929856,
+      "span_MiB": 7.5625,
+      "non_FF_bytes": 7093156,
+      "FF_bytes": 836700,
+      "FF_pattern_percent": 10.551263,
+      "fully_FF_4KiB_sector_count": 187,
+      "fully_FF_4KiB_bytes": 765952,
+      "fully_FF_4KiB_MiB": 0.73046875,
+      "fully_FF_4KiB_percent": 9.659091,
+      "trailing_FF_byte_count": 769220
+    },
+    {
+      "name": "a7",
+      "start": "0x8e0000",
+      "end_exclusive": "0xfe0000",
+      "extent_kind": "partition table allocated extent",
+      "table_record_NOR_offset": "0x6259bc",
+      "span_bytes": 7340032,
+      "span_MiB": 7.0,
+      "non_FF_bytes": 5711233,
+      "FF_bytes": 1628799,
+      "FF_pattern_percent": 22.190625,
+      "fully_FF_4KiB_sector_count": 387,
+      "fully_FF_4KiB_bytes": 1585152,
+      "fully_FF_4KiB_MiB": 1.51171875,
+      "fully_FF_4KiB_percent": 21.595982,
+      "trailing_FF_byte_count": 1586972
+    },
+    {
+      "name": "misc_etc",
+      "start": "0xfe0000",
+      "end_exclusive": "0xfe4000",
+      "extent_kind": "partition table allocated extent",
+      "table_record_NOR_offset": "0x625a30",
+      "span_bytes": 16384,
+      "span_MiB": 0.015625,
+      "non_FF_bytes": 84,
+      "FF_bytes": 16300,
+      "FF_pattern_percent": 99.487305,
+      "fully_FF_4KiB_sector_count": 3,
+      "fully_FF_4KiB_bytes": 12288,
+      "fully_FF_4KiB_MiB": 0.01171875,
+      "fully_FF_4KiB_percent": 75.0,
+      "trailing_FF_byte_count": 15855
+    },
+    {
+      "name": "tail beyond listed partition table",
+      "start": "0xfe4000",
+      "end_exclusive": "0x1000000",
+      "extent_kind": "unclassified/reserved; not proved allocatable; final 4 KiB is non-FF",
+      "span_bytes": 114688,
+      "span_MiB": 0.109375,
+      "non_FF_bytes": 3971,
+      "FF_bytes": 110717,
+      "FF_pattern_percent": 96.537563,
+      "fully_FF_4KiB_sector_count": 27,
+      "fully_FF_4KiB_bytes": 110592,
+      "fully_FF_4KiB_MiB": 0.10546875,
+      "fully_FF_4KiB_percent": 96.428571,
+      "trailing_FF_byte_count": 0
+    }
+  ],
+  "known_image_extents": [
+    {
+      "name": "main MCU observed non-FF span",
+      "start": "0x150000",
+      "end_exclusive": "0x82433c",
+      "bytes": 7160636,
+      "basis": "last non-FF byte within allocated ap partition; includes image metadata, not a linker allocation/free-space declaration"
+    },
+    {
+      "name": "A7 header-declared program payload",
+      "start": "0x8e0004",
+      "end_exclusive": "0xdd3fe4",
+      "bytes": 5193696,
+      "basis": "existing exact 1.50.10 header evidence"
+    },
+    {
+      "name": "A7 partition observed non-FF span",
+      "start": "0x8e0000",
+      "end_exclusive": "0xe5c8e4",
+      "bytes": 5753060,
+      "basis": "contains additional data beyond program payload; last non-FF offset is not an allocation boundary"
+    }
+  ],
+  "all_fully_FF_sector_runs": [
+    {
+      "start": "0x1a000",
+      "end_exclusive": "0x40000",
+      "sector_count": 38,
+      "bytes": 155648
+    },
+    {
+      "start": "0xbf000",
+      "end_exclusive": "0xc0000",
+      "sector_count": 1,
+      "bytes": 4096
+    },
+    {
+      "start": "0x13f000",
+      "end_exclusive": "0x140000",
+      "sector_count": 1,
+      "bytes": 4096
+    },
+    {
+      "start": "0x141000",
+      "end_exclusive": "0x150000",
+      "sector_count": 15,
+      "bytes": 61440
+    },
+    {
+      "start": "0x825000",
+      "end_exclusive": "0x8e0000",
+      "sector_count": 187,
+      "bytes": 765952
+    },
+    {
+      "start": "0xe5d000",
+      "end_exclusive": "0xfe0000",
+      "sector_count": 387,
+      "bytes": 1585152
+    },
+    {
+      "start": "0xfe1000",
+      "end_exclusive": "0xfff000",
+      "sector_count": 30,
+      "bytes": 122880
+    }
+  ],
+  "interpretation": [
+    "Non-FF bytes are a byte-pattern metric, not semantically live/used bytes. Code/data can contain FF or 00.",
+    "Fully FF sectors are content-pattern candidates only; current partition ownership, reserved uses, OTA and integrity coverage are not determined by the pattern.",
+    "The six known table allocations plus first-stage boot cover [0,0xfe4000); remaining 112 KiB is not identified as free and contains a non-FF final sector.",
+    "The last byte of the whole backup is non-FF, so the whole-image trailing-FF length is zero despite large internal FF runs.",
+    "Writable /data is not present in this NOR backup. Actual filesystem free space needs its own mounted filesystem/block metadata.",
+    "These are stock-backup statistics; they are not a live installed-image readback or new auxiliary-slot hardware qualification."
+  ],
+  "sensitive_values_or_raw_firmware_bytes_in_report": false,
+  "hardware_or_Git_operations": false
+}

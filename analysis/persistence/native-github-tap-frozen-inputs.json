@@ -1,0 +1,108 @@
+{
+  "scope": "Exact reviewed 1.50.10 segmented GitHub tap; three NOR pages, exact card+stock-aux or tap triples only; restore GitHub card and stock auxiliary page",
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "local_only_session_configs": [
+    "diagnostics/mcu-native-github-tap-install-session.cfg",
+    "diagnostics/mcu-native-github-tap-restore-session.cfg"
+  ],
+  "review_artifacts": [
+    {
+      "path": "analysis/display-takeover/native-github-tap-independent-review-1.50.10.json",
+      "sha256": "46ea240ec909d16f5125256edf3db5d72152f094ca3b02e9136113b1d9427f5f"
+    },
+    {
+      "path": "analysis/persistence/native-github-tap-installer-review-1.50.10.json",
+      "sha256": "6d96f4919cc6879de4aefaa09bb31990b2ecb2cdc07c35147feb3cc33db9d641"
+    },
+    {
+      "path": "analysis/persistence/offline-native-github-tap-runner/run-1/summary.json",
+      "sha256": "6abca4ec53615d279a3da088b2520438bc93943dad01223b1c822a4f2e738620"
+    },
+    {
+      "path": "analysis/display-takeover/github-tap-arm-offline-result.json",
+      "sha256": "b9f923b5f94014537344977dad388626f0efbac00a1f80fd70986399572ee217"
+    },
+    {
+      "path": "analysis/display-takeover/github-tap-aux-container-review-1.50.10.json",
+      "sha256": "489161863af8cc23294daa0b39fb8ddf065d7839a605b69b726e44c360ccd740"
+    },
+    {
+      "path": "analysis/persistence/native-github-tap-writer-peer-review-1.50.10.json",
+      "sha256": "63ef2ab4e80146dcd4b1ca237d665e5d539ae1ae302ba32b298930a0ec3be9bd"
+    },
+    {
+      "path": "analysis/persistence/github-tap-aux-live-baseline-result.json",
+      "sha256": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3"
+    },
+    {
+      "path": "analysis/persistence/offline-native-github-tap-runner/latest-summary.json",
+      "sha256": "6abca4ec53615d279a3da088b2520438bc93943dad01223b1c822a4f2e738620"
+    }
+  ],
+  "sha256": {
+    "analysis/persistence/native-github-tap-patch-inputs-1.50.10.json": "df526e8c8267ea0ae1d591232f58e357aa9f1c03476f568233b4b88a67216c74",
+    "analysis/display-takeover/native-github-tap.c": "fa9136ce248a13db679c158f92bfeeb749c5c191867006704dee6f563069ddd1",
+    "analysis/display-takeover/native-github-tap-entry.S": "7c990b54a73045243848c936198c5989f2e86c7105ee49ef7656b3cd0fca75ed",
+    "analysis/display-takeover/native-github-tap.ld": "43aed8dc7a4a95057c127dfe7f87e2f717a34dffc85d53b0892ed3b7eb3f7868",
+    "analysis/display-takeover/build-native-github-tap.sh": "ec69333e858953ef154c2e180017fec70f58794949a9617416888fa5cb8da35e",
+    "analysis/display-takeover/render_github_tap_reference.py": "34e92c0ec3ee7397a5a29ee3dc29ed7d5e7eaf4d641805ded40bf4c419dfb757",
+    "analysis/display-takeover/native-github-tap.elf": "f5ffaf6c05955b04b8246c20e71b99ea4b75e58b3cd989eeb369fc9511e016eb",
+    "analysis/display-takeover/native-github-tap.bin": "c8d3ab6342a194087cfce94a30317b39c40fd4552a3d83c3188e97d8f0120c5b",
+    "analysis/display-takeover/native-github-tap-feedback.bin": "affc9b7dcd71df697e4a5b49713d56f24849eabc8bd1bc7f914eb855c7ca9b1d",
+    "analysis/display-takeover/test_native_github_card_arm.py": "c47a4267057bdbde3645b9edbb1e90d367e693000130adb94b65e9e5a8dc3d40",
+    "analysis/display-takeover/test_native_drawer_smooth_arm.py": "512c923505aa0d21d07f407c3bf11a2f71fec2c3edc5858030236da151d00ea2",
+    "analysis/display-takeover/test_native_drawer_ease_arm.py": "c1cf3cc9ec0b0d083c7c6d28aa291eabc66e3d96f1a1ae6efa66ca7658e84ace",
+    "analysis/display-takeover/test_native_drawer_arm.py": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+    "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408",
+    "analysis/persistence/prepare_native_github_tap_inputs.py": "4a6b5ed52fdd6e43810b15f0aee99749d6331cc7a4eec3711c59ffad566a7508",
+    "analysis/persistence/run_native_github_tap_firmware.py": "bc516a8eda80e0c87c10aa630434f4989fae2bf3b9f03dd7626f9a303e50bfa1",
+    "analysis/persistence/freeze_native_github_tap_inputs.py": "9555a0134b17278f02a2ca9c5890c2e876043c2677cc138150930711a3b9ae32",
+    "analysis/persistence/review_native_github_tap_installer.py": "7c8784e0e025d27f5f506861017ffdf02cfbfaf935d73317f698ef89580153b5",
+    "analysis/persistence/native_github_tap_three_page_writer.py": "598b6ce2cacdbbdca4a5a36e94d8538b17a980606ff63e97335d7b6b0b88b6b2",
+    "diagnostics/swd-memory.cfg": "8e1e707483009a25d8a77752512a4afad9839b0a2f88c75656b21e7dc195a6a2",
+    "diagnostics/swd-dap.cfg": "de1b441878f71ac2985deae1c694d9790c2b386e35bdaac8787759f08416b8f5",
+    "diagnostics/boot-watchdog-stop.cfg": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+    "diagnostics/boot-nor-read-runner.cfg": "1bd3b194645e755753b0253c9d0f0cab5a3b3cb189c83451cc522130d9560742",
+    "analysis/persistence/boot-nor-read-runner-data.cfg": "a52e7a38a7735ff5d8f2974057a013ce2329cb55cbc00071cce7ac5cd9c5e656",
+    "diagnostics/boot-nor-native-github-tap-runner.cfg": "1a50a2626d40eab4b5df18ad568cda03afa288c470df69a3d2c002b8d215d89f",
+    "diagnostics/boot-nor-native-github-tap-stage-inputs.cfg": "c6741246a9381bc5fb3c426309d6c7d02416699db8e875e2fe5faa3c07aeb674",
+    "diagnostics/mcu-native-github-tap-install-session.cfg": "e7bd7ccb652156f7c2df12a4049d90f47a4a5035d22ae83545784b84e7151bb6",
+    "diagnostics/mcu-native-github-tap-restore-session.cfg": "a8df2fc31baedbb63e2b2dd313c3fcd4b1bdf5476de0d18a7ef714866adce10e",
+    "diagnostics/read-native-github-tap-state.cfg": "d9965ccb6be7f04bd324594e04eb7150dd741716cc5fcf59c33b9310b609ccbd",
+    "diagnostics/read-native-github-tap-runtime.cfg": "40bdd36a88e469c00f847db9752a1cb642d36c8749da86c9ee873569901b972b",
+    "analysis/persistence/native-github-tap-writer-preparation.json": "94b84c6e779c2f7f2db0c852bd01f15643157679e7a14065b10d4c8d924830ae",
+    "analysis/persistence/test_native_github_tap_runner_offline.py": "3708263b38a7b02ca33f9679170e29a91f199553e9fcd98d9158a7707e30db62",
+    "analysis/persistence/mock_boot_read_runner.tcl": "c32714c553cf8277901e8dd6f46827c08f9ab469f32176905a27c30d1ae93396",
+    "scripts/Set-PanelNativeGitHubTap.ps1": "8f30dbf99d3a404eef105b7320293f970aa8f7d6e68f8951d72b9f05e8a4722a",
+    "tools/xpack-openocd-0.12.0-7/bin/openocd.exe": "10567f01d37c66a0975537960d66e61f7b4e2a17eb2c9637e2c2cbc569f70c79",
+    "backups/mi-panel-flash-16m-1.50.10-20261004.bin": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+    "analysis/persistence/native-github-card-frozen-inputs.json": "7bd88c1f217fd53219a054bf3c24ef197ee5666133d45f1557bfd8173c4c41db",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/native-drawer-frozen-inputs.json": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+    "analysis/persistence/native-drawer-ease-frozen-inputs.json": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b",
+    "analysis/persistence/native-drawer-smooth-frozen-inputs.json": "c464db59ec74849396d6ea2bcd3c0aa9d2110f7766068c6f08a23a82522aa392",
+    "analysis/display-takeover/test_native_github_tap_arm.py": "74f6c37f13d38b2f26fd20ec7c3b332809e607daa7390c426ba15cce117c9c47",
+    "analysis/persistence/native-github-card-patched-sector-92b000.bin": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265",
+    "analysis/persistence/native-github-tap-original-sector-92b000.bin": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265",
+    "analysis/persistence/native-github-tap-patched-sector-92b000.bin": "1b28758ee8597a676589bca406226208914afce4a54a583428f0a4c51f7bf3d0",
+    "analysis/persistence/native-github-card-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-tap-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-tap-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-tap-original-sector-95a000.bin": "fe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185",
+    "analysis/persistence/native-github-tap-patched-sector-95a000.bin": "5d6321192144e869a82d424ad32b6d6bb64014c179205cd481c3379e8a28b1e6",
+    "analysis/display-takeover/native-github-tap-independent-review-1.50.10.json": "46ea240ec909d16f5125256edf3db5d72152f094ca3b02e9136113b1d9427f5f",
+    "analysis/persistence/native-github-tap-installer-review-1.50.10.json": "6d96f4919cc6879de4aefaa09bb31990b2ecb2cdc07c35147feb3cc33db9d641",
+    "analysis/persistence/offline-native-github-tap-runner/run-1/summary.json": "6abca4ec53615d279a3da088b2520438bc93943dad01223b1c822a4f2e738620",
+    "analysis/display-takeover/github-tap-arm-offline-result.json": "b9f923b5f94014537344977dad388626f0efbac00a1f80fd70986399572ee217",
+    "analysis/display-takeover/github-tap-aux-container-review-1.50.10.json": "489161863af8cc23294daa0b39fb8ddf065d7839a605b69b726e44c360ccd740",
+    "analysis/persistence/native-github-tap-writer-peer-review-1.50.10.json": "63ef2ab4e80146dcd4b1ca237d665e5d539ae1ae302ba32b298930a0ec3be9bd",
+    "analysis/persistence/github-tap-aux-live-baseline-result.json": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3",
+    "analysis/persistence/offline-native-github-tap-runner/latest-summary.json": "6abca4ec53615d279a3da088b2520438bc93943dad01223b1c822a4f2e738620",
+    "analysis/display-takeover/github-tap-logo.h": "b5549c598115b23298913bdce00b948bda27996f320c7b3e1f374e52261824b9",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c"
+  }
+}

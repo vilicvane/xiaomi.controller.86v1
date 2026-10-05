@@ -1,0 +1,74 @@
+{
+  "scope": "GitHub tap1.50.10 safe UI state and hashes only; no identities, network configuration or raw captures",
+  "installed": true,
+  "program_bytes": 3392,
+  "auxiliary_program_bytes": 291,
+  "program_sha256": "c8d3ab6342a194087cfce94a30317b39c40fd4552a3d83c3188e97d8f0120c5b",
+  "auxiliary_program_sha256": "affc9b7dcd71df697e4a5b49713d56f24849eabc8bd1bc7f914eb855c7ca9b1d",
+  "elf_sha256": "f5ffaf6c05955b04b8246c20e71b99ea4b75e58b3cd989eeb369fc9511e016eb",
+  "freeze_sha256": "680a5f173a55c2e9811987a794b5332628f55d76a142076b9088aab3fea94f0e",
+  "install_capture": "analysis/persistence/native-github-tap-install-session-20261005-103306",
+  "install_result": {
+    "mode": "install",
+    "capture": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\analysis\\persistence\\native-github-tap-install-session-20261005-103306",
+    "passed": true,
+    "cold_poweroff_verification": {
+      "status": "skipped_by_user_request",
+      "requested": false
+    },
+    "scope": "NOR sectors92b000/95a000/ccd000 only; native boot task; restore returns verified GitHub card and stock auxiliary page",
+    "read_only_connection_attempts": 2,
+    "code_sha256": "1b28758ee8597a676589bca406226208914afce4a54a583428f0a4c51f7bf3d0",
+    "entry_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "aux_sha256": "5d6321192144e869a82d424ad32b6d6bb64014c179205cd481c3379e8a28b1e6",
+    "entry": "0x3804b2f5",
+    "mcu_running": true
+  },
+  "warm_read_only": {
+    "context": "0x3864ed40",
+    "context_bytes": 184,
+    "fields": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "dirty": 0,
+      "count": 0,
+      "physical_driver_index": 1,
+      "overlay": 0,
+      "cover": 320,
+      "target": 320,
+      "shown": 320,
+      "gui_cycles": 10598,
+      "toggles": 6,
+      "last_present": 0,
+      "animation_from": 193,
+      "pending": 0,
+      "phase": 150,
+      "feedback_ms": 45694,
+      "feedback_pending": 0
+    },
+    "frame_queue_empty": true
+  },
+  "user_observation": {
+    "tap_sequence_and_restore": "Overall normal by user report; continuous taps sometimes respond slowly, appear skipped or restore star during the sequence. A subsequent attempted reproduction felt smooth. User then reproduced the stall again; not considered resolved.",
+    "gesture_round_trips": "Overall normal by user report, including the requested up/down/key3 round trips; no separate timing measurement.",
+    "cold_boot": "skipped at explicit user request; not claimed as verified",
+    "mi_home_online_control": "not checked for this new variant"
+  },
+  "rollback": "Set-PanelNativeGitHubTap.ps1 -Mode restore returns exact GitHub card and stock auxiliary page; then use each matching reviewed rollback entry",
+  "followup": "Performance/timing improvement under development as a separate immutable-input variant; existing tap source and61-input catalog remain exact.",
+  "read_only_feedback_sampling": {
+    "runs": 2,
+    "samples": [
+      1138,
+      2282
+    ],
+    "durations_seconds": [
+      30,
+      60
+    ],
+    "count_changes_observed": 0,
+    "limitation": "No count changes were recorded in these non-atomic MEM-AP reads. They do not establish touch throughput, frame latency or the cause of the reported intermittent symptom."
+  }
+}

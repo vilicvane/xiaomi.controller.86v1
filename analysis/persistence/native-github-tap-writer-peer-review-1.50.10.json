@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "reviewer": "root, independent of installer author",
+  "offline_only": true,
+  "hardware_actions": 0,
+  "scope": "Independent peer review of fixed three-page public writer, exact native prefix, stage allowlist, prepare/freeze/runner and fault mocks",
+  "checks": [
+    "Native call prefix equals immutable card after reviewed namespace/scope and trailing whitespace normalization; both complete outer sessions match. 168-byte caller exact.",
+    "Root reconstructed all three full pages independently. Only main3392B and auxiliary291B change; entry, shared helpers and old40B tail preserved.",
+    "Exact triple checks precede native status/protection and NOR mutation; unknown/mixed triples rejected.",
+    "Auxiliary erase/program fixed to2895a000 and16x256B pages; I/D cache alias2c95a000. Arbitrary stage/address/callee/source refused.",
+    "Install auxiliary readback/status precedes main then entry. Restore verified main and entry precede original auxiliary.",
+    "Native fresh BOOT/controller0 provenance, halted A7/stopped watchdog, scratch/core/data recovery and BP/QE checks retained.",
+    "Six cache closures precede full-page comparisons; app_complete and safe_to_resume together gate GLOBAL. Uncertain call retains halted evidence without stale replay.",
+    "65 unique offline cases passed and bind final inputs. Every prior frozen hash rechecked independently.",
+    "Freezer rejects overwrite and binds exact inputs/prior catalogs; runner checks before hardware and only known post-GLOBAL DP-IDR failure permits fresh readonly retry."
+  ],
+  "reviewed_inputs": {
+    "analysis/persistence/native_github_tap_three_page_writer.py": "598b6ce2cacdbbdca4a5a36e94d8538b17a980606ff63e97335d7b6b0b88b6b2",
+    "analysis/persistence/prepare_native_github_tap_inputs.py": "4a6b5ed52fdd6e43810b15f0aee99749d6331cc7a4eec3711c59ffad566a7508",
+    "analysis/persistence/test_native_github_tap_runner_offline.py": "3708263b38a7b02ca33f9679170e29a91f199553e9fcd98d9158a7707e30db62",
+    "analysis/persistence/run_native_github_tap_firmware.py": "bc516a8eda80e0c87c10aa630434f4989fae2bf3b9f03dd7626f9a303e50bfa1",
+    "analysis/persistence/freeze_native_github_tap_inputs.py": "9555a0134b17278f02a2ca9c5890c2e876043c2677cc138150930711a3b9ae32",
+    "analysis/persistence/review_native_github_tap_installer.py": "7c8784e0e025d27f5f506861017ffdf02cfbfaf935d73317f698ef89580153b5",
+    "analysis/persistence/native-github-tap-patch-inputs-1.50.10.json": "df526e8c8267ea0ae1d591232f58e357aa9f1c03476f568233b4b88a67216c74",
+    "analysis/persistence/native-github-tap-installer-review-1.50.10.json": "6d96f4919cc6879de4aefaa09bb31990b2ecb2cdc07c35147feb3cc33db9d641",
+    "analysis/persistence/github-tap-aux-live-baseline-result.json": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3",
+    "analysis/display-takeover/github-tap-aux-container-review-1.50.10.json": "489161863af8cc23294daa0b39fb8ddf065d7839a605b69b726e44c360ccd740",
+    "analysis/display-takeover/native-github-tap-independent-review-1.50.10.json": "46ea240ec909d16f5125256edf3db5d72152f094ca3b02e9136113b1d9427f5f",
+    "diagnostics/boot-nor-native-github-tap-runner.cfg": "1a50a2626d40eab4b5df18ad568cda03afa288c470df69a3d2c002b8d215d89f",
+    "diagnostics/boot-nor-native-github-tap-stage-inputs.cfg": "c6741246a9381bc5fb3c426309d6c7d02416699db8e875e2fe5faa3c07aeb674",
+    "diagnostics/mcu-native-github-tap-install-session.cfg": "e7bd7ccb652156f7c2df12a4049d90f47a4a5035d22ae83545784b84e7151bb6",
+    "diagnostics/mcu-native-github-tap-restore-session.cfg": "a8df2fc31baedbb63e2b2dd313c3fcd4b1bdf5476de0d18a7ef714866adce10e",
+    "diagnostics/read-native-github-tap-state.cfg": "d9965ccb6be7f04bd324594e04eb7150dd741716cc5fcf59c33b9310b609ccbd",
+    "diagnostics/read-native-github-tap-runtime.cfg": "40bdd36a88e469c00f847db9752a1cb642d36c8749da86c9ee873569901b972b",
+    "scripts/Set-PanelNativeGitHubTap.ps1": "8f30dbf99d3a404eef105b7320293f970aa8f7d6e68f8951d72b9f05e8a4722a",
+    "analysis/persistence/offline-native-github-tap-runner/latest-summary.json": "6abca4ec53615d279a3da088b2520438bc93943dad01223b1c822a4f2e738620",
+    "analysis/persistence/native-github-tap-original-sector-92b000.bin": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265",
+    "analysis/persistence/native-github-tap-patched-sector-92b000.bin": "1b28758ee8597a676589bca406226208914afce4a54a583428f0a4c51f7bf3d0",
+    "analysis/persistence/native-github-tap-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-tap-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-tap-original-sector-95a000.bin": "fe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185",
+    "analysis/persistence/native-github-tap-patched-sector-95a000.bin": "5d6321192144e869a82d424ad32b6d6bb64014c179205cd481c3379e8a28b1e6"
+  },
+  "writer_mock_cases": 65,
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "limits": [
+    "Review/mocks do not establish real display, warm runtime, cold boot or cloud health.",
+    "Boot route tested on healthy MAIN; arbitrary corrupted boot recovery not demonstrated."
+  ]
+}

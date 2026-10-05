@@ -1,0 +1,19 @@
+{
+  "offline_backup_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "read_only_live_baseline": true,
+  "target_writes": 0,
+  "halt_reset_native_calls": 0,
+  "NOR_sector": "0x95a000",
+  "bytes": 4096,
+  "live_sha256": "fe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185",
+  "matches_exact_stock_backup_page": true,
+  "candidate_runtime_range": [
+    "0x3807a764",
+    "0x3807a920"
+  ],
+  "candidate_NOR_range": [
+    "0x95a768",
+    "0x95a924"
+  ],
+  "scope": "Hash equality only; no raw page bytes, credentials or identities included. Auxiliary slot still requires independent static qualification and new segmented writer/model review."
+}

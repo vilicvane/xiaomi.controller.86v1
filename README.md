@@ -7,9 +7,12 @@
 开机显示 GitHub 标志、白色 `vilicvane`、灰色 `xiaomi.controller.86v1`，以及金色
 星形和 `Star on GitHub` 提示。上滑收起，原界面顶边下拉带出自定义界面，
 短拉松手回弹；第三个自定义物理键三击仍可往返。
-当前信息卡沿用 smooth 的手势与交接，已通过完整页面读回、暖启动 owner/动画
-终态检查。用户确认排版、颜色及上下滑/三击均正常，实屏观察单独记录在
-native-github-card-hardware-result.json。
+当前点击反馈版在松手时将星标提示换成 `+1`；连续点击累加，约800ms无新点按后
+恢复提示，下一次从1开始。它沿用 smooth 的手势与交接，已通过三个完整页面读回、
+暖启动 owner/动画终态检查。实屏点击和切换观察单独记录在
+native-github-tap-hardware-result.json。此前信息卡的排版、颜色和手势已经用户确认。
+用户确认当前整体正常，但连续点击有时响应慢、漏计或恢复提示；另一次测试顺畅。
+这项间歇问题尚在优化，不能把当前模型通过写成已解决实际输入吞吐。
 本次完整断电测试按用户要求跳过，没有记为通过。
 此前 smooth 的手感已获用户确认；松手动画从最后提交的位置开始，并限制每帧推进量。
 之前ease版本已通过上下滑、三击、完整断电和米家控制，但上滑收起时有较大首帧跳跃。
@@ -29,6 +32,7 @@ native-github-card-hardware-result.json。
 - [覆盖层缓动](analysis/display-takeover/native-drawer-ease.md)：120ms三次缓出、独立版本和逐级回退。
 - [松手动画节奏](analysis/display-takeover/native-drawer-smooth.md)：从已提交位置开始、缓入缓出及每帧进度上限。
 - [GitHub 信息卡](analysis/display-takeover/native-github-card.md)：设备绘制的排版、星标提示和恢复到 smooth。
+- [点击反馈](analysis/display-takeover/native-github-tap.md)：临时累加、自动恢复和三页回退到信息卡。
 - [启动时的 NOR 写入执行器](analysis/persistence/boot-nor-native-app-runner.md)：固定扇区写入流程。
 
 源码主要在 `analysis/display-takeover/`、`analysis/persistence/` 和 `analysis/pinout/`；

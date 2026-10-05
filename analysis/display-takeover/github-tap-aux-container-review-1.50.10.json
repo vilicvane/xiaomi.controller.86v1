@@ -1,0 +1,189 @@
+{
+  "scope": "Independent bounded offline requalification of exact1.50.10 auxiliary code slot only. No hardware access, Git operation, frozeninput rewrite or prior hardwareproof modification. Structured metadata and selected semantic evidence only; no vendor firmware arrays or raw disassembly byte dumps.",
+  "decision": "Qualified as a bounded444-byte auxiliary container under the exact frozen GitHubcard baseline and preservation constraints below. No retained explicit encoded external reference found afterthe reviewed parent replacement. This is bounded static qualification, not a proof that all possible computed indirectcalls are absent or that hardware installation/behavior passed.",
+  "firmware_version": "1.50.10",
+  "inputs": {
+    "AGENTS": {
+      "path": "AGENTS.md",
+      "sha256": "4acc3c2716e56e23be28915e69e9bed2a02234589556e4c83b616c4a25cced6e"
+    },
+    "engineering_notes": {
+      "path": "docs/engineering-notes.md",
+      "sha256": "9209605426c2edbe9ee327873897d1705acdbc35d041b4a07b190832ba016e1f"
+    },
+    "development": {
+      "path": "docs/development.md",
+      "sha256": "1141990d91f4e835b3a433fbe0d52bf4e0526177f083b9bb25d49018b1e90f4f"
+    },
+    "backup": {
+      "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+      "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+    },
+    "old_container_review": {
+      "path": "analysis/display-takeover/a7-factory-worker-container-review-1.50.10.json",
+      "sha256": "041acf9e89880d307b71b221f993c1c8ec7d89b02b72c2344e433a8e228a0517"
+    },
+    "analysis_helper": {
+      "path": "analysis/pinout/analyze_a7_peripherals.py",
+      "sha256": "f00af34d25e326fe88e2314fe8ca1e9a0aaabb806fddfc40773e876d3bff9ef4"
+    },
+    "card_source": {
+      "path": "analysis/display-takeover/native-github-card.c",
+      "sha256": "c8b9c73e8ad7a5aba3a05043b4e3e5290d047c2ba4680060578482f9d02aab41"
+    },
+    "card_entry_source": {
+      "path": "analysis/display-takeover/native-github-card-entry.S",
+      "sha256": "5434a44f07ac05411996510f2fb7d74ec6e5ce1ae6741f4d932a31bc45a91f7a"
+    },
+    "card_linker_source": {
+      "path": "analysis/display-takeover/native-github-card.ld",
+      "sha256": "5b14bd4c057a6af6277da43849194284a6d248bc8ad580b1b93fab1d793790ce"
+    },
+    "card_frozen_inputs": {
+      "path": "analysis/persistence/native-github-card-frozen-inputs.json",
+      "sha256": "7bd88c1f217fd53219a054bf3c24ef197ee5666133d45f1557bfd8173c4c41db"
+    },
+    "card_patch_manifest": {
+      "path": "analysis/persistence/native-github-card-patch-inputs-1.50.10.json",
+      "sha256": "363356fd0fb5f0ed7f1a9e085f595fbb158e5b28a1d6f0399afdf02f7e2816b9"
+    },
+    "card_code_page": {
+      "path": "analysis/persistence/native-github-card-patched-sector-92b000.bin",
+      "sha256": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265"
+    },
+    "card_entry_page": {
+      "path": "analysis/persistence/native-github-card-patched-sector-ccd000.bin",
+      "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+    },
+    "parent_live_page_evidence": {
+      "path": "analysis/persistence/github-tap-aux-live-baseline-result.json",
+      "sha256": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3"
+    }
+  },
+  "A7_mapping": {
+    "NOR_start": "0x8e0004",
+    "runtime_start": "0x38000000",
+    "length": "0x4f3fe0",
+    "NOR_end_exclusive": "0xdd3fe4",
+    "mapping_formula": "VA=0x38000000+(NOR_offset-0x8e0004)",
+    "payload_length_header_rechecked": true
+  },
+  "container": {
+    "runtime_start": "0x3807a764",
+    "runtime_end_exclusive": "0x3807a920",
+    "NOR_start": "0x95a768",
+    "NOR_end_exclusive": "0x95a924",
+    "bytes": 444,
+    "classification": "Original factorypthread socketworker, including its own4-byte literalpool; the previously rejected larger multiroutine prefix is not qualified.",
+    "instruction_boundary": "Thumbentry3807a765 starts push {r7,lr} at3807a764. Decoded worker code endswith internal B at3807a91a targeting3807a8de; nofallthrough into the pool orbacklight callback isidentified.",
+    "literal_pool": {
+      "runtime": "0x3807a91c",
+      "NOR": "0x95a920",
+      "bytes": 4,
+      "value": "0x384b8ab0",
+      "reference": "ThumbLDR3807a768 uses(PC aligned+0x1b0)=3807a91c",
+      "inside_container": true
+    },
+    "right_boundary": "3807a920 is next independent backlightcallback prologue push.w {r4,r5,r6,r7,r8,lr}; excluded fromthe auxiliaryrange.",
+    "other_exclusions": [
+      "Preserve backlightcallback3807a920..3807aadc.",
+      "Preserve sharedJSONhelper3807ae28..3807b370; originaldirectexternalcaller3838a1be remainsvalid andisoutsidefactoryparent.",
+      "Preserve allothersector95a000 bytes, including precedingfactoryhelpers andJSONportion."
+    ]
+  },
+  "original_parent_reference": {
+    "type": "Single reconstructed ThumbMOVW/MOVT functionpointer, not a rawliteralword.",
+    "MOVW_runtime": "0x3804b4e6",
+    "MOVW_NOR": "0x92b4ea",
+    "MOVT_runtime": "0x3804b4ea",
+    "MOVT_NOR": "0x92b4ee",
+    "register": "r2",
+    "value": "0x3807a765",
+    "ABI_use": "3804b4fc BL383acc04(pthread_create): r0=384fc864 outputtid, r1=NULL, r2=workerentry3807a765, r3=r4 context. No intervening r2 clobber in decoded parentwindow.",
+    "owner": "Original faclvgl_main3804b2f4..3804b87c.",
+    "parent_replacement_proof": "Exact frozen cardcodepage92b000 SHA53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265 replaces thisbody/sourcepair. Exact frozen entrypageccd000 changes faclvgl builtin.entry NORccdebc/VA383edeb8 from3804b2f5 tosuccessstub3804b111. OverlayfullA7 scan finds0 remaining MOVpairs orrawpointers toauxiliaryrange."
+  },
+  "reference_scans": {
+    "range": "Full saved valid A7 payloadNOR8e0004..dd3fe4, includingcode anddata; candidate value range3807a764..3807a920 exclusive considers oddThumb andeven values.",
+    "stock_raw_u32_pointer_candidates": "0 at everybyteposition, alignedorunaligned.",
+    "stock_MOVW_MOVT_candidates": 1,
+    "stock_validated_external_MOV_reference": "Only the faclvgl parentpointer described above.",
+    "scan_tools": "Reran analysis_helper MOVW/MOVT reconstruction and Thumb32BL/BLX/B.W plusARMB/BL scans; independently addedThumb16B/conditionalB/CBZ/CBNZ in displacement-bounded surroundingwindow, Thumb32conditionalB overfullA7 andARMBLX-immediate overfullA7.",
+    "Thumb16_internal_branches": 15,
+    "Thumb32_conditional_internal_branches": 1,
+    "validated_external_direct_branches": 0,
+    "branch_false_positives": [
+      {
+        "candidate_ARM_source": "0x3801c7a0",
+        "candidate_ARM_target": "0x3807a830",
+        "actual_Thumb_instruction_starts": [
+          "0x3801c7a0",
+          "0x3801c7a2"
+        ],
+        "actual_operations": [
+          "ldrb r2,[r4]",
+          "cmp r2,#1"
+        ],
+        "classification": "ARM-decoding shadow of two genuine Thumb16 instructions; no incoming branch to auxiliaryslot",
+        "instruction_boundary_context": "Overlapping correctly aligned Thumb source windows contain normal Thumb16 operations and neighboring Thumb32 instructions/branches. A raw ARM word scan does not qualify ISA here."
+      },
+      {
+        "candidate_ARM_source": "0x3801c7c0",
+        "candidate_ARM_target": "0x3807a854",
+        "actual_Thumb_instruction_starts": [
+          "0x3801c7c0",
+          "0x3801c7c2"
+        ],
+        "actual_operations": [
+          "ldrb r3,[r4]",
+          "cmp r3,#1"
+        ],
+        "classification": "ARM-decoding shadow of two genuine Thumb16 instructions; no incoming branch to auxiliaryslot",
+        "instruction_boundary_context": "Overlapping correctly aligned Thumb source windows contain normal Thumb16 operations and neighboring Thumb32 instructions/branches. A raw ARM word scan does not qualify ISA here."
+      },
+      {
+        "candidate_ARM_source": "0x3805c6f8",
+        "candidate_ARM_target": "0x3807a86c",
+        "actual_Thumb_instruction_starts": [
+          "0x3805c6f8",
+          "0x3805c6fa"
+        ],
+        "actual_operations": [
+          "ldrb r3,[r3,#1]",
+          "cmp r3,#0"
+        ],
+        "classification": "ARM-decoding shadow of two genuine Thumb16 instructions; no incoming branch to auxiliaryslot",
+        "instruction_boundary_context": "Overlapping correctly aligned Thumb source windows contain normal Thumb16 operations and neighboring Thumb32 instructions/branches. A raw ARM word scan does not qualify ISA here."
+      }
+    ],
+    "expected_card_overlay": "Builtinmemory from exactstock plusonlytwofrozen cardpages; rawu32pointer andMOVreference counts0, remaining3ARM candidates are unchanged Thumbshadows, all internalworker branches remainoriginal. This isexpectedbaseline metadata, not independent livehardwareread."
+  },
+  "frozen_baseline": {
+    "manifest_sha256": "7bd88c1f217fd53219a054bf3c24ef197ee5666133d45f1557bfd8173c4c41db",
+    "items": 51,
+    "all51_file_hashes_rechecked": true,
+    "code_page_sha256": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265",
+    "entry_page_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "current_NOR95a000_expected_sha256": "fe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185",
+    "current_device_state_claim": "Not independently examined by this reviewer. Parent owns sequentialhardware operations."
+  },
+  "parent_hardware_evidence_reference": {
+    "path": "analysis/persistence/github-tap-aux-live-baseline-result.json",
+    "sha256": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3",
+    "reported_result": "Parent read4096B atNOR95a000 andrecorded exactstockpageSHAfe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185 equality, no targetwrite/nativecall/halt/reset. Thisreview onlyreadsthe safeJSON; itdoesnotownorreplaythatdeviceoperation."
+  },
+  "installation_preconditions": [
+    "Pin exact stockbackup andcurrentcard51freeze/pagebaseline; unknownpartialstate mustfailclosed.",
+    "NewauxiliaryELF/BIN sections, allprivateconstants/pools andeveryentrymustfit [3807a764,3807a920) withoutchangingA7imagecopy/BSS lengths. Linker/container qualification is separate fromthisoriginal-owner review.",
+    "Admitonlythe reviewedauxiliarybytes inside third95a000sector; full4KiBprogram/readback mustpreserveallotherbytes, notablybacklightcallback andsharedJSONhelper.",
+    "Keepfaclvgl builtin successstub andoldparentbody replacement. Do notuse larger3084B prefix orclaimwhole95a000sectorunowned.",
+    "Use a new separatelyreviewed/frozenthree-sectorwriter/install/restore route; previous two-sectororotherversion writers are not qualified forthisnewbaseline. Parent owns recovery/nativecallclosure."
+  ],
+  "limitations": [
+    "No arbitrary computed pointer, relativejumptable, runtime-generatedcallback orunexaminedexternalMCU/A7path absenceproof. Encodedreference scans overcode/data areboundedstaticevidence, not whole-programreachability proof.",
+    "Thumb/ARM rawcandidate scans needISA andinstruction-boundary classification; three rejectedARMshadows are explicitlydocumented ratherthan counted asgenuinecalls.",
+    "The preserved worker hasoutgoingcalls tosharedhelpers; thisreview doesnot authorize alteringthosehelpers.",
+    "No hardwareoperation oracceptance claim bythisreviewer. Cold-power testing anduseracceptance fromotherfirmwarevariants do not establishthisnewtapvariant.",
+    "Current new299B renderer sizing wasreportedbyparent; itsinstructions/ABI/drawinglogic are not qualified bythiscontainer-only review."
+  ]
+}

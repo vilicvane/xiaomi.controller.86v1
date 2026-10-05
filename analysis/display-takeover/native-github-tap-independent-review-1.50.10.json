@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "offline_only": true,
+  "hardware_operation": false,
+  "reviewer": "root independent source, assembly ABI, segmented ELF and bound-model peer review of renderer-agent implementation",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-github-tap.c": "fa9136ce248a13db679c158f92bfeeb749c5c191867006704dee6f563069ddd1",
+    "analysis/display-takeover/native-github-tap-entry.S": "7c990b54a73045243848c936198c5989f2e86c7105ee49ef7656b3cd0fca75ed",
+    "analysis/display-takeover/native-github-tap.ld": "43aed8dc7a4a95057c127dfe7f87e2f717a34dffc85d53b0892ed3b7eb3f7868",
+    "analysis/display-takeover/build-native-github-tap.sh": "ec69333e858953ef154c2e180017fec70f58794949a9617416888fa5cb8da35e",
+    "analysis/display-takeover/native-github-tap.elf": "f5ffaf6c05955b04b8246c20e71b99ea4b75e58b3cd989eeb369fc9511e016eb",
+    "analysis/display-takeover/native-github-tap.bin": "c8d3ab6342a194087cfce94a30317b39c40fd4552a3d83c3188e97d8f0120c5b",
+    "analysis/display-takeover/native-github-tap-feedback.bin": "affc9b7dcd71df697e4a5b49713d56f24849eabc8bd1bc7f914eb855c7ca9b1d",
+    "analysis/display-takeover/github-tap-logo.h": "b5549c598115b23298913bdce00b948bda27996f320c7b3e1f374e52261824b9",
+    "analysis/display-takeover/render_github_tap_reference.py": "34e92c0ec3ee7397a5a29ee3dc29ed7d5e7eaf4d641805ded40bf4c419dfb757",
+    "analysis/display-takeover/test_native_github_tap_arm.py": "74f6c37f13d38b2f26fd20ec7c3b332809e607daa7390c426ba15cce117c9c47",
+    "analysis/display-takeover/github-tap-arm-offline-result.json": "b9f923b5f94014537344977dad388626f0efbac00a1f80fd70986399572ee217",
+    "analysis/display-takeover/github-tap-aux-container-review-1.50.10.json": "489161863af8cc23294daa0b39fb8ddf065d7839a605b69b726e44c360ccd740"
+  },
+  "capacity": {
+    "main_bytes": 3392,
+    "main_allocated_bytes": 3388,
+    "feedback_bytes": 291,
+    "total_allocated_bytes": 3679,
+    "gap_bytes": 4,
+    "main_runtime_start": "0x3804b108",
+    "main_end_exclusive": "0x3804be48",
+    "main_limit_end_exclusive": "0x3804be70",
+    "aux_runtime_start": "0x3807a764",
+    "aux_end_exclusive": "0x3807a887",
+    "aux_limit_end_exclusive": "0x3807a920",
+    "aux_remaining_bytes": 153,
+    "sections": [
+      {
+        "name": ".prefix",
+        "address": "0x3804b108",
+        "bytes": 488,
+        "end_exclusive": "0x3804b2f0"
+      },
+      {
+        "name": ".start",
+        "address": "0x3804b2f4",
+        "bytes": 4,
+        "end_exclusive": "0x3804b2f8"
+      },
+      {
+        "name": ".broker",
+        "address": "0x3804b2f8",
+        "bytes": 2896,
+        "end_exclusive": "0x3804be48"
+      },
+      {
+        "name": ".feedback",
+        "address": "0x3807a764",
+        "bytes": 291,
+        "end_exclusive": "0x3807a887"
+      }
+    ]
+  },
+  "context": {
+    "bytes": 184,
+    "feedback_ms_offset": 176,
+    "feedback_pending_offset": 180,
+    "animation_pending_offset": 168,
+    "animation_phase_offset": 172
+  },
+  "checks": [
+    "Independent ELF32 ARM parser reconstructed each small BIN from exact approved sections, retaining fixed Thumb entry/stubs and excluding writable sections, unmapped holes and all other allocated output",
+    "Main3392B ends40B before shared helper be70; bounded aux291B ends153B before backlight callback a920 and preserves shared JSON formatting helper ae28; separate independent auxiliary owner/ref review is bound",
+    "Private stamp traverses nonzero source-column bits, writes only scaled set pixels after unsigned row<320 clipping and preserves r4-r11/SP; no per-outputpixel divide remains",
+    "Private paint stores count in caller-savedr12 stack slot; callee-savedr4-r11 remain intact. Numeric formatter uses32B save and16B scratch with bounded10-digit saturatedu32 reverse buffer and8B alignment",
+    "Digit styles are gold scale3 at y249 with centered width18 per character; maximum11-character +4294967295 spans198px and cannot overflow x9 field or 480px canvas",
+    "184B heap context is zeroed using sizeof and actual ARM ALLOC capture confirms184B plus1228800B canvas/snapshot. Newfeedback fields have unambiguous offsets+176/+180, separate from animation+168/+172",
+    "Original physical-only DRAWER_TAP increments once onUP and saturatesUINT32_MAX; originalstock/virtual/continued-queue/drag/handoff guards stay intact, no new touch subscription/thread/nativeABI",
+    "Explicit feedback_pending preserves valid taps across staleUP/CLOCKfailure and sets new deadline only on fresh monotonic sample; unsigned clock subtraction handles genuineFFFFFFFF anchor and wrap without sentinel collision",
+    "800ms inactivity proposes star restoration, but count clears only after accepted correspondingPAN; queued or failed restoration keeps sequence for nexttap. Newtap extends interval; actualhide transition clears feedback before return",
+    "Mutex/queue/publisher gates keep UI rendering serialized; no framebuffer writes while displayqueue occupied. All22 prior core behavior groups and10 new feedback groups execute current ARM ELF with native APIs stubbed",
+    "642 full clipping buffers and multi-digit/extreme outputs match root independent oracle; redzones/unpainted arbitrary seed and per-instruction stack/register checks cover all render helpers",
+    "40 current model groups bind exact C/ELF/test/assets/oracle and both BINs, and check all51 immutable card inputs. This peer review does not reuse historical model output as new hardware evidence"
+  ],
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "limitations": [
+    "NativeAPI/IRQ/OS/LCD scanout behavior is mocked; source/model/capacity checks do not establish hardware success or physical display cadence.",
+    "Aux qualification excludes arbitrary computed indirect references; current page/whole writer/recovery closure and real user results require separate evidence."
+  ]
+}

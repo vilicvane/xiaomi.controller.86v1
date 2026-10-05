@@ -1,0 +1,135 @@
+{
+  "offline_only": true,
+  "frozen": false,
+  "hardware_actions": 0,
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "local_only_session_configs": [
+    "diagnostics/mcu-native-github-tap-install-session.cfg",
+    "diagnostics/mcu-native-github-tap-restore-session.cfg"
+  ],
+  "firmware": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "aux_live_baseline": {
+    "path": "analysis/persistence/github-tap-aux-live-baseline-result.json",
+    "sha256": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3",
+    "sector_sha256": "fe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185"
+  },
+  "runtime_context": {
+    "bytes": 184,
+    "words": 46,
+    "feedback_ms_offset": 176,
+    "feedback_pending_offset": 180,
+    "animation_from_offset": 164,
+    "pending_offset": 168,
+    "phase_offset": 172
+  },
+  "rollback": {
+    "kind": "native-github-card-v1",
+    "freeze": "analysis/persistence/native-github-card-frozen-inputs.json",
+    "freeze_sha256": "7bd88c1f217fd53219a054bf3c24ef197ee5666133d45f1557bfd8173c4c41db"
+  },
+  "program": {
+    "path": "analysis/display-takeover/native-github-tap.bin",
+    "elf": "analysis/display-takeover/native-github-tap.elf",
+    "sha256": "c8d3ab6342a194087cfce94a30317b39c40fd4552a3d83c3188e97d8f0120c5b",
+    "elf_sha256": "f5ffaf6c05955b04b8246c20e71b99ea4b75e58b3cd989eeb369fc9511e016eb",
+    "bytes": 3392,
+    "entry": "0x3804b2f5",
+    "start": "0x3804b108",
+    "container_end_exclusive": "0x3804be70",
+    "container_bytes": 3432,
+    "file_start": "0x92b10c",
+    "elf_image_kind": "two-independent-allocated-spans",
+    "feedback": {
+      "path": "analysis/display-takeover/native-github-tap-feedback.bin",
+      "sha256": "affc9b7dcd71df697e4a5b49713d56f24849eabc8bd1bc7f914eb855c7ca9b1d",
+      "bytes": 291,
+      "start": "0x3807a764",
+      "container_end_exclusive": "0x3807a920",
+      "file_start": "0x95a768",
+      "container_bytes": 444
+    }
+  },
+  "scope": "Three exact full NOR pages. Replace the card main code and only bounded factory socket-worker slot 0x3807a764..0x3807a920 with segmented tap feedback; every builtin entry and every other byte stay unchanged. Restore original card code and stock auxiliary page. Preserve helpers at/after 0x3804be70 and 0x3807a920.",
+  "disabled_commands": {
+    "wifi_recorder": "-ENOSYS stub at 0x3804b109 retained from smooth v1; no new entry mutation"
+  },
+  "install_baseline": "Exact native-github-card-v1 code and entry pages only. Smooth, ease, first drawer, broker, stock and old counter require their separate reviewed flow first.",
+  "install_order": [
+    "aux",
+    "code",
+    "entry"
+  ],
+  "restore_order": [
+    "entry",
+    "code",
+    "aux"
+  ],
+  "sectors": {
+    "code": {
+      "offset": "0x92b000",
+      "mutations": [
+        {
+          "sector_offset": "0x10c",
+          "bytes": 3392
+        }
+      ],
+      "baseline_kind": "verified-native-github-card-v1",
+      "baseline_source": "analysis/persistence/native-github-card-patched-sector-92b000.bin",
+      "original": {
+        "path": "analysis/persistence/native-github-tap-original-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "53beefb16316e2a326030aabf92c0245f2eb49bb0cbccd03dcac1fe544e4e265"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-github-tap-patched-sector-92b000.bin",
+        "bytes": 4096,
+        "sha256": "1b28758ee8597a676589bca406226208914afce4a54a583428f0a4c51f7bf3d0"
+      }
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "mutations": [],
+      "baseline_kind": "verified-native-github-card-v1",
+      "baseline_source": "analysis/persistence/native-github-card-patched-sector-ccd000.bin",
+      "original": {
+        "path": "analysis/persistence/native-github-tap-original-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-github-tap-patched-sector-ccd000.bin",
+        "bytes": 4096,
+        "sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26"
+      }
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "mutations": [
+        {
+          "sector_offset": "0x768",
+          "bytes": 291
+        }
+      ],
+      "baseline_kind": "verified-stock-auxiliary-page",
+      "baseline_source": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+      "baseline_source_offset": "0x95a000",
+      "original": {
+        "path": "analysis/persistence/native-github-tap-original-sector-95a000.bin",
+        "bytes": 4096,
+        "sha256": "fe815dee80d04a6f4b35f238a4c0d05063ecb219ff53132534c71f08ef47f185"
+      },
+      "patched": {
+        "path": "analysis/persistence/native-github-tap-patched-sector-95a000.bin",
+        "bytes": 4096,
+        "sha256": "5d6321192144e869a82d424ad32b6d6bb64014c179205cd481c3379e8a28b1e6"
+      }
+    }
+  }
+}

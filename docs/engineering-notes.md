@@ -258,7 +258,7 @@ A7 正常启动只复制 `0x8e0004..0xdd3fe4` 的 `0x4f3fe0` 字节，目标末�
 
 ## GitHub 卡片的临时累加反馈
 
-独立 `native-github-tap` 已安装。主 BIN3392B，辅助 BIN291B，共3683B（含主段4B空隙）。
+tap v1阶段安装了独立 `native-github-tap`。主 BIN3392B，辅助 BIN291B，共3683B（含主段4B空隙）。
 主段末端3804be48，40B旧卡片尾部和be70共享helper保持原值；辅助范围
 3807a764..3807a887，位于原工厂socket worker的444B容器内，a920后的背光回调和
 ae28 JSON helper保留。新的引用审查和只读实页哈希已确认第三页95a000基线；
@@ -266,7 +266,7 @@ ae28 JSON helper保留。新的引用审查和只读实页哈希已确认第三�
 
 原physical-only DRAWER_TAP在UP时累计；新pending字段等待有效CLOCK样本设起点，
 避免旧UP时间把刚收到的点击立即判为过期。800ms无点击后只提议恢复星标，
-真正PAN接受恢复帧才清零。队列阻塞或PAN失败时不改画布、不清序列；期间的新
+真正PAN接受恢复帧才清零。队列阻塞时不改画布，PAN失败时不清序列；期间的新
 点按继续累加并续期。clock回绕和失败、u32饱和、多位数居中均有当前实际ARM模型。
 显示、触摸、计时完全在设备上运行，触摸不写Flash。context184B，+176/+180是
 feedback_ms/feedback_pending；动画pending/+168和phase/+172保持原偏移。
@@ -288,9 +288,53 @@ custom owner/ready、cover320/pending0/phase150、count0/feedback_pending0通过
 旧样本，不保护DOWN/UP配对；GUI先读取输入后再绘图。模型中缺UP可合并点击、
 误作移动，甚至触发关闭，但尚未证明这次实机问题就是溢出。
 
-当前一次普通计数的软件画布写量626460B，包含全帧填充及整卡重画，不含原PAN
+tap v1一次普通计数的软件画布写量626460B，包含全帧填充及整卡重画，不含原PAN
 旋转。计时锚取自绘制前；900ms模拟PAN后下一轮便开始恢复，而实际可见时间还取决于
 星标那帧的提交/扫描，不能直接称LCD只显示20ms。第二个DOWN按住时，旧超时逻辑
 也会清序列、下一UP重回+1。这些独立复现的缺口将用另一个版本修正，不能更改tap
 已经冻结的源码/模型来掩盖结果。真实fresh sample总置continue/+0x13为1，
 缓存DOWN的continue为0，因此不能移除fresh门作为漏点修复。
+
+## 点击反馈的提交后计时与局部绘图
+
+当前已安装独立 `native-github-tap-fast`，离线审查及68项冻结完成，用户验收待确认。
+主 BIN3336B，范围3804b108..3804be10；辅助 BIN431B，范围3807a764..3807a913，
+均为 exclusive 末端。仍使用原3432B/444B受控容器，be70共享helper、a920后的背光
+回调和JSON helper保留；不借用额外代码范围。旧tap61项及所有更早集合保留原字节。
+
+context仍184B、46个word，feedback_ms/+176和feedback_pending/+180的位置不变。
+反馈pending的三态为0=已PAN接受且时钟已锚定、1=新计数等待成功PAN、2=PAN已成功
+但等待有效CLOCK。只有新计数成功PAN后的新鲜单调时钟启动800ms；CLOCK失败保留
+计数，在下一有效时钟锚定时不重放已接受的帧。同一计数的重绘不续期，后续点击累加
+并重新等待自己的成功提交；饱和u32、多位数和回绕语义不变。
+
+恢复星标前及成功PAN后清序列前，分别短持两输入publisher锁，检查释放状态、
+当前手势及两个subscriber ring。PAN期间出现新输入则保留count/dirty，后续点按
+仍接续原序列。新增反馈绘图的PAN不持publisher锁；原owner交接仍在双publisher
+锁中PAN并立即提交owner，保留既有事务。LVGL continue/+0x13的fresh门仍保留。
+
+静止、完全展开且已提交整卡时，仅清除并绘制249..269共21行；初次呈现、无有效
+shown及滑动覆盖层仍完整合成。实际ARM写hook核对普通+1的软件画布写入为41004B，
+旧版为626460B，减少93.45%；这个统计不含原PAN旋转。原PAN依旧提交整帧，原8条
+触摸ring依旧可能覆盖DOWN/UP，新版本不能重建已经丢失的事件，也没有新证据把
+实机间歇卡顿归因于溢出。
+
+53组实际ARM模型保留原40组，并增加慢PAN900/3000ms、CLOCK失败三态、同计数不续期、
+按住/两ring阻塞、PAN途中发布、原owner事务、局部写界限及故意丢UP限制；321种cover
+和星标/数字完整像素、红区和R4–R11/SP校验仍通过。68项写入器mock及独立程序/安装器
+审查通过；模型和mock不证明真实LCD节奏、IRQ吞吐、米家控制或完整断电结果。
+
+冻结表 `native-github-tap-fast-frozen-inputs.json` SHA-256：
+`96588070da46764460c72d0ba1e71c635c1de39d226842ff3e71c2226e4a5b6c`。
+安装和回退只接受精确三页状态，fast回退先返回tap v1，再依次tap→card→smooth→ease→
+drawer→broker→stock；必须使用各自的独立writer。实机安装闭包及普通重启后的三页
+完整SHA读回通过；MCU运行、resetcatch清零、临时FPB清理通过。只读暖启动状态为
+alive/mode/wanted/ready1、cover/target/shown320、overlay/pending0、phase150，GUI活跃且
+framequeue为空。实屏点击和切换观察仍待确认，单独记录在
+`native-github-tap-fast-hardware-result.json`；暖启动读回不证明实际延迟。完整断电按
+用户明确要求跳过，不再次请求，也不借用旧版断电或米家在线/控制结果。
+
+用户最新反馈fast手感仍一般，询问是否因为松手才加。当前DRAWER_TAP仍在UP触发，
+用于区分点击与滑动；新版并未改成DOWN计数。按下立即显示临时计数、拖动时撤销，
+或者按下高亮/松手计数都未实现；用户决定保留当前Demo，不继续修改交互。
+最新回复没有单独确认fast手势往返、星标超时或米家控制通过。

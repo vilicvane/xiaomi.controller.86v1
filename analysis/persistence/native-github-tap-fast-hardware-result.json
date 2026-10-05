@@ -1,0 +1,80 @@
+{
+  "scope": "Fast GitHub tap1.50.10 safe UI state and hashes only; no identities, network configuration or raw captures",
+  "installed": true,
+  "program_bytes": 3336,
+  "auxiliary_program_bytes": 431,
+  "program_sha256": "9c529291e9c32534df89f17939e9b9d63a38267f45d0b04a579a84b0c1c7c6d9",
+  "auxiliary_program_sha256": "61285fe7177bafa255b4dc880a70d58cd44f6edbd25171db4674f81b7da52cf0",
+  "elf_sha256": "d36daa251ce820e0e4038d6a0190554306a1bc6a545d0f7a502a8327000454f0",
+  "freeze_sha256": "96588070da46764460c72d0ba1e71c635c1de39d226842ff3e71c2226e4a5b6c",
+  "frozen_inputs": 68,
+  "install_capture": "analysis/persistence/native-github-tap-fast-install-session-20261005-113837",
+  "install_result": {
+    "mode": "install",
+    "capture": "C:\\Users\\vilicvane\\Projects\\vilicvane\\mi-panel\\analysis\\persistence\\native-github-tap-fast-install-session-20261005-113837",
+    "passed": true,
+    "cold_poweroff_verification": {
+      "status": "skipped_by_user_request",
+      "requested": false
+    },
+    "scope": "NOR sectors92b000/95a000/ccd000 only; native boot task; restore returns exact native GitHub tap v1 main/entry/aux pages",
+    "read_only_connection_attempts": 2,
+    "code_sha256": "6b1213342d9f97ef3c53e4691f0533217eb9fd15fc76b5dc06d8bca1df286bf9",
+    "entry_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "aux_sha256": "27ccfe87b0e1e5a71a286e91e587964cdab1fa0a9f1b4778860a299f7eb3eed6",
+    "entry": "0x3804b2f5",
+    "mcu_running": true
+  },
+  "warm_read_only": {
+    "context": "0x3864ed40",
+    "context_bytes": 184,
+    "fields": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "dirty": 0,
+      "count": 0,
+      "physical_driver_index": 1,
+      "overlay": 0,
+      "cover": 320,
+      "target": 320,
+      "shown": 320,
+      "gui_cycles": 12992,
+      "toggles": 0,
+      "last_present": 0,
+      "animation_from": 0,
+      "pending": 0,
+      "phase": 150,
+      "feedback_ms": 0,
+      "feedback_pending": 0
+    },
+    "frame_queue_empty": true
+  },
+  "offline_validation": {
+    "actual_arm_model_groups": 53,
+    "writer_mock_cases": 68,
+    "canvas_stores_per_settled_count": {
+      "previous_bytes": 626460,
+      "current_bytes": 41004,
+      "reduction_percent": 93.45,
+      "excludes": "Whole-frame native PAN rotation and scanout; not a measured real device frame rate"
+    },
+    "program_review": "analysis/display-takeover/native-github-tap-fast-independent-review-1.50.10.json",
+    "writer_peer_review": "analysis/persistence/native-github-tap-fast-writer-peer-review-1.50.10.json"
+  },
+  "user_observation": {
+    "tap_sequence_and_restore": "User reports the new version still feels only average and asks whether release-triggered counting causes it. No claim that real latency or intermittent missed taps is resolved.",
+    "gesture_round_trips": "Not separately confirmed for this version in the latest reply.",
+    "cold_boot": "skipped at explicit user request; not claimed as verified",
+    "mi_home_online_control": "not checked for this new variant",
+    "demo_decision": "Retain current release-triggered demo; user explicitly declined further interaction changes."
+  },
+  "rollback": "Set-PanelNativeGitHubTapFast.ps1 -Mode restore returns exact native GitHub tap v1 triple; then use each matching reviewed rollback entry",
+  "limitations": [
+    "A successful warm boot/full-page readback does not establish user-perceived latency or cold boot.",
+    "PAN still submits a whole frame and physical input ring remains eight samples; arbitrary tap speed and overflow freedom are not proved.",
+    "Prior non-atomic MEM-AP samplers saw no count changes, so do not establish the cause of the reported intermittent v1 symptom."
+  ],
+  "followup": "User chose to retain the current demo and stop interaction changes after discussing release-triggered counting. No press-triggered variant was implemented."
+}

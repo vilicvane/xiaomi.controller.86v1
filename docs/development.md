@@ -210,3 +210,41 @@ python -X utf8 analysis/persistence/run_native_github_tap_firmware.py install
 不要 force-add stage inputs、session、BIN/ELF、扇区或运行内存。
 暖启动及用户观察记录在新的 native-github-tap-hardware-result.json；完整断电按
 用户要求跳过，不能借用旧版断电或米家控制结果。
+
+## 点击反馈计时与局部绘图的独立版本
+
+`native-github-tap-fast` 使用独立C/Thumb入口/链接器/构建脚本、实际ARM模型和三页
+安装材料，说明见 `analysis/display-takeover/native-github-tap-fast.md`。主BIN3336B
+止于3804be10，辅助BIN431B止于3807a913；仍分别生成两段BIN，禁止平铺地址空洞。
+复用已冻结tap的logo和像素参考，旧源码/模型/资产及61项输入保持原字节。
+
+53组实际ARM模型和68项Jim写入器mock通过，68项材料已独立冻结，SHA-256为
+`96588070da46764460c72d0ba1e71c635c1de39d226842ff3e71c2226e4a5b6c`。
+184B/46-word运行采样保留+176 feedback_ms和+180 feedback_pending；pending0表示
+已接受并锚定，1表示新计数待成功PAN，2表示已成功PAN待有效CLOCK。
+冻结后不要重新编译、prepare、运行旧结果生成器或改写测试摘要来更新材料。
+
+```powershell
+python -X utf8 analysis/persistence/run_native_github_tap_fast_firmware.py install
+```
+
+没有 `--execute` 时只核对冻结输入及六套旧UI集合，不访问设备。本版安装闭包、
+普通重启后的三页完整SHA读回、MCU状态和暖启动owner/ready/phase150已通过。
+新版本用户触摸与切换观察仍待确认；ARM/mock通过不能证明LCD吞吐或米家控制。
+安装仍为aux→code→entry，回退仍为entry→code→aux，每页完整核对才继续。
+入口只接受精确tap v1三页作为安装基线，restore返回精确tap v1三页；未知或混合
+主/辅页不能套用历史writer。只有fast恢复tap v1后才执行下一步：
+
+```powershell
+.\scripts\Set-PanelNativeGitHubTapFast.ps1 -Mode restore
+.\scripts\Set-PanelNativeGitHubTap.ps1 -Mode restore
+```
+
+第二步返回card及原始辅助页，之后card→smooth→ease→drawer→broker→stock各用自己的
+restore。每一步会中断服务并重启，不要将这个顺序改成跨版本直接回退。
+
+fast两个session cfg沿用原厂BOOT校验字节，仅本地存放并由冻结表绑定哈希；stage
+Tcl数组、BIN/ELF、扇区、运行dump和原始帧继续被忽略。临时数字绘制只更新RAM，
+软件画布写入减少不等于原PAN已局部传输；8条原生输入ring没有增加或改成无损队列。
+本版实机及用户观察应单独记在native-github-tap-fast-hardware-result.json。完整断电
+按用户要求跳过，不再询问，不借用旧版在线/控制或断电结果。

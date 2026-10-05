@@ -132,3 +132,12 @@
 /diagnostics/mcu-native-github-tap-restore-session.cfg
 !/analysis/display-takeover/github-tap-logo.h
 !/analysis/flash-capacity-summary-1.50.10.json
+!/analysis/display-takeover/github-tap-fast-arm-offline-result.json
+!/analysis/display-takeover/native-github-tap-fast-independent-review-1.50.10.json
+!/analysis/persistence/native-github-tap-fast-patch-inputs-1.50.10.json
+!/analysis/persistence/native-github-tap-fast-installer-review-1.50.10.json
+!/analysis/persistence/native-github-tap-fast-writer-peer-review-1.50.10.json
+!/analysis/persistence/native-github-tap-fast-frozen-inputs.json
+!/analysis/persistence/native-github-tap-fast-hardware-result.json
+/diagnostics/mcu-native-github-tap-fast-install-session.cfg
+/diagnostics/mcu-native-github-tap-fast-restore-session.cfg

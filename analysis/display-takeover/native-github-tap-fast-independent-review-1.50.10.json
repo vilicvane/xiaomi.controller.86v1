@@ -1,0 +1,124 @@
+{
+  "passed": true,
+  "reviewer": "/root/power_board_review; independent offline source, assembly, ELF, model and focused ARM execution review",
+  "scope": "Exact locked native-github-tap-fast inputs for this panel 1.50.10 only. No hardware or Git operations; no installer approval or live-baseline verification.",
+  "reviewed_inputs": {
+    "analysis/display-takeover/native-github-tap-fast.c": "1b9d7abb3f05e7952acad2053b914828ef35e0e6a36def258f9d2cfee3ecceaf",
+    "analysis/display-takeover/native-github-tap-fast-entry.S": "a4d9d10f02e23fe0e7cbfa6819bd4cc81c745e1fdb8aad68dc210d433cb99cab",
+    "analysis/display-takeover/native-github-tap-fast.ld": "43aed8dc7a4a95057c127dfe7f87e2f717a34dffc85d53b0892ed3b7eb3f7868",
+    "analysis/display-takeover/build-native-github-tap-fast.sh": "c05fb80765f8931d4211de30d9afec2eddf39a0c9b27cd287c3c3aa4ccf6352d",
+    "analysis/display-takeover/native-github-tap-fast.elf": "d36daa251ce820e0e4038d6a0190554306a1bc6a545d0f7a502a8327000454f0",
+    "analysis/display-takeover/native-github-tap-fast.bin": "9c529291e9c32534df89f17939e9b9d63a38267f45d0b04a579a84b0c1c7c6d9",
+    "analysis/display-takeover/native-github-tap-fast-feedback.bin": "61285fe7177bafa255b4dc880a70d58cd44f6edbd25171db4674f81b7da52cf0",
+    "analysis/display-takeover/native-github-tap-fast.map": "786ffdc0bc3fb8846f4ca0602c2e96d0c2c4e84fe9e16189cf3f3c403f8aa5ea",
+    "analysis/display-takeover/github-tap-fast-arm-offline-result.json": "4a423900d86e3daa4d717e32eb258260787005b307792e75cb4f0c9892a2c85a",
+    "analysis/display-takeover/test_native_github_tap_fast_arm.py": "5549679474b36e016bbe2c0a6f63028f97d1bf50f2a45f3b7e5ab499bc6c5b22",
+    "analysis/display-takeover/render_github_tap_reference.py": "34e92c0ec3ee7397a5a29ee3dc29ed7d5e7eaf4d641805ded40bf4c419dfb757",
+    "analysis/display-takeover/render_github_card_reference.py": "a470a5f9c1d357c4587ad645089c50e92da3cf3c8d5b0089e4dca290ffffb72f",
+    "analysis/display-takeover/github-tap-logo.h": "b5549c598115b23298913bdce00b948bda27996f320c7b3e1f374e52261824b9",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c",
+    "analysis/display-takeover/test_native_drawer_arm.py": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+    "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408",
+    "analysis/display-takeover/native-github-tap-fast.md": "8b0c2e159849df67e310191f8b07b806e2b43b1d4bf0ac5f12dfa206038c7df8",
+    "analysis/display-takeover/github-tap-aux-container-review-1.50.10.json": "489161863af8cc23294daa0b39fb8ddf065d7839a605b69b726e44c360ccd740",
+    "analysis/display-takeover/native-github-tap-independent-review-1.50.10.json": "46ea240ec909d16f5125256edf3db5d72152f094ca3b02e9136113b1d9427f5f",
+    "analysis/persistence/native-github-tap-frozen-inputs.json": "680a5f173a55c2e9811987a794b5332628f55d76a142076b9088aab3fea94f0e",
+    "backups/mi-panel-flash-16m-1.50.10-20261004.bin": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "final_vs_draft": {
+    "semantic_change_found": false,
+    "observation": "Locked source retains the reviewed feedback/quiet/footer logic. handoff has explicit noinline and the build uses fomit-frame-pointer; these are code-generation choices. The locked ELF hash equals the ELF exercised in the draft review."
+  },
+  "ELF": {
+    "entry": "0x3804b2f5",
+    "broker_main": "0x3804b2f9",
+    "sections": [
+      {
+        "name": ".prefix",
+        "start": "0x3804b108",
+        "bytes": 488,
+        "end_exclusive": "0x3804b2f0"
+      },
+      {
+        "name": ".start",
+        "start": "0x3804b2f4",
+        "bytes": 4,
+        "end_exclusive": "0x3804b2f8"
+      },
+      {
+        "name": ".broker",
+        "start": "0x3804b2f8",
+        "bytes": 2840,
+        "end_exclusive": "0x3804be10"
+      },
+      {
+        "name": ".feedback",
+        "start": "0x3807a764",
+        "bytes": 431,
+        "end_exclusive": "0x3807a913"
+      }
+    ],
+    "main_BIN_bytes": 3336,
+    "main_limit_end_exclusive": "0x3804be70",
+    "auxiliary_limit_end_exclusive": "0x3807a920",
+    "writable_allocated_sections": 0,
+    "undefined_symbols": 0,
+    "relocation_sections": 0,
+    "entry_branch_targets_actual_broker_main": true,
+    "main_and_aux_BIN_exactly_equal_ELF_sections": true,
+    "image_load_length_or_BSS_change": false
+  },
+  "checks": [
+    "All four parent-supplied locked C/ELF/test/model hashes match actual files; both BIN hashes/sizes agree with the hash-bound 53-group model report.",
+    "Independent ELF parsing finds exactly four approved non-writable allocated sections, no undefined symbols or relocations, and correct Thumb entry. The 4-byte entry B.W reaches broker_main; flattened main and separate auxiliary BINs match ELF sections byte-for-byte.",
+    "3336-byte main ends at3804be10, preserving shared helper3804be70. 431-byte auxiliary ends at3807a913 within the independently qualified444-byte former worker slot, preserving backlight function3807a920 and later shared helpers.",
+    "Build is freestanding Cortex-A7 Thumb/Oz with fixed linker sections and no new writable/BSS sections. Entry and native API addresses remain specific to1.50.10. Mutable state remains184-byte heap context with feedback offsets176/180 and1228800-byte owned canvas/snapshot allocation.",
+    "feedback_pending1 awaits accepted new-count PAN; success moves to2 before attempting fresh CLOCK; success anchors and clears to0. Failed PAN retains1 anddirty; failed post-PAN CLOCK retains2 without expiry. A later valid CLOCK anchors2 without replaying an accepted frame.",
+    "Expiry requires valid unsigned monotonic elapsed>=800ms, pending0 and prequiet0. A redraw of the same accepted count does not refresh the deadline. Count saturation and clock wrap behavior remain covered.",
+    "quiet0/1 acquire broker then both publisher locks in original driver order, check both valid input inode classes, subscriber head/tail equality, both released states, raw physical pressed byte and gesture.active. They release publishers before ordinary draw/PAN; every observed success/failure path balances locks.",
+    "quiet1 clears count/pending only after an accepted star PAN and a second quiet check. Input published during PAN retains count anddirty for retry; queued display state from that PAN does not itself falsely reject postquiet.",
+    "quiet2 retains original owner handoff transaction: both publisher locks enclose displayqueue0 admission, raw PAN and owner commit only on nonnegative return. The added inactive-gesture gate is stricter; no owner commit or native PAN occurs while an active contact is retained.",
+    "Partial composition requires no overlay, cover320 and previously admitted shown320. Otherwise first presentation, unavailable shown sentinel and overlay animation use full composition. The original background/phase/admitted-frame lifecycle remains intact.",
+    "Only footer rows249..269 are cleared and restamped for settled feedback. Star and multidigit/extreme counters match the independent logical oracle; outside-footer pixels and framebuffer redzones remain untouched. Private stamp/paint/footer/number preserve callee-saved registers and aligned SP.",
+    "Independent read-only execution invoked fast_checks,feedback_checks,layout_checks and passed26 test groups without calling renderer/result writers. This revalidated slow-PAN anchors, CLOCK/PAN failures, pre/post input-publication gates, active contacts, owner handoff, exact pixel/write bounds, first/full composition, ring-overflow limits and61 prior frozen inputs.",
+    "Provided hash-bound ARM result records53 passing groups, including642 clipping canvases and callback/animation/lifecycle checks. The reported settled+1 canvas writes drop from626460 bytes to41004; this is a store-count measurement, not physical timing.",
+    "Original TIMER executes outside broker mutex; stock PAN and AREA interception, input state/continue offsets12/13, list next84, physical/virtual classification, fresh sample handling and boot-held-contact suppression are retained.",
+    "No new Flash/MMIO mutation, code injection path, input subscription, long-lived worker or native ABI was added by the performance change. Original native PAN remains the only rendering submission API."
+  ],
+  "independent_execution": {
+    "hardware_operation": false,
+    "actual_ARM_ELF_used": true,
+    "native_APIs_mocked": true,
+    "test_group_count": 26,
+    "functions_called": [
+      "fast_checks",
+      "feedback_checks",
+      "layout_checks"
+    ],
+    "result_or_preview_writer_called": false,
+    "all_passed": true,
+    "prior_frozen_input_count": 61,
+    "prior_frozen_inputs_unchanged": true
+  },
+  "provided_model_result": {
+    "sha256": "4a423900d86e3daa4d717e32eb258260787005b307792e75cb4f0c9892a2c85a",
+    "reported_check_count": 53,
+    "reported_passed": true,
+    "all53_independently_rerun": false
+  },
+  "limits": [
+    "Native PAN still performs full-frame rotation/submission. Reduced canvas stores do not establish hardware latency, actual LCD cadence or a15x speedup.",
+    "The original input ring remains8 samples and overwrites old records. Already lost DOWN/UP pairs cannot be reconstructed; arbitrary-speed taps and IRQ burst loss are not proved fixed.",
+    "Unicorn executes actual ARM instructions but mocks native APIs, IRQs, mutex behavior, OS scheduling and scanout. The new variant has no hardware validation in this review.",
+    "Complete power-cycle validation is skipped per the current user preference and is not counted as passed. Warm usability and Mi Home acceptance must be recorded separately by the hardware-owning parent.",
+    "Only supplied build source/script and linked outputs were inspected; no compiler/linker rebuild was run because locked inputs must remain unchanged.",
+    "No independent broad audit of original GUI exit/destruction, all runtime callback races or earlierROM/eFuse/OTA paths was added. This review preserves the prior startup-only lifetime and current container qualifications.",
+    "A separate exact-baseline three-sector installer/restore review and frozen dependency set remain required. This document does not authorize use of a historical writer against another installed baseline."
+  ],
+  "cold_user_skipped": true,
+  "hardware_operations": 0,
+  "Git_operations": 0,
+  "locked_inputs_modified": false,
+  "raw_vendor_firmware_arrays_or_credentials_in_report": false
+}

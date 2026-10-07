@@ -2,7 +2,7 @@
 
 本页描述本机精确 1.50.10 映像上的维护版 **maintained-http-four-page-20261007-c**。
 源码、四页布局与离线审查已冻结，四页读回、状态闭包、暖启动和 HTTP 基础请求通过；
-用户界面、息屏唤醒及米家验收待记录，不能继承旧版验收。
+用户已确认双击切换和息屏唤醒正常；图片、上下滑、三击取消及米家验收待记录，不能继承旧版验收。
 源码入口见 [firmware](../firmware/README.md)，精确材料位于 ignored 的 release 快照。
 [当前发布结果](../firmware/releases/maintained-http-20261007.json)单列离线、硬件及用户观察。
 最后确认的旧三页 TCP 原型另有 [manifest](../analysis/persistence/native-image-drawer-patch-inputs-1.50.10.json)
@@ -17,7 +17,7 @@
 
 ```mermaid
 flowchart LR
-    Client[上传器或后续网页] -->|HTTP VIMG body| Worker[A7 网络 worker]
+    Client[上传器或图片编辑网页] -->|HTTP VIMG body| Worker[A7 网络 worker]
     Worker -->|校验后发布| Slots[两个 RGB565 RAM 槽]
     Slots -->|GUI 安全边界交换| GUI[原 GUI 线程中的 drawer 代理]
     Original[原米家 UI 和 JS] --> GUI
@@ -63,7 +63,8 @@ touch publisher、核对 ring 和真实释放状态、提交新源，最后更�
 不参与双击识别，但仍允许抽屉手势。
 
 这是对可观察状态的处理：完整 off/on 若发生在两次 timer 采样之间就无法识别，
-原厂调度及唤醒首帧还需实机验收。没有找到通用的锁屏插件生命周期入口。
+用户于 2026-10-07 确认息屏唤醒测试正常；这个观察不证明所有原厂调度路径。
+没有找到通用的锁屏插件生命周期入口。
 
 ## 网络与图片 RAM
 
@@ -72,6 +73,10 @@ touch publisher、核对 ring 和真实释放状态、提交新源，最后更�
 完整校验并发布到 GUI 待消费槽后返回 202；它不是 LCD 扫描或 Flash 保存完成确认。
 `GET /` 默认返回 200 说明页，配置前端 URL 的构建返回 303，并把设备 endpoint 放在
 fragment。当前 URL 留空，303 只做过模型验证，没有部署前端。
+
+[图片编辑网页](frontend.md)在浏览器内完成裁切、缩放和 RGB565 转换，直接调用面板
+API；Cloudflare 后续只托管静态文件，不代理图片或访问用户的局域网。设备地址可由
+fragment 或用户手动输入，图片处理与下载不依赖面板连接。
 
 OPTIONS/CORS 已实现；HTTPS 云网页到局域网的浏览器权限和网络条件尚未端到端验证。
 没有客户端认证或设备端 PNG/JPEG 解码。A7 socket 经 usrsock/RPMsg 使用原 MCU 网络服务。
@@ -143,7 +148,8 @@ wifi_recorder 诊断 builtin 的禁用 stub 继承此前版本，它不是 Wi-Fi
 | 发布及写入流程 | 12 项 release 工具测试、93 项当前 Jim writer mock；独立 ownership、程序及 writer 审查 |
 | 安装及暖启动 | 四页完整 SHA 读回、native/cache/context 闭包与 GLOBAL 清理通过，暖启动正常 |
 | HTTP | GET/200 说明页、OPTIONS/204 CORS、16B 错误 body POST/400、307216B 完整测试图 POST/202、错误 FNV POST/422 通过 |
-| 用户实屏及交互 | 双击地址、手势、三击取消及息屏唤醒待用户验收 |
+| 图片编辑前端 | Windows Chrome 本地 HTTP 页面的裁切像素、缩放、PNG/RGB565 导出及真实 POST/202 通过；云 HTTPS 到 LAN 未测试 |
+| 用户实屏及交互 | 2026-10-07 用户确认双击地址和息屏唤醒正常；图片、手势和三击取消仍待验收 |
 | 米家 | 当前维护版在线/控制待用户验收 |
 | 新启动只读状态 | alive=1、ready=1、mode=1、server=1；上传前 generation/displayed_generation=0，完整上传后均为 1、pending=0，GUI 活跃 |
 | 当前恢复路线 | 精确目标及顺序已审查、mock 通过；该 release 的硬件 restore 未执行 |

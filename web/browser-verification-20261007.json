@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "date": "2026-10-07",
+  "passed": true,
+  "browser": "Windows Chrome",
+  "scope": "Initial layout: local HTTP frontend to LAN panel; later layout revision is tracked separately",
+  "checks": {
+    "svg_file_decode": "passed",
+    "portrait_center_crop_independent_pixel_oracle": "passed",
+    "pan_bottom_region_independent_pixel_oracle": "passed",
+    "button_and_keyboard_zoom": "passed",
+    "reset": "passed",
+    "two_finger_pinch_to_2x": "passed",
+    "png_export_dimensions": [480, 320],
+    "rgb565_export_bytes": 307200,
+    "known_green_export_pixels": "passed",
+    "api_documentation_expands": "passed",
+    "mobile_390px_no_horizontal_overflow": "passed",
+    "browser_post_status": 202,
+    "browser_request_pixels_match_rgb565_export": true,
+    "browser_request_fnv_matches_pixels": true,
+    "page_errors": 0
+  },
+  "mocked_upload": {
+    "scope": "Delayed HTTP 202 response in browser",
+    "editing_during_upload_reports_sent_snapshot": "passed",
+    "address_change_during_upload_reports_original_target": "passed"
+  },
+  "layout_revision": {
+    "date": "2026-10-07",
+    "status": "passed",
+    "app_name": "小米智能家庭面板自定义锁屏",
+    "requirements": [
+      "Previous GitHub card as the default image",
+      "Muted dark gray page theme #303b4b; default GitHub image keeps its gold Star row",
+      "Enter the editor directly without a large introduction heading",
+      "API is always visible as METHOD, URL and PAYLOAD",
+      "API body description does not require the repository Node upload tool",
+      "Pixelated preview, no zoom or reset row, and wheel, pinch or keyboard zoom"
+    ],
+    "historical_core_checks": "The initial crop, zoom, export and HTTP upload checks remain recorded above; they are not a full retest of the revised layout",
+    "old_api_accordion": "The earlier expansion check applies only to the initial layout; the revised API is always visible",
+    "checks": {
+      "desktop_width": 1400,
+      "heading_font_size_px": 17,
+      "exact_app_name": true,
+      "default_canvas_pixels_match_png": true,
+      "page_accent": "#303b4b",
+      "css_image_rendering": "pixelated",
+      "no_large_intro_heading": true,
+      "no_details_or_summary": true,
+      "no_zoom_slider": true,
+      "no_zoom_or_reset_row": true,
+      "method_url_payload_always_visible": true,
+      "no_repository_node_example": true,
+      "zoom_110_percent_disables_canvas_smoothing": true,
+      "enlarged_default_palette": ["#101010", "#ffffff", "#a0a0a0", "#e3b341"],
+      "wheel_pinch_keyboard_zoom_and_reset": "passed",
+      "mobile_no_horizontal_overflow_widths": [390, 360],
+      "fragment_initializes_device_and_api_url": "passed",
+      "page_errors": 0
+    },
+    "default_image": {
+      "source": "First-party offline rendering; not a device dump",
+      "asset": "public/github-card.png",
+      "sha256": "ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e"
+    },
+    "download_filename_filesystem_verification": {
+      "status": "passed",
+      "scope": "Separate ordinary browser download checks",
+      "default_png_filename": "xiaomi-panel-github-lockscreen-480x320.png",
+      "chosen_image_rgb565_filename": "旅行照片-480x320.rgb565",
+      "rgb565_bytes": 307200
+    },
+    "scope_limit": "This revised layout check did not perform a device upload or firmware write; earlier real HTTP upload evidence keeps its original scope"
+  },
+  "payload_margin_revision": {
+    "date": "2026-10-07",
+    "status": "passed",
+    "requirements": [
+      "PNG and complete .vimg Payload downloads; no raw RGB565 download",
+      "Copyable cURL example sends the .vimg file as the request body",
+      "544x384 preview with 32px margins and 55 percent black mask outside the 480x320 crop",
+      "The crop center is copied 1:1 from the same canvas used for export and sending",
+      "No zoom or reset row, independent waiting row, cloud privacy banner or GitHub link star",
+      "Idle, working, success and error send button states with contextual feedback",
+      "Tree-shaken Lucide UI icons and generated favicon; GitHub brand SVG retained"
+    ],
+    "payload_bytes": 307216,
+    "payload_format": "16-byte VIMG header plus 307200-byte RGB565LE pixels with FNV-1a checksum",
+    "historical_raw_download_checks": "All earlier RGB565 sizes, filenames and body comparisons above apply to the previous raw-download UI; they are not evidence for the new complete Payload download",
+    "preview_export_send_match": {
+      "png_dimensions": [480, 320],
+      "png_pixels_equal_preview_crop": true,
+      "size_zoom_corner_combinations": 27,
+      "mocked_request_equals_downloaded_payload": true,
+      "real_device_upload_this_revision": false
+    },
+    "download_payload_filename_header_and_fnv": {
+      "status": "passed",
+      "method": "Intercepted browser Blob and anchor download attribute",
+      "filename": "旅行照片-480x320.vimg",
+      "bytes": 307216,
+      "vimg_width_height_pixel_length": "passed",
+      "independent_fnv_verification": "passed",
+      "independent_green_pixel_oracle": "passed",
+      "ordinary_browser_vimg_filesystem_write": "not_tested"
+    },
+    "masked_outside_region": {
+      "stage_dimensions": [544, 384],
+      "margin_px": 32,
+      "mask_black_opacity": 0.55,
+      "inside_green_rgba": [0, 255, 0, 255],
+      "outside_top_red_rgba": [115, 0, 0, 255],
+      "outside_bottom_blue_rgba": [0, 0, 115, 255]
+    },
+    "send_button_states": {
+      "scope": "Browser with mocked HTTP responses",
+      "idle_working_success_error": "passed",
+      "working_button_disabled": true,
+      "normal_success_has_no_extra_feedback": true,
+      "http_422_error_feedback": "passed",
+      "editing_during_upload_has_precise_feedback": "passed",
+      "editing_after_completion_returns_idle": "passed"
+    },
+    "latest_layout": {
+      "no_waiting_row_cloud_note_or_link_star": true,
+      "no_zoom_or_reset_row": true,
+      "curl_vimg_example_and_api_always_visible": true,
+      "wheel_pinch_keyboard_zoom_and_reset": "passed",
+      "default_crop_matches_png_and_enlarged_pixels_stay_sharp": true,
+      "mobile_no_horizontal_overflow_widths": [390, 360],
+      "fragment_initializes_device_and_api_url": "passed",
+      "page_errors": 0
+    },
+    "lucide_icons_and_favicon": {
+      "ui_icons": "passed",
+      "github_brand_svg_exception": true,
+      "favicon_source": "Generated from the imported Lucide Image icon"
+    },
+    "scope_limit": "The current integration used intercepted downloads and mocked HTTP responses, with no live device upload or firmware write. Earlier raw RGB565 filesystem checks do not prove the current .vimg filesystem download."
+  },
+  "boundaries": {
+    "lcd_scan_completion": "not_verified_by_http_202",
+    "cloud_https_to_lan": "not_tested",
+    "cloudflare_deployment": "not_deployed",
+    "firmware_flash_changes": false,
+    "cold_power_cycle": "not_performed"
+  }
+}

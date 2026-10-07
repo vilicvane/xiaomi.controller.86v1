@@ -117,11 +117,21 @@
   },
   "user_observations": {
     "image_display": "pending",
-    "double_tap_image_address": "pending",
+    "double_tap_image_address": "passed",
     "swipe_roundtrip": "pending",
     "key3_triple_disabled": "pending",
-    "stock_sleep_wake_custom": "pending",
-    "mi_home_online_control": "pending"
+    "stock_sleep_wake_custom": "passed",
+    "mi_home_online_control": "pending",
+    "report": {
+      "date": "2026-10-07",
+      "source": "user",
+      "statement": "双击和熄屏测试都正常",
+      "scope": [
+        "double_tap_image_address",
+        "stock_sleep_wake_custom"
+      ],
+      "other_observations": "Not confirmed by this report"
+    }
   },
   "cold_power_cycle": "skipped_by_explicit_user_request",
   "restore": {

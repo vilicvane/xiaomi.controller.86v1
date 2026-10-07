@@ -30,9 +30,11 @@
   GET/200 instructions, OPTIONS/204 CORS, wrong body POST/400, full image POST/202
   and invalid FNV POST/422 passed. Rejection preserved generation/displayed_generation=1,
   pending=0/server=1; server_error=422 means last rejected HTTP status, not worker failure.
-  User image/doubletap/swipe/key3-removal/sleep-wake/MiHome observations are pending.
+  User doubletap and stock sleep-wake observations passed on 2026-10-07.
+  User image/swipe/key3-removal/MiHome observations remain pending; do not infer them from that report.
   HTTP 18086 has no legacy raw TCP/VACK compatibility. Frontend URL is blank; configured 303
-  was tested only in a separate ARM model. Frontend and HTTPS-browser-to-LAN are unverified.
+  was tested only in a separate ARM model. Local HTTP frontend-to-LAN upload passed in Windows Chrome;
+  see web/browser-verification-20261007.json. Cloud HTTPS-browser-to-LAN remains unverified.
   Context remains 212 B: doubletap state +128, screen_off +144, show_address +204;
   image/receive +176/+180, pending +184, generation +188/+192, server +196/+200, IPv4 +208.
   Do not interpret these with historical key3/reserved or tap-fast feedback semantics.

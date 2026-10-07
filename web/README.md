@@ -1,0 +1,49 @@
+# 小米智能家庭面板自定义锁屏
+
+纯静态 Vite + TypeScript 页面，为维护版 HTTP 图片 API 准备 480×320 画面。
+图片在浏览器内裁切、缩放、转换并发送到同一局域网的面板；不需要后端或图片中转服务。
+支持 PNG、JPEG、WebP、SVG，单文件最大 32MiB；动图采用解码后的静态首帧。
+拖动调整位置，用滚轮、双指或键盘 `+`/`-` 调整 1～5 倍覆盖比例，键盘 `0` 重置构图。
+页面不显示缩放或重置栏，可下载 PNG 和完整的 `.vimg` Payload。
+
+页面直接进入编辑工作区，默认画面沿用此前设备端 GitHub 卡片：GitHub 标志、用户名、
+项目名称与金色星标提示。页面主题为克制的深灰色 `#303b4b`，默认图片保持原有金色。
+可直接发送默认画面，也可替换
+自己的图片。API 指南常显，按 METHOD、URL、PAYLOAD 展示接口与二进制 body 说明。
+下载的 Payload 为 307216B，包含 VIMG 头、RGB565LE 像素和 FNV 校验，可直接用于
+页面的 cURL 示例；不再提供仅像素的 raw RGB565 下载。
+
+预览在裁切框外继续显示整图，框外以 55% 黑色遮罩变暗；中央 480×320 区域与导出和
+发送使用同一画布。放大源像素时关闭插值，大图缩小时使用高质量过滤。
+默认 [GitHub 卡片 PNG](public/github-card.png)来自第一方离线绘图，是静态资源而非设备 dump。
+SHA-256：`ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e`。
+
+从仓库根目录运行：
+
+```powershell
+npm --prefix web install
+npm --prefix web run dev
+npm --prefix web run test
+npm --prefix web run build
+```
+
+使用 Node.js 24。开发服务器地址以 Vite 控制台为准。生产产物位于 `web/dist`，不提交依赖和生成产物。
+设备地址可手动输入，或由页面 URL 的 `#device=` fragment 传入。
+双击面板自定义画面即可查看设备当前地址和 18086 端口。
+
+裁切缩放、导出、上传语义及 Cloudflare Pages 配置见
+[前端开发与使用说明](../docs/frontend.md)，完整协议见
+[HTTP 图片 API](../docs/http-image-api.md)。
+
+HTTP 202 表示设备已接收并排队供 GUI 消费；图片保存在 RAM，重启不会保留。
+当前已安装固件没有配置前端跳转 URL；本页面可独立访问，不需为编辑图片改写固件。
+Cloudflare 部署及 HTTPS 页面到面板 HTTP 的实际浏览器链路分别验证；浏览器请求本地网络
+权限时，授权后才能上传。未连接设备时仍可编辑和下载。
+
+本地 HTTP 页面到面板的 Windows Chrome 上传、裁切/缩放和导出已验证，见
+[浏览器验证](browser-verification-20261007.json)；云端 HTTPS 到 LAN 尚未测试。
+该记录的初次检查使用旧布局；新版深灰主题、默认卡片、像素放大、常显 API、
+移动端布局和普通浏览器下载文件名已单列检查通过。
+这些检查保留此前布局和 raw RGB565 下载的原范围；新版框外预览、完整 Payload、
+发送按钮状态及 Lucide 图标也已单列检查通过。最新检查使用模拟 HTTP 和拦截导出
+Blob/下载属性，没有新做真实设备上传或 `.vimg` 的普通浏览器落盘验证。

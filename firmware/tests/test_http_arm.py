@@ -33,8 +33,8 @@ def request(method='GET', path='/', fields=(), version='1.1'):
     return ('\r\n'.join(lines + list(fields)) + '\r\n\r\n').encode()
 
 
-def upload(payload, checksum=None):
-    fields = ('Content-Type: application/octet-stream', 'Content-Length: 307216')
+def upload(payload, checksum=None, content_type='application/octet-stream'):
+    fields = (() if content_type is None else ('Content-Type: ' + content_type,)) + ('Content-Length: 307216',)
     header = struct.pack('<4sHHII', b'VIMG', 480, 320, len(payload),
                          previous.fnv(payload) if checksum is None else checksum)
     return request('POST', '/api/image', fields), header, payload
@@ -228,8 +228,12 @@ def parser_checks():
         (request('POST', '/api/image'), 411),
         (request('POST', '/api/image', ('Content-Length: 307217',)), 413),
         (request('POST', '/api/image', ('Content-Length: 307215',)), 400),
-        (request('POST', '/api/image', ('Content-Length: 307216',)), 415),
-        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: text/plain')), 415),
+        (request('POST', '/api/image', ('Content-Length: 307216',)), 0),
+        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: application/x-www-form-urlencoded')), 0),
+        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: text/plain')), 0),
+        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type:')), 0),
+        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: text/plain', 'content-type: application/octet-stream')), 0),
+        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: a\x01b')), 400),
         (request(fields=('Expect: 100-continue',)), 417),
         (request(fields=('Transfer-Encoding: chunked',)), 400),
         (request(fields=('Content-Length: 0', 'Content-Length: 0')), 400),
@@ -250,7 +254,7 @@ def parser_checks():
         assert m.call('panel_http_parse', SCRATCH, len(data), REQUEST) == status
         if status:
             assert bytes(m.uc.mem_read(REQUEST, 8)) == bytes([0x5a]) * 8
-    checks.append('Actual ARM parser independently matches valid HTTP1.0/1.1 and all method/path/Host/length/type/TE/Expect/control rejection statuses')
+    checks.append('Actual ARM parser ignores absent/arbitrary/empty/duplicate Content-Type while preserving HTTP1.0/1.1 method/path/Host/length/TE/Expect/control rejection statuses')
     valid = request()
     for size in range(len(valid)):
         m.uc.mem_write(SCRATCH, valid[:size])
@@ -292,7 +296,7 @@ def response_checks():
         (request('POST', '/api/image'), 411),
         (request('POST', '/api/image', ('Content-Length: 307217',)), 413),
         (request('POST', '/api/image', ('Content-Length: 307215',)), 400),
-        (request('POST', '/api/image', ('Content-Length: 307216',)), 415),
+        (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: a\x01b')), 400),
         (request(fields=('Expect: 100-continue',)), 417),
         (request(fields=('Transfer-Encoding: identity',)), 400),
         (request(fields=('Content-Length: 0', 'content-length: 0')), 400),
@@ -368,6 +372,22 @@ def image_checks():
     m.guards()
     checks.append('Coalesced HTTP/VIMG/body preserves cached binary bytes; FNV-valid307200B publishes owned receive slot only, then GUI atomically swaps and renders exactRGB32 without guard damage')
 
+    for content_type in (None, 'application/x-www-form-urlencoded', 'text/plain', ''):
+        http_variant, binary_variant, data_variant = upload(payload, content_type=content_type)
+        m_variant = Machine().ready().custom()
+        active = bytes(m_variant.uc.mem_read(IMAGE, 307200))
+        m_variant.transact([http_variant + binary_variant, data_variant])
+        m_variant.response(202)
+        assert m_variant.f('image_pending') == 1 and m_variant.f('image') == IMAGE
+        assert bytes(m_variant.uc.mem_read(IMAGE, 307200)) == active
+        assert bytes(m_variant.uc.mem_read(RECEIVE, 307200)) == payload
+        m_variant.tick(ms=0)
+        assert m_variant.f('image') == RECEIVE and not m_variant.f('image_pending')
+        assert m_variant.f('generation') == m_variant.f('displayed_generation') == 2
+        assert bytes(m_variant.uc.mem_read(PIXELS, 614400)) == struct.pack('<I', previous.rgb(0x07e0)) * 153600
+        m_variant.guards()
+    checks.append('Absent Content-Type, curl default form type, explicit text/plain and empty type all accept the same valid VIMG payload with202; actual ARM GUI swaps and renders exact pixels only after admission')
+
     second = previous.frame(0x001f)
     http2, binary2, _ = upload(second)
     m.closed.clear()
@@ -394,6 +414,23 @@ def image_checks():
     m.response(422)
     assert not m.f('image_pending') and m.f('image') == IMAGE
     checks.append('Wrong VIMG magic/dimensions/length rejects before body write; independently wrong FNV returns422 without replacing active image')
+
+    for content_type in (None, 'application/x-www-form-urlencoded'):
+        http_variant, binary_variant, _ = upload(payload, content_type=content_type)
+        for status, events in (
+            (400, [http_variant + b'NOPE' + binary_variant[4:]]),
+            (422, [http_variant + binary_variant, previous.frame(0x001f)]),
+        ):
+            rejected = Machine().ready().custom()
+            active = bytes(rejected.uc.mem_read(IMAGE, 307200))
+            generation = rejected.f('generation')
+            displayed = rejected.f('displayed_generation')
+            rejected.transact(events)
+            rejected.response(status)
+            assert rejected.f('server_error') == status and not rejected.f('image_pending')
+            assert rejected.f('image') == IMAGE and bytes(rejected.uc.mem_read(IMAGE, 307200)) == active
+            assert rejected.f('generation') == generation and rejected.f('displayed_generation') == displayed
+    checks.append('Ignoring absent or curl-default Content-Type does not weaken content validation: bad VIMG400 and wrong FNV422 preserve active pixels, pending0 and both generation counters')
 
     for events in ([http + binary[:8], 0], [http + binary, data[:100], 0],
                    [http + binary, data[:100], ('error', 5)]):
@@ -595,8 +632,9 @@ def main():
         'context_bytes': 212, 'header_heap_bytes': 2048, 'image_payload_bytes': 307200,
         'configured_redirect_tested': bool(FRONTEND), 'configured_cors_tested': ORIGIN != '*',
         'limitations': 'Actual ARM instructions execute, but native APIs/socketRPC timing/locks/OS scheduling/LCD scanout/heap availability/cold boot are mocked or unchecked.'}
-    output = ROOT / ('build/reviews/http-configured-arm-offline-result.json'
-                     if FRONTEND or ORIGIN != '*' else 'firmware/tests/http-arm-offline-result.json')
+    output = Path(os.environ.get('PANEL_TEST_OUTPUT', ROOT / (
+        'build/reviews/http-configured-arm-offline-result.json'
+        if FRONTEND or ORIGIN != '*' else 'firmware/tests/http-arm-offline-result.json')))
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(result, indent=2))

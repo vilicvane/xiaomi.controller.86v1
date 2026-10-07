@@ -51,7 +51,7 @@ unsigned panel_http_parse(const char *data, unsigned bytes,
                       equal(data, first, "POST", 0) ? PANEL_HTTP_POST :
                       equal(data, first, "OPTIONS", 0) ? PANEL_HTTP_OPTIONS : 0;
     unsigned target = first + 1, target_bytes = second - target;
-    unsigned pos = end + 2, length = 0, has_length = 0, has_host = 0, has_type = 0;
+    unsigned pos = end + 2, length = 0, has_length = 0, has_host = 0;
     while (pos < bytes - 2) {
         end = pos;
         while (end + 1 < bytes && data[end] != '\r') ++end;
@@ -76,10 +76,6 @@ unsigned panel_http_parse(const char *data, unsigned bytes,
         }
         if (equal(data + pos, colon - pos, "host", 1))
             if (has_host++ || value == value_end) return 400;
-        if (equal(data + pos, colon - pos, "content-type", 1)) {
-            if (has_type++) return 400;
-            if (!equal(data + value, value_end - value, "application/octet-stream", 1)) has_type = 2;
-        }
         pos = end + 2;
     }
     if (http11 && !has_host) return 400;
@@ -89,7 +85,6 @@ unsigned panel_http_parse(const char *data, unsigned bytes,
     if (method == PANEL_HTTP_POST) {
         if (!has_length) return 411;
         if (length != PANEL_HTTP_BODY_BYTES) return length > PANEL_HTTP_BODY_BYTES ? 413 : 400;
-        if (has_type != 1) return 415;
     } else if (length) return 400;
     request->method = method;
     request->length = length;

@@ -66,10 +66,19 @@ int main(void)
     CHECK(POST "Content-Length: 307216\r\nTransfer-Encoding: chunked\r\n\r\n", 400, 0, 0);
     CHECK(POST "Transfer-Encoding: identity\r\n\r\n", 400, 0, 0);
     CHECK(POST "Content-Length: 307216\r\nExpect: 100-continue\r\n\r\n", 417, 0, 0);
-    CHECK("POST /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 307216\r\n\r\n", 415, 0, 0);
+    CHECK("POST /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 307216\r\n\r\n",
+          0, PANEL_HTTP_POST, PANEL_HTTP_BODY_BYTES);
     CHECK("POST /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 307216\r\n"
-          "Content-Type: text/plain\r\n\r\n", 415, 0, 0);
-    CHECK(POST "Content-Length: 307216\r\nContent-Type: application/octet-stream\r\n\r\n", 400, 0, 0);
+          "Content-Type: application/x-www-form-urlencoded\r\n\r\n",
+          0, PANEL_HTTP_POST, PANEL_HTTP_BODY_BYTES);
+    CHECK("POST /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 307216\r\n"
+          "Content-Type: text/plain; charset=utf-8\r\n\r\n",
+          0, PANEL_HTTP_POST, PANEL_HTTP_BODY_BYTES);
+    CHECK(POST "Content-Length: 307216\r\nContent-Type: text/plain\r\n\r\n",
+          0, PANEL_HTTP_POST, PANEL_HTTP_BODY_BYTES);
+    CHECK("POST /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 307216\r\n"
+          "Content-Type:\r\n\r\n", 0, PANEL_HTTP_POST, PANEL_HTTP_BODY_BYTES);
+    CHECK(POST "Content-Length: 307216\r\nContent-Type: a\1b\r\n\r\n", 400, 0, 0);
     CHECK("OPTIONS /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 1\r\n\r\n", 400, 0, 0);
     CHECK("GET / HTTP/1.1\r\nHost: panel\r\nContent-Length: 1\r\n\r\n", 400, 0, 0);
 

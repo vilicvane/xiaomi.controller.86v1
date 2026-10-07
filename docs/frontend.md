@@ -60,6 +60,10 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 
 curl -X POST "http://PANEL_IPV4:18086/api/image" -H "Content-Type: application/octet-stream" --data-binary "@picture-480x320.vimg"
 ```
 
+保留 `@` 前缀，它表示读取本地文件内容；只替换后面的文件名或路径。
+Content-Type header 用于当前已安装的严格版本；维护源码已取消类型限制，下一独立
+发布安装后可省略它。
+
 `202` 仅确认完整图像已接受并排队供 GUI 消费，不证明 LCD 扫描已经完成；图片仅存于
 RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，结果可能不确定，不能报告成功。
 页面不会自动重复发送来掩盖失败。

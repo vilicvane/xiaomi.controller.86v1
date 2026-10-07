@@ -45,6 +45,8 @@ node firmware/tools/release.ts verify maintained-http-four-page-20261007-c
 
 已冻结的 C/S/链接脚本、BIN/ELF、prepare 输出及结果保持原字节。后续可以修改 canonical
 `firmware/` 源码并构建另一个唯一 release，不能覆盖旧快照或运行会改写历史 result 的生成器。
+例如维护源码已放宽 Content-Type，但源码修改或离线构建不会改变已安装的严格版本；
+该行为须在下一独立发布安装后生效。
 缺材料先报告，不连接硬件凑结果。当前 [HTTP 图片 API](http-image-api.md) 与
 [历史 TCP 协议](image-upload-protocol.md) 分开记录；图片上传只修改 RAM。
 

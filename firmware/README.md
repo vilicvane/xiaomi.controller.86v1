@@ -32,12 +32,15 @@ clang-18 -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 
 ```powershell
 python -X utf8 firmware/tests/test_ui_arm.py
+$env:PANEL_TEST_OUTPUT = "build/reviews/http-arm-$(Get-Date -Format yyyyMMdd-HHmmss).json"
 python -X utf8 firmware/tests/test_http_arm.py
+Remove-Item Env:PANEL_TEST_OUTPUT
 node --test firmware/tools/release.test.ts
 ```
 
 ARM 模型执行真实 ELF 指令，原生接口仍由 mock 提供；不证明真实 RPC 延迟、LCD、
-并发或断电恢复。它们不调用历史结果写入器，新的结果只写维护版的结果文件。
+并发或断电恢复。它们不调用历史结果写入器；HTTP 模型用 `PANEL_TEST_OUTPUT` 将新结果
+写到独立路径，避免覆盖已冻结发布所绑定的结果。
 
 默认 `GET /` 返回本机说明页。未来前端有实际网址后，在 WSL 构建时配置：
 
@@ -49,6 +52,10 @@ PANEL_FRONTEND_ORIGIN=https://YOUR_FRONTEND_DOMAIN sh firmware/build.sh
 URL 不能含凭据或 fragment；根页面跳转时把设备 endpoint 放在 fragment 中，供前端读取。
 未配置的 origin 默认为 `*`。设备不内置 PNG/JPEG 解码，前端或上传器提供 RGB565。
 协议见 [HTTP 图片 API](../docs/http-image-api.md)。
+
+维护源码已允许省略或任意声明 Content-Type，仍校验固定长度、VIMG 头和 FNV。
+当前已安装的 `maintained-http-four-page-20261007-c` 保持原来的严格要求；网页与上传器
+继续声明 `application/octet-stream`，放宽需要新的独立发布安装后生效。
 
 ## 安装与维护
 

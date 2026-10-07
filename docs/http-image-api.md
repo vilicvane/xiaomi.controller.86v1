@@ -3,6 +3,11 @@
 适用于 `firmware/` 的维护版。历史 raw TCP/VACK 协议单独保留在
 [原型协议](image-upload-protocol.md)，维护版不接受旧 raw TCP 上传。
 
+维护源码已取消对 Content-Type 的限制；当前已安装的
+`maintained-http-four-page-20261007-c` 仍要求 `application/octet-stream`。
+这项放宽需要新的独立发布完成审查、冻结及安装后才在设备上生效，现有网页和上传器
+继续发送该 header，以便用于已安装版本。
+
 监听局域网 TCP18086。双击自定义画面可显示地址；地址按名义 1 秒查询 IPv4，查询失败
 显示 0 地址，更新时仅改变地址展示状态。原生 RPC 没有证明严格墙钟上限。
 
@@ -18,7 +23,9 @@
 
 ## 图片 body
 
-Content-Type 必须为 `application/octet-stream`，Content-Length 必须为 **307216**。
+Content-Type 可以省略；声明的类型不参与图片判断，因此也接受 cURL 默认的
+`application/x-www-form-urlencoded`。通用 HTTP header 语法仍需有效。
+Content-Length 必须为 **307216**。
 body 为 16B VIMG header 加 307200B RGB565LE；header 和校验算法与原型相同：
 
 | 偏移 | 类型 | 值 |
@@ -46,8 +53,9 @@ node firmware/tools/upload.ts PANEL_IPV4 --pattern
 ## 拒绝与连接条件
 
 常见状态为 400 无效/截断请求、404 路径不存在、405 方法不支持、408 请求头超时、
-411 缺 Content-Length、413 body 过大、415 Content-Type 错误、417 不支持 Expect、
+411 缺 Content-Length、413 body 过大、417 不支持 Expect、
 422 图像校验和错误、431 请求头超过2048B、503 clock/owned buffer/发布不可用。
+当前已安装的严格版本还会在 Content-Type 缺失或错误时返回 415。
 不支持 Transfer-Encoding、chunked、100-continue、连接复用或图片压缩。
 
 接收/发送各自检查 5 秒无进展及 30 秒总期限。网络 worker 串行处理请求，等待期间不持

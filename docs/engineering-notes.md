@@ -338,3 +338,54 @@ framequeue为空。实屏点击和切换观察仍待确认，单独记录在
 用于区分点击与滑动；新版并未改成DOWN计数。按下立即显示临时计数、拖动时撤销，
 或者按下高亮/松手计数都未实现；用户决定保留当前Demo，不继续修改交互。
 最新回复没有单独确认fast手势往返、星标超时或米家控制通过。
+
+
+## 设备端图片接收，独立 image drawer
+
+本次独立版本 main3416B止于3804be60，aux424B止于3807a90c；仍在3432B/444B
+容器内，be70共享helper、a920背光回调和ae28 JSON helper保持当前基线原字节。
+四个只读ALLOC段、两段BIN从ELF重构通过；原入口3804b2f5和禁用builtin不变。
+context212B，前176B沿用drawer；+176/+180图片与接收槽，+184待发布，+188/+192
+生成与PAN接受生成，+196/+200服务状态/错误，+204保留0，+208为IPv4原始网络字节。
+不要用tap-fast的feedback字段解释这些偏移。
+
+一次1,843,200B分配拥有RGB32画布/原快照与两个RGB565槽；实机分配成功。worker
+先完成307200B接收和FNV校验，GUI在framequeue空、无gesture/overlay时短持锁交换。
+网络等待不持GUI/publisher锁；PAN只接收owned RGB32，不直接读取可覆写RGB565。
+原publisher双锁的PAN/owner事务、物理/虚拟输入屏蔽与三击逻辑保留。
+
+Native TCP请求通过A7 usrsock/RPMsg转MCU；已离线确认socket/bind/listen/accept、
+recvfrom、4参数send、POSIX close、errno、ioctl和snprintf。SIOCGIFADDR=0x701使用
+40B ifreq，wlan0名字@0，family@20，IPv4@24。默认显示设备查询的IP:18086；
+首次非零IP缓存到本轮结束。完整图片被接收后不覆盖IP文字到图片上。
+
+33组当前ELF实际ARM模型（含全部321 cover逐像素）、12组独立重点检查和70项
+三页writer mock通过，93项新输入独立冻结。冻结表SHA为
+fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61。
+root独立重构三页及全writer/stage/outer/caller核对通过，所有旧255项材料保持exact。
+只从精确fast-tap三页安装，restore先返回fast-tap，之后才使用旧版本各自的restore。
+
+实机写入闭包、三页完整读回、普通重启的MCU/GUI/server状态通过。设备查IP与实屏
+地址确认通过；两次307200B上传VACK0，耗时约5.58/7.03秒，第二张使用实际PNG
+转换并核对RGB565完全一致。只读样本generation/displayed_generation2、pending0、
+server1/error0、GUI活跃；样本非原子，PAN接受不是LCD扫描测量。用户确认第一张图。
+进一步图片/手势/米家观察单独记于native-image-drawer-hardware-result.json。
+图片在RAM中，程序写入Flash常驻；没有实施/data图片写入或文件持久化验证。
+完整断电继续按用户要求跳过，不再次请求，也不借用更早的冷启动/控制结果。
+
+异常输入实测：再次无效header收到VACK1；完整错误校验和收到VACK2，最终只发布
+两张有效图。第一次无效header与客户端SHUT_WR截断未收到完整拒绝ACK。
+A7 usrsock send的REMOTE_CLOSED条件路径返回EPIPE，支持半关闭后无法回复的假设，
+但没捕获该次connflag/errno，不能宣称原因已证明。空连接回复退出约10.038秒：
+应用层5秒无进度/30秒接收计时及独立ACK计时，不保证RPMsg/native调用或整笔
+交易的严格墙钟上限。普通上传器不使用SHUT_WR；保留这些原型限制，不重写旧证据。
+
+字体静态证据：rcS在/dev/font存在时挂ROMFS到/font，原程序使用
+/font/MiSansW_Regular.ttf，资源位于MMC而非16MiB NOR。LVGL/FreeType初始化和
+字形回调候选已识别，但共享currentglyph/cache，必须协调原GUI执行与字体生命期；
+不能重新初始化/销毁正在使用的全局字体缓存。当前字体文件可读性、字形ABI和
+原生canvas适配没有实机调用；本版仅嵌入小数字用于地址，上传图片无需设备字库。
+
+用户随后确认第二张PNG、上下滑、第三键三击和米家在线控制均正常。独立只读样本
+alive/ready1、mode/wanted1、cover/shown320、pending0/phase150、generation/displayed2、
+server1/error0、toggles2及GUI活跃通过。没有执行或请求完整断电测试。

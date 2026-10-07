@@ -1,0 +1,140 @@
+{
+  "scope": "Exact reviewed 1.50.10 segmented image drawer; three NOR pages, exact fast-tap or image-drawer triples only; restore the precise original fast-tap triple",
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "local_only_session_configs": [
+    "diagnostics/mcu-native-image-drawer-install-session.cfg",
+    "diagnostics/mcu-native-image-drawer-restore-session.cfg"
+  ],
+  "review_artifacts": [
+    {
+      "path": "analysis/image-push/native-image-drawer-independent-review-1.50.10.json",
+      "sha256": "5f01243a796e5215854226211155a8e1d40179882057296591ffcaffa4cced3b"
+    },
+    {
+      "path": "analysis/persistence/native-image-drawer-installer-review-1.50.10.json",
+      "sha256": "d7e7b29883d731372a2f7063983152cdc0f11b4e5843bbcffa3c2aac83a24be0"
+    },
+    {
+      "path": "analysis/persistence/native-image-drawer-writer-peer-review-1.50.10.json",
+      "sha256": "ffb7d6d9bf6535f64b1b74c6e893ae1f3c83654939ee531d8704808c43bebb18"
+    },
+    {
+      "path": "analysis/persistence/offline-native-image-drawer-runner/run-1/summary.json",
+      "sha256": "225c6da7f6e09a7056c5ce62b3f97e1ea919b9df2e88a5f0662a8ce06ff5d30b"
+    },
+    {
+      "path": "analysis/image-push/image-drawer-arm-offline-result.json",
+      "sha256": "fe8cf3c37db6803b0e1d7b9869539a2a08ebc68213e895647ab336ceae18b4f0"
+    },
+    {
+      "path": "analysis/image-push/native-image-drawer-independent-review-1.50.10.json",
+      "sha256": "5f01243a796e5215854226211155a8e1d40179882057296591ffcaffa4cced3b"
+    },
+    {
+      "path": "analysis/persistence/native-image-drawer-writer-peer-review-1.50.10.json",
+      "sha256": "ffb7d6d9bf6535f64b1b74c6e893ae1f3c83654939ee531d8704808c43bebb18"
+    },
+    {
+      "path": "analysis/persistence/github-tap-aux-live-baseline-result.json",
+      "sha256": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3"
+    }
+  ],
+  "sha256": {
+    "analysis/persistence/native-image-drawer-patch-inputs-1.50.10.json": "21632e5168b3fda02c533d549e4ddf88e6cc446edc6414ca663a4f7fbd3ca8c0",
+    "analysis/image-push/native-image-drawer.c": "3bc6affa3969ce4e54264781117b8738fcea9576aeeed1d7f323cdf580a24a8d",
+    "analysis/image-push/native-image-drawer-entry.S": "7ff49a4ee51343cf348cfb9085ff5a7b8a801c2f0dac37d846ee61039e43f37e",
+    "analysis/image-push/native-image-drawer.ld": "43aed8dc7a4a95057c127dfe7f87e2f717a34dffc85d53b0892ed3b7eb3f7868",
+    "analysis/image-push/build-native-image-drawer.sh": "e8fa4505598dba27abf64c9bc15bd032b1de93274b20186f8d11f4424d6559f6",
+    "analysis/image-push/native-image-drawer.elf": "ba55f04a751b71e4a2d9933e7459889cf12287e3ec6f97a83f4559d7f7ccfa8b",
+    "analysis/image-push/native-image-drawer.bin": "e82a9814e711443e93670f5f60eae9a2a754ceb82199e9bd7d1bef14d2c2d5ee",
+    "analysis/image-push/native-image-drawer-feedback.bin": "29feeebfd3cac736b53724d844b972e9ef6aeaed9b7710667fb87b5191b5b144",
+    "analysis/display-takeover/test_native_github_tap_arm.py": "74f6c37f13d38b2f26fd20ec7c3b332809e607daa7390c426ba15cce117c9c47",
+    "analysis/display-takeover/test_native_github_card_arm.py": "c47a4267057bdbde3645b9edbb1e90d367e693000130adb94b65e9e5a8dc3d40",
+    "analysis/display-takeover/test_native_drawer_smooth_arm.py": "512c923505aa0d21d07f407c3bf11a2f71fec2c3edc5858030236da151d00ea2",
+    "analysis/display-takeover/test_native_drawer_ease_arm.py": "c1cf3cc9ec0b0d083c7c6d28aa291eabc66e3d96f1a1ae6efa66ca7658e84ace",
+    "analysis/display-takeover/test_native_drawer_arm.py": "6b2a7a45ef341c0d365180fd22b7e434f3c30cf069d4217461b6aa307e6b5ac6",
+    "analysis/display-takeover/test_ui_broker_arm.py": "853ac6e19943d262d4043c334e5beeb311e9dbc51a46c51b8524d1645f7be408",
+    "analysis/persistence/prepare_native_image_drawer_inputs.py": "b6e8be4e86821bd94a5be42282af74bce6b106c10bdda4f6eddfb722c0f3fec2",
+    "analysis/persistence/run_native_image_drawer_firmware.py": "ab3b6b1213b2d9023f1d64d57892176d4ee9d7edaf676cfa26f02861dd42685d",
+    "analysis/persistence/freeze_native_image_drawer_inputs.py": "fc7bbdf77f4c2884f4e223801e5c5ad2f713846490ad9c179d3b5f297ac7c6fe",
+    "analysis/persistence/review_native_image_drawer_installer.py": "ec4c4617fdc1ee65506cbb9bb59b97f1f76543209e0d9a59a20b082952c8117f",
+    "analysis/persistence/native_image_drawer_three_page_writer.py": "17a222edbc37695d7518c4e971ebb69b18c52ccfa95567f48fdfbaf480afbb25",
+    "diagnostics/swd-memory.cfg": "8e1e707483009a25d8a77752512a4afad9839b0a2f88c75656b21e7dc195a6a2",
+    "diagnostics/swd-dap.cfg": "de1b441878f71ac2985deae1c694d9790c2b386e35bdaac8787759f08416b8f5",
+    "diagnostics/boot-watchdog-stop.cfg": "56733df0028a65f0e0cb98295b1a7e1f2ffc00509b6fef520fec61cb1e17f441",
+    "diagnostics/boot-nor-read-runner.cfg": "1bd3b194645e755753b0253c9d0f0cab5a3b3cb189c83451cc522130d9560742",
+    "analysis/persistence/boot-nor-read-runner-data.cfg": "a52e7a38a7735ff5d8f2974057a013ce2329cb55cbc00071cce7ac5cd9c5e656",
+    "diagnostics/boot-nor-native-image-drawer-runner.cfg": "0a00b24b3343433179e1e5d6902529a3b2e61ff0bcacd3d09a3fe9b9ee3b6546",
+    "diagnostics/boot-nor-native-image-drawer-stage-inputs.cfg": "f235dd5423a188b832ed5f750db3c612fca581cffe850024457220935e08fc1b",
+    "diagnostics/mcu-native-image-drawer-install-session.cfg": "0f2283882a5524597e4f4d5cb4041ac508ab74848d7d55b1b4f0d8aa55abdd35",
+    "diagnostics/mcu-native-image-drawer-restore-session.cfg": "165afff401d24718cd309bd1321af0402037d8b732802094be99730aa4aa0b09",
+    "diagnostics/read-native-image-drawer-state.cfg": "034148806a1714de0f57cba5c7f899e2aabc94a540caf7ce037d86803c747c91",
+    "diagnostics/read-native-image-drawer-runtime.cfg": "0b8292e6b1bfc32019a7b5a2b70744f55155b3a4d705462bb8e6432999de63c6",
+    "analysis/persistence/native-image-drawer-writer-preparation.json": "353bc39d81aba1b903a5a7785c0ebc40adc39785396e40a61c4877a150e4e959",
+    "analysis/persistence/test_native_image_drawer_runner_offline.py": "d5a55dce340608c592a742078acee0c775e996d9193ca5cfeb48090bae52af5a",
+    "analysis/persistence/mock_boot_read_runner.tcl": "c32714c553cf8277901e8dd6f46827c08f9ab469f32176905a27c30d1ae93396",
+    "scripts/Set-PanelNativeImageDrawer.ps1": "bdf751932a36f9ce842ce1b1790b14c4b64daa804c3fefe9e9f2a9d96cecc1fb",
+    "tools/xpack-openocd-0.12.0-7/bin/openocd.exe": "10567f01d37c66a0975537960d66e61f7b4e2a17eb2c9637e2c2cbc569f70c79",
+    "backups/mi-panel-flash-16m-1.50.10-20261004.bin": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+    "analysis/persistence/native-github-tap-fast-frozen-inputs.json": "96588070da46764460c72d0ba1e71c635c1de39d226842ff3e71c2226e4a5b6c",
+    "analysis/persistence/native-ui-broker-frozen-inputs.json": "be8a154b8c5b44e8899062d9373a9395c99ff8ca2d90ddc9e4b824fa1fd1f4ba",
+    "analysis/persistence/native-drawer-frozen-inputs.json": "b6d30c6efaa28158c6596c4283a41a9be79412d66f099980145434b10fe5b28f",
+    "analysis/persistence/native-drawer-ease-frozen-inputs.json": "1c4e519efc84063024d106966bf159a65cc2b378af81b7ad6cc5bc19888e2e6b",
+    "analysis/persistence/native-drawer-smooth-frozen-inputs.json": "c464db59ec74849396d6ea2bcd3c0aa9d2110f7766068c6f08a23a82522aa392",
+    "analysis/persistence/native-github-card-frozen-inputs.json": "7bd88c1f217fd53219a054bf3c24ef197ee5666133d45f1557bfd8173c4c41db",
+    "analysis/persistence/native-github-tap-frozen-inputs.json": "680a5f173a55c2e9811987a794b5332628f55d76a142076b9088aab3fea94f0e",
+    "analysis/persistence/native-counter-frozen-inputs.json": "b9619a62ea8613eca200aa29b9e466df76194b90e637534c03937176deb2fad2",
+    "analysis/image-push/test_native_image_drawer_arm.py": "655e7d0665dc4a404b57e5c5ca1dc4944956c90b5a0938d9e640260ee352ea70",
+    "analysis/persistence/native-github-tap-fast-patched-sector-92b000.bin": "6b1213342d9f97ef3c53e4691f0533217eb9fd15fc76b5dc06d8bca1df286bf9",
+    "analysis/persistence/native-image-drawer-original-sector-92b000.bin": "6b1213342d9f97ef3c53e4691f0533217eb9fd15fc76b5dc06d8bca1df286bf9",
+    "analysis/persistence/native-image-drawer-patched-sector-92b000.bin": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+    "analysis/persistence/native-github-tap-fast-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-image-drawer-original-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-image-drawer-patched-sector-ccd000.bin": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+    "analysis/persistence/native-github-tap-fast-patched-sector-95a000.bin": "27ccfe87b0e1e5a71a286e91e587964cdab1fa0a9f1b4778860a299f7eb3eed6",
+    "analysis/persistence/native-image-drawer-original-sector-95a000.bin": "27ccfe87b0e1e5a71a286e91e587964cdab1fa0a9f1b4778860a299f7eb3eed6",
+    "analysis/persistence/native-image-drawer-patched-sector-95a000.bin": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+    "analysis/image-push/native-image-drawer-independent-review-1.50.10.json": "5f01243a796e5215854226211155a8e1d40179882057296591ffcaffa4cced3b",
+    "analysis/image-push/native-image-drawer.md": "5f71982d54d0a5f748ea1efed3ec56ed52f40f97404468fa9ffc5e16c20cd431",
+    "analysis/image-push/image-drawer-arm-offline-result.json": "fe8cf3c37db6803b0e1d7b9869539a2a08ebc68213e895647ab336ceae18b4f0",
+    "analysis/image-push/network-abi-1.50.10.json": "10a64906deb91c6d1006cb436da829723b9718091ef48c86c61b935ef788da66",
+    "analysis/image-push/native-image-drawer.map": "1ba04921738ca2e78744b0e554884b5721dee20c08fe2792879e548797765693",
+    "analysis/image-push/push_panel_image.py": "2953ecb0a7851a96429c8373b84e168652b188e43eaab29b6967573fd5be64a3",
+    "analysis/image-push/test_push_panel_image.py": "c80d67f522d4dcec530ec1ed4ef4c45b9a7a246853c08b607a3d24a7841d3484",
+    "analysis/image-push/font-resource-feasibility-1.50.10.json": "0c5158ebc2db4cdd997bdb20589cada22ce18f1f16dab3b623ebc49c62c783e4",
+    "analysis/image-push/offline/independent_program_checks.py": "d2d1a9453ab6ff0655be15ade4b3a1e8b8062400782b23ac8d1a191d1708c7d9",
+    "analysis/image-push/offline/independent-program-checks-result.json": "48db813e2cd0409030366f2635bc199253c0b39fd8412c380cf9ad3c506e78e4",
+    "analysis/display-takeover/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "analysis/display-takeover/key3-gesture.h": "a4937dc473191f3bd33844677cf0b2f09599151a080a5cd15eb11278ab37412c",
+    "analysis/display-takeover/native-github-tap-fast.c": "1b9d7abb3f05e7952acad2053b914828ef35e0e6a36def258f9d2cfee3ecceaf",
+    "analysis/display-takeover/github-tap-aux-container-review-1.50.10.json": "489161863af8cc23294daa0b39fb8ddf065d7839a605b69b726e44c360ccd740",
+    "analysis/display-takeover/a7-factory-worker-container-review-1.50.10.json": "041acf9e89880d307b71b221f993c1c8ec7d89b02b72c2344e433a8e228a0517",
+    "analysis/image-push/reference/apache-12.7-include-errno.h": "3417345abf0a3b554b7919d80fde5cf0482a4f49f570ba227200a509cf34c521",
+    "analysis/image-push/reference/apache-12.7-include-net-if.h": "7c1d25676ce0d4f50d4821525529e5c13a4f6e0cec0709bd41d6a9774202e427",
+    "analysis/image-push/reference/apache-12.7-include-netinet-in.h": "254dc2c50e20279e018064d0043b941c6d6a481d84c68335dc6eb341ca8c1823",
+    "analysis/image-push/reference/apache-12.7-include-nuttx-net-ioctl.h": "be70db735a10266e644bb832e4a4c79e59374c9bd197c4a20ce6de9a983b7fe1",
+    "analysis/image-push/reference/apache-12.7-include-sys-socket.h": "2490c9099820215578ba68694495c6ef74e9cbd5fbfb346ed538c2b2ada5f63c",
+    "analysis/image-push/reference/apache-12.7-include-sys-time.h": "9a9cc2ecb0cf359e79c1715d74577768302c18cf3365866de1ecf4b36ef07706",
+    "analysis/image-push/reference/apache-12.7-include-sys-types.h": "762a9a779bc05c8f6d30a7ff129fe53aa4fcf47cd3aa71ba838ca9822dc05980",
+    "analysis/image-push/reference/apache-12.7-net-usrsock-usrsock_accept.c": "0e3f9ab733f9623138a97b11f86bfc69f0b0e1859043fa1ad8f63131103ef8a3",
+    "analysis/image-push/reference/apache-12.7-net-usrsock-usrsock_listen.c": "e222711df42bfe872bac5b4a047197ed7a68c21dae7d79668475a79b7554f2ca",
+    "analysis/image-push/reference/apache-12.7-net-usrsock-usrsock_setsockopt.c": "821d8e43cd321301bbf8f7b3cb11aa28e77b7678078d71b9485253b0f763b992",
+    "analysis/image-push/reference/open-vela-drivers-usrsock-usrsock_rpmsg_server.c": "e607abb71edfebe8972e3139bb96e9d28c9c87da562f466e2ba38d142006418c",
+    "analysis/image-push/reference/lvgl-v8.3.11-src-extra-libs-freetype-lv_freetype.h": "b3426c118996f1567abc652c1f2ce4d9ac225415c6dbc2eab0115afd8a6386e8",
+    "analysis/image-push/reference/lvgl-v8.3.11-src-extra-libs-freetype-lv_freetype.c": "d6787432256d425bd2d2db12ab64b364deaa37d965bb89026435ecb07abea971",
+    "analysis/image-push/reference/lvgl-v8.3.11-src-font-lv_font.h": "1c29529613fc27d8b72d21016b1298ff828ea098069319beb60cb3c6ed90a982",
+    "analysis/display-takeover/romfs-1.50.10/image-00cce4f4/init.d/rcS": "b5e4a1b3e8b8e6064115a774c8783b30b925b451f613aa910ef951221c2dcac0",
+    "analysis/persistence/native-image-drawer-installer-review-1.50.10.json": "d7e7b29883d731372a2f7063983152cdc0f11b4e5843bbcffa3c2aac83a24be0",
+    "analysis/persistence/offline-native-image-drawer-runner/run-1/summary.json": "225c6da7f6e09a7056c5ce62b3f97e1ea919b9df2e88a5f0662a8ce06ff5d30b",
+    "analysis/persistence/github-tap-aux-live-baseline-result.json": "10f693b4f6983374c63168c1f7bd24ddbb4fd12658358fe79700383dc4ef70e3",
+    "analysis/persistence/native-image-drawer-writer-peer-review-1.50.10.json": "ffb7d6d9bf6535f64b1b74c6e893ae1f3c83654939ee531d8704808c43bebb18",
+    "analysis/persistence/review_native_image_drawer_writer_peer.py": "efed2847829327fabe2abf5621b370c52ef3db2345f30c3d52b2e9f19ead306f",
+    "diagnostics/boot-nor-native-github-tap-fast-runner.cfg": "61f9bd68f09555614f279ef86b5b3a2944924d351daffe7ada670cb588fb85f8",
+    "diagnostics/boot-nor-native-github-tap-fast-stage-inputs.cfg": "ca64293959e7956430996c26aaf4f16362b3229dbcfe30062aac7f472dd97838",
+    "diagnostics/mcu-native-github-tap-fast-install-session.cfg": "93040b51dcb9ba526f93a19f6cab712e1453e8a1613f2293379e110a7f149a89",
+    "diagnostics/mcu-native-github-tap-fast-restore-session.cfg": "e01b381385f868228462a0f5ff023fa04f7823b35148734027e232a6558e751f"
+  }
+}

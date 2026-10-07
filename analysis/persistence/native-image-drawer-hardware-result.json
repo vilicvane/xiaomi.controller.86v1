@@ -1,0 +1,169 @@
+{
+  "scope": "Native image drawer on this exact panel 1.50.10, program persistent through ordinary restart; uploaded images RAM only",
+  "installed": true,
+  "device_firmware": "1.50.10",
+  "frozen_inputs": {
+    "path": "analysis/persistence/native-image-drawer-frozen-inputs.json",
+    "sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "count": 93
+  },
+  "program": {
+    "main_bytes": 3416,
+    "feedback_bytes": 424,
+    "elf_sha256": "ba55f04a751b71e4a2d9933e7459889cf12287e3ec6f97a83f4559d7f7ccfa8b",
+    "context_bytes": 212,
+    "owned_pixels_bytes": 1843200
+  },
+  "installation": {
+    "passed": true,
+    "full_page_sha256": {
+      "code": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "entry": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "aux": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75"
+    },
+    "mcu_running": true,
+    "reset_catch_cleared": true,
+    "temporary_breakpoint_cleared": true,
+    "read_only_connection_attempts_after_global": 2,
+    "writer_replays": 0
+  },
+  "warm_runtime": {
+    "alive": 1,
+    "mode": 1,
+    "wanted": 1,
+    "ready": 1,
+    "overlay": 0,
+    "cover": 320,
+    "target": 320,
+    "shown": 320,
+    "gui_cycles": 117316,
+    "toggles": 0,
+    "pending": 0,
+    "phase": 150,
+    "image_pending": 0,
+    "generation": 2,
+    "displayed_generation": 2,
+    "server_state": 1,
+    "server_error": 0
+  },
+  "network": {
+    "transport": "TCP VIMG/VACK",
+    "port": 18086,
+    "ipv4_obtained_on_device": true,
+    "actual_ip_excluded_from_git": true,
+    "valid_uploads": [
+      {
+        "case": "valid_pattern_first",
+        "accepted_for_gui": true,
+        "bytes": 307200,
+        "fnv1a32": "8f634a70",
+        "width": 480,
+        "height": 320,
+        "persistent_image": false,
+        "elapsed_seconds": 5.582
+      },
+      {
+        "case": "second_image_png_conversion",
+        "source_rgb565_exact": true,
+        "source_png_sha256": "0a71f5ed470dfa24a21936c801b72203dbf30f11c5af34e65dfe4afa91375f01",
+        "accepted_for_gui": true,
+        "bytes": 307200,
+        "fnv1a32": "8181aaf0",
+        "width": 480,
+        "height": 320,
+        "persistent_image": false,
+        "elapsed_seconds": 7.031
+      }
+    ],
+    "negative_tests": [
+      {
+        "case": "invalid_header_after_valid",
+        "magic": "VACK",
+        "reply_status": 1,
+        "ack_complete": true,
+        "passed": true,
+        "elapsed_seconds": 0.034
+      },
+      {
+        "case": "truncated_payload",
+        "error": "ConnectionError: Panel closed the connection before the complete ACK",
+        "passed": false,
+        "ack_complete": false,
+        "elapsed_seconds": 0.017
+      },
+      {
+        "case": "idle_deadline",
+        "magic": "VACK",
+        "reply_status": 1,
+        "ack_complete": true,
+        "passed": true,
+        "elapsed_seconds": 10.038
+      },
+      {
+        "case": "bad_checksum",
+        "magic": "VACK",
+        "reply_status": 2,
+        "ack_complete": true,
+        "passed": true,
+        "elapsed_seconds": 7.565
+      }
+    ],
+    "initial_invalid_header": {
+      "case": "invalid_header",
+      "connection_established": true,
+      "ack_complete": false,
+      "error": "ConnectionError: Panel closed before complete ACK",
+      "ui_address_user_observed": true,
+      "no_additional_flash_operations": true
+    },
+    "complete_error_ack_guaranteed": false
+  },
+  "user_observation": {
+    "address_display": "passed",
+    "first_pattern_display": "passed",
+    "second_pattern_display": "passed",
+    "swipe_and_key3_roundtrips": "passed",
+    "mi_home_online_control": "passed",
+    "basis": "User explicitly confirmed second PNG, swipe/key3 roundtrips and Mi Home online/control all normal; no cold cycle requested."
+  },
+  "cold_poweroff_verification": {
+    "status": "skipped_by_user_request",
+    "requested": false
+  },
+  "font": {
+    "existing_MiSans_resource_static_evidence": true,
+    "live_font_read_or_native_glyph_call_performed": false,
+    "font_adapter_installed": false
+  },
+  "raw_evidence_local_only": [
+    "analysis/persistence/native-image-drawer-install-session-20261007-121500",
+    "analysis/image-push/hardware-20261007-121808"
+  ],
+  "limits": [
+    "Two valid full images ACKed and visually confirmed. ACK means GUI publication, not LCD scanout measurement.",
+    "Initial rejected header and client half-close did not return complete error ACK; repeated invalid header and full corrupt payload returned VACK1/VACK2. Cause not fully captured.",
+    "Idle connection took10.038 wall seconds; application monotonic guards do not bound underlying native RPCs or the full receive-plus-reply transaction.",
+    "Uploaded image disappears on reboot; image filesystem persistence is not implemented.",
+    "Current raw MEM-AP runtime samples are non-atomic; user observations are recorded independently.",
+    "No native font ABI or cache adapter has been exercised; TTF stays on device and outside Git."
+  ],
+  "runtime_after_user_roundtrips": {
+    "alive": 1,
+    "mode": 1,
+    "wanted": 1,
+    "ready": 1,
+    "overlay": 0,
+    "cover": 320,
+    "target": 320,
+    "shown": 320,
+    "gui_cycles": 168699,
+    "toggles": 2,
+    "pending": 0,
+    "phase": 150,
+    "image_pending": 0,
+    "generation": 2,
+    "displayed_generation": 2,
+    "server_state": 1,
+    "server_error": 0
+  }
+}

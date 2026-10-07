@@ -3,7 +3,26 @@
 小米智能家庭面板（`xiaomi.controller.86v1`）的硬件分析、原生程序和自定义固件实验。
 产品名称见[小米官网](https://www.mi.com/intelligent-panel)。
 
-当前基线是这台设备的官方固件 **1.50.10**。已安装常驻 A7 下拉覆盖层测试版：
+当前基线是这台设备的官方固件 **1.50.10**。当前已安装独立 **图片下拉屏幕测试版**：
+设备在默认深灰画面显示自己查询到的 `IP:18086`，电脑上传图片后替换整个自定义画面。
+上滑回原界面、原界面顶边下拉，以及第三键三击的交接逻辑保留。
+程序常驻设备，上传图片先保存在 RAM，重启后恢复默认地址画面。
+
+```powershell
+python -X utf8 analysis/image-push/push_panel_image.py PANEL_IP --image picture.png
+```
+
+将 `PANEL_IP` 换成屏幕显示的地址。PNG/JPEG 转换需要电脑安装 Pillow；
+`--pattern` 无第三方依赖。这是 TCP 固定像素协议，暂时没有 HTTP 上传页面。
+两张完整图片已收到成功确认，用户已确认地址、两张测试图、上下滑、三击和米家
+在线控制均正常，单独记录在 `native-image-drawer-hardware-result.json`。33组实际ARM模型、12组独立
+检查及70项写入器mock通过，93项输入冻结，三页完整读回和普通重启运行状态通过。
+异常输入有一项限制：首次拒绝和发送端提前结束时未收到完整确认；空闲连接实测
+约10秒退出，不能把应用内超时等同于所有底层调用的墙钟上限。
+具体使用与回退见[图片推送程序](analysis/image-push/native-image-drawer.md)。
+当前及此前卡片的完整断电测试按用户要求跳过，不能声称已通过。
+
+上一版常驻 A7 GitHub 下拉覆盖层测试版：
 开机显示 GitHub 标志、白色 `vilicvane`、灰色 `xiaomi.controller.86v1`，以及金色
 星形和 `Star on GitHub` 提示。上滑收起，原界面顶边下拉带出自定义界面，
 短拉松手回弹；第三个自定义物理键三击仍可往返。
@@ -12,7 +31,7 @@
 手势已经用户确认。tap v1整体正常，但用户报告连续点击有时响应慢、漏计或恢复提示；
 另一次测试顺畅，旧观察保留在native-github-tap-hardware-result.json。
 这项间歇问题的实机原因尚未确认。
-当前已安装独立 `native-github-tap-fast`：53组实际ARM模型、68项写入器mock通过，
+此前安装独立 `native-github-tap-fast`：53组实际ARM模型、68项写入器mock通过，
 68项输入冻结，三个完整Flash页面读回及正常重启后的owner/动画终态检查通过。
 用户反馈新版手感仍一般，并询问松手才加一的影响；不能宣称实际卡顿已解决。
 用户决定保留当前Demo的松手计数交互。
@@ -40,6 +59,7 @@
 - [GitHub 信息卡](analysis/display-takeover/native-github-card.md)：设备绘制的排版、星标提示和恢复到 smooth。
 - [点击反馈](analysis/display-takeover/native-github-tap.md)：临时累加、自动恢复和三页回退到信息卡。
 - [点击反馈计时与局部绘图](analysis/display-takeover/native-github-tap-fast.md)：提交后计时、输入保护及三页回退到 tap v1。
+- [设备端图片接收](analysis/image-push/native-image-drawer.md)：IP显示、电脑图片转换、RAM替换及精确回退到tap-fast。
 - [启动时的 NOR 写入执行器](analysis/persistence/boot-nor-native-app-runner.md)：固定扇区写入流程。
 
 源码主要在 `analysis/display-takeover/`、`analysis/persistence/` 和 `analysis/pinout/`；

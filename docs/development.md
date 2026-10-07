@@ -248,3 +248,35 @@ Tcl数组、BIN/ELF、扇区、运行dump和原始帧继续被忽略。临时数
 软件画布写入减少不等于原PAN已局部传输；8条原生输入ring没有增加或改成无损队列。
 本版实机及用户观察应单独记在native-github-tap-fast-hardware-result.json。完整断电
 按用户要求跳过，不再询问，不借用旧版在线/控制或断电结果。
+
+
+## 设备端图片推送程序
+
+本轮新代码在analysis/image-push，说明见native-image-drawer.md；历史display-takeover
+输入不移动、不重新生成。主3416B+辅助424B，212B context；33组当前实际ARM模型、
+12组独立重点检查、70项三页Jim mock和独立程序/容量/writer审查通过，93项输入冻结。
+已经冻结后禁止重建、prepare或写旧测试摘要。新独立peer复核源码是
+analysis/persistence/review_native_image_drawer_writer_peer.py。
+
+```powershell
+python -X utf8 analysis/persistence/run_native_image_drawer_firmware.py install
+python -X utf8 analysis/image-push/push_panel_image.py PANEL_IP --pattern
+python -X utf8 analysis/image-push/push_panel_image.py PANEL_IP --image picture.png --fit contain
+.\scripts\Set-PanelNativeImageDrawer.ps1 -Mode restore
+```
+
+第一条无--execute只核对全部新/旧冻结输入，不访问设备。PANEL_IP来自面板默认地址
+画面；port18086、TCP VIMG，不是HTTP。PNG/JPEG在电脑通过Pillow转换到480x320
+RGB565 LE，--pattern/--raw不依赖Pillow。图片校验后在GUI安全边界发布，ACK0表示
+已排队，不等于LCD扫描。第二次上传会替换前一张图；图片仅RAM，重启恢复地址。
+
+restore只返回精确tap-fast，之后才可用tap-fast→tap-v1→card→smooth→ease→drawer→
+broker→stock各自入口；不能直接套旧两页/三页writer。BOOT caller168B和完整stage/
+outer按命名替换保持控制流程；每页全读回及safe-to-resume/complete都通过才GLOBAL。
+新stage/session/扇区/BIN/ELF与raw capture保持local ignored，仓库只存源码及审查元数据。
+
+普通重启安装、两张完整上传及设备IP显示已验证；用户确认两张图、上下滑、三击
+和米家在线控制正常，后续只读核对generation/displayed_generation2、server1/error0。
+首次拒绝/客户端提前结束可能没有完整ACK，空连接退出实测10.038秒；native RPC不
+保证严格墙钟界限。完整断电按用户要求继续跳过。字体资源可行性与ACK条件路径
+分别记录在image-push的安全JSON中；它们没有实施字体文件读取或原生字形调用。

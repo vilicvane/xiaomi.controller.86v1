@@ -16,7 +16,26 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is native GitHub tap-fast (3336-byte main + 431-byte aux BIN, 1.50.10).
+- Current installed UI is native image drawer (3416-byte main + 424-byte aux BIN, 1.50.10).
+  Its 93-input freeze is fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61.
+  33 ARM groups, 12 independent focused ARM groups and 70 writer mocks passed.
+  Main ends at 0x3804be60, aux at 0x3807a90c; existing containers and adjacent helpers preserved.
+  Exact fast-tap triple was the installation baseline; three full pages and warm
+  MCU/GUI/server state passed. Context is 212B, image/receive +176/+180,
+  image_pending +184, generation/displayed_generation +188/+192, server_state/error
+  +196/+200, unused reserved +204, IPv4 network bytes +208. These are NOT fast-tap feedback slots.
+  TCP18086 receives fixed480x320 RGB565 images with FNV/VACK; images are RAM-only,
+  program is persistent. Two complete uploads, address/both image display, swipe/key3
+  roundtrips and Mi Home online/control passed; user observations are separately
+  recorded in native-image-drawer-hardware-result.json. Fresh runtime after roundtrips
+  showed generation/displayed_generation2, pending0, server1/error0 and active GUI.
+  Do not promise every rejection ACK: initial invalid header and client half-close
+  lacked complete ACK; idle took10.038 wall seconds. Native RPCs are not strictly bounded.
+  Restore ONLY with Set-PanelNativeImageDrawer.ps1 to exact fast-tap first; never
+  apply a historical writer directly against the image triple. Cold power-cycle
+  remains explicitly user-skipped; do not ask again or borrow old cloud results.
+  Native fonts are only static feasibility; never reinitialize shared GUI FreeType/cache.
+- Previous installed UI was native GitHub tap-fast (3336-byte main + 431-byte aux BIN, 1.50.10).
   Full-page Flash/readback and warm custom-owner/phase150 state passed;
   user tap/gesture acceptance is pending and recorded separately in
   native-github-tap-fast-hardware-result.json. Mi Home controls are unchecked

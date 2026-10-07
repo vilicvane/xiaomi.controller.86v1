@@ -1,0 +1,485 @@
+{
+  "scope": "Offline static analysis only of this panel exact1.50.10 backup. No hardware/native calls, no mutable runtime claim, no frozen input change. First-party semantic metadata and hashes; no vendor firmware byte arrays or credentials.",
+  "firmware_version": "1.50.10",
+  "backup": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+    "bytes": 16777216
+  },
+  "A7_mapping": {
+    "runtime_start": "0x38000000",
+    "NOR_start": "0x8e0004",
+    "length": "0x4f3fe0"
+  },
+  "status": "ABI and compile-time constants statically confirmed; network reachability, service execution, image acceptance, IP result and real timeout behavior require hardware owner validation.",
+  "callables": {
+    "socket": {
+      "thumb": "0x3802b529",
+      "signature": "int socket(int domain,int type,int protocol)",
+      "result": "fd>=0; -1 with errno"
+    },
+    "bind": {
+      "thumb": "0x381792ed",
+      "signature": "int bind(int fd,const void *sockaddr,uint32_t length)",
+      "result": "0; -1 with errno"
+    },
+    "listen": {
+      "thumb": "0x381794fd",
+      "signature": "int listen(int fd,int backlog)",
+      "result": "0; -1 with errno"
+    },
+    "accept": {
+      "thumb": "0x38394355",
+      "signature": "int accept(int fd,void *sockaddr,uint32_t *length)",
+      "NULL_address_and_length": true,
+      "result": "newfd>=0; -1 with errno"
+    },
+    "recvfrom": {
+      "thumb": "0x38179785",
+      "signature": "int32_t recvfrom(int fd,void *buffer,uint32_t length,int flags,void *source,uint32_t *source_length)",
+      "preferred": "source/source_length NULL, flags0x40",
+      "result": "positive completedbytes;0EOF; -1 with errno"
+    },
+    "send": {
+      "thumb": "0x381798a1",
+      "signature": "int32_t send(int fd,const void *buffer,uint32_t length,int flags)",
+      "preferred": "flags0x40; handle partialsend,0 and-1",
+      "result": "positive completedbytes; -1 with errno"
+    },
+    "setsockopt": {
+      "thumb": "0x3817a1c9",
+      "signature": "int setsockopt(int fd,int level,int option,const void *value,uint32_t length)",
+      "result": "0; -1 with errno"
+    },
+    "ioctl": {
+      "thumb": "0x38025c41",
+      "signature": "int ioctl(int fd,int command,...); argument is pointer inr2",
+      "result": ">=0; -1 with errno"
+    },
+    "close": {
+      "thumb": "0x38025de1",
+      "signature": "int close(int fd)",
+      "result": "0; -1 with errno"
+    },
+    "nxclose": {
+      "thumb": "0x38025d21",
+      "signature": "int nxclose(int fd)",
+      "result": "0; negative errno directly",
+      "do_not_confuse_with_POSIX_close": true
+    },
+    "errno_location": {
+      "thumb": "0x38018c5d",
+      "signature": "int *errno_location(void)",
+      "ownership": "callingworker TLS; read immediately after failure"
+    },
+    "snprintf": {
+      "thumb": "0x3801a419",
+      "signature": "int snprintf(char *destination,uint32_t capacity,const char *format,...)",
+      "use": "owned char[24], format %u.%u.%u.%u:18086, four unsigned octets0..255",
+      "max_IP_port_chars_without_NUL": 21
+    },
+    "file_read": {
+      "thumb": "0x3802954d",
+      "signature": "int32_t file_read(void *file,void *buffer,uint32_t length)",
+      "result": "bytes or negative errno directly",
+      "qualification": "Existing verified device file-layer API, not POSIX fdread; not needed by proposed network path"
+    },
+    "write": {
+      "thumb": "0x3802b379",
+      "signature": "int32_t write(int fd,const void *buffer,uint32_t length)",
+      "qualification": "Existing VFS static ABI; prefer explicit send with flags for network to avoid blocking assumptions"
+    },
+    "fcntl": {
+      "status": "Not resolved or required by selected path; no callable address claimed. SOCK_NONBLOCK plus per-call MSG_DONTWAIT avoids assumption about accepted fd flags."
+    }
+  },
+  "constants": {
+    "AF_INET": 2,
+    "SOCK_STREAM": 1,
+    "SOCK_CTRL": 6,
+    "IPPROTO_TCP": 6,
+    "default_stream_protocol": 0,
+    "SOCK_NONBLOCK": "0x800",
+    "MSG_DONTWAIT": "0x40",
+    "MSG_NOSIGNAL_header_value": "0x4000",
+    "MSG_NOSIGNAL_runtime_signal_semantics": "not proven; independent reviewer should not infer signal immunity from header alone",
+    "SOL_SOCKET": 1,
+    "SO_REUSEADDR": 11,
+    "SO_RCVTIMEO": 10,
+    "SO_SNDTIMEO": 14,
+    "EINTR": 4,
+    "EAGAIN": 11,
+    "EWOULDBLOCK": 11,
+    "SIOCGIFADDR": "0x701"
+  },
+  "structures": {
+    "sockaddr_in": {
+      "bytes": 16,
+      "alignment": 4,
+      "family_u16_offset": 0,
+      "port_u16_network_order_offset": 2,
+      "IPv4_network_order_u32_offset": 4,
+      "zero_padding_range": [
+        8,
+        16
+      ],
+      "bind_all_interfaces": "IPv4=0; family2; portbyte-swapped fromnative16bits",
+      "no_BSD_length_byte": true
+    },
+    "timeval": {
+      "bytes": 16,
+      "alignment": 8,
+      "seconds_u64_offset": 0,
+      "microseconds_i32_offset": 8,
+      "padding_range": [
+        12,
+        16
+      ],
+      "qualification": "Binarysetsockopt length16 and microsecondsread+8 authoritative; referenceCONFIG_SYSTEM_TIME64 selects64bitseconds"
+    },
+    "ifreq_for_SIOCGIFADDR": {
+      "bytes": 40,
+      "alignment": 4,
+      "name_offset": 0,
+      "name_capacity": 16,
+      "ifindex_i16_offset": 16,
+      "padding_range": [
+        18,
+        20
+      ],
+      "sockaddr_union_offset": 20,
+      "family_u16_offset": 20,
+      "IPv4_network_bytes_range": [
+        24,
+        28
+      ],
+      "interface_candidate": "wlan0",
+      "initialization": "zero all40B, then writewlan0 +NUL; requireioctlsuccess,family2 and nonzero IPv4",
+      "qualification": "Exactusrsock RPC lengths forcmd0x701..709=0x28; addresses demonstrated byoriginalifconfig/getifaddrs. This supersedes initial conservative152B suggestion."
+    }
+  },
+  "TCP_path": {
+    "A7_AF_INET_vtable": "0x3843ef3c",
+    "A7_usrsock_listen": "0x3817e5f9",
+    "A7_usrsock_accept": "0x3817e301",
+    "A7_usrsock_recvmsg": "0x38180561",
+    "A7_usrsock_sendmsg": "0x3818086d",
+    "MCU_RPC_handler_table_NOR": "0x624650",
+    "MCU_RPC_dispatch_NOR": "0x1adfe4",
+    "MCU_listen_index": 10,
+    "MCU_listen_pointer": "0x0c1ae0e1",
+    "MCU_accept_index": 11,
+    "MCU_accept_pointer": "0x0c1b3fa1",
+    "MCU_accept_explicit_nonblock": "0x800",
+    "qualifier": "Staticcrosscore protocol closure; does not establishcurrentWiFiattachment, daemon availability or LANreachability."
+  },
+  "bounded_worker_policy": [
+    "Worker owns listener/client descriptor creation andclose; never holdbroker/publishermutex across network operation.",
+    "socket(2,0x801,0) providesnonblockinglistener; accept withno pendingevent returnsEAGAIN11. Per-callrecvfrom/send flags0x40 essential because accepted A7descriptor iscreated flags3 andinheritance isnot established.",
+    "Handle positive shortread/shortsend explicitly,0EOF,anderrno immediately. RetryonlyEAGAIN/EINTR withscheduledsleep andmonotonic no-progress/overall deadlines.",
+    "Do not trust numberofsleep iterations as elapsedtime. Checkalive/cancellationpolicy withinloop.",
+    "Nonblocking stopsdata/event waits, notallRPMsgrequestresponse waits,native mutexortransport waits. No strictnativecall wallclockupperboundproved; keepIPquery andallnetwork callsoutsideGUI.",
+    "SO_RCVTIMEO/SNDTIMEO staticfallback validonly16Btimeval andproperoptions; notneededforselectedper-callnonblockingpath.",
+    "Separateowned receiveimage fromactiveGUI image; incomplete/rejectedtransfernever publishesbuffer. Networkprotocolvalidation notcoveredbythisABIartifact."
+  ],
+  "limits": [
+    "No hardware/nativecall, serverstartup, socketreceive,IPread or networktimeoutwas performedbythisagent.",
+    "Publicsourcesarecomparisonreferences,notexactvendorbuildsymbolproof. Currentopen-veladev SO_REUSEADDR0/SO_SNDTIMEO11 differsfromthisimage; usebinary-confirmed12.7constants.",
+    "Unmodifiedsource/imageaddressesdo notremove OTA/version or currentpartial-writebaseline risks. Rootmustverifyinstalledbaselinebeforeanydeviceinstall.",
+    "Accept/listenwrappershave noexplicitcancellationpointcall inreviewedwindow, butlowernative wait/cancel behaviorisnotfullyclosed; useworker-ownedlifetime.",
+    "No ready-to-use HTTPimageuploadserver was identified. Existingcurl uploadstringsareclientfeatures."
+  ],
+  "evidence_windows": [
+    {
+      "name": "socket_fd_wrapper",
+      "core": "A7",
+      "start": "0x3802b528",
+      "end_exclusive": "0x3802b600",
+      "NOR_offset": "0x90b52c",
+      "sha256": "ae5d77d328e6ebf623a6422c53f65dc687acf38fd6c268197a0b7474ccc04436",
+      "semantic_evidence": "Domain/type/protocol retained in r8/r4/r9; type0x800 sets descriptor O_NONBLOCK0x40; allocates12-byte socket and creates calling-taskgroup file descriptor; failure returns-1 and errno."
+    },
+    {
+      "name": "socket_setup",
+      "core": "A7",
+      "start": "0x381795c4",
+      "end_exclusive": "0x38179698",
+      "NOR_offset": "0xa595c8",
+      "sha256": "7289c0cb62f26c4ddd8af990df51e2521f97986a068afdb7e1817a3f0ab21da3",
+      "semantic_evidence": "Type mask0xf; AF_INET2 selects vtable3843ef3c; SOCK_NONBLOCK0x800 sets s_conn flags8."
+    },
+    {
+      "name": "socket_supported_stream_protocol",
+      "core": "A7",
+      "start": "0x38179920",
+      "end_exclusive": "0x381799d4",
+      "NOR_offset": "0xa59924",
+      "sha256": "a73cffb5f00be404296d88867cc440ed88755f59ed091a131579443d943ca7c8",
+      "semantic_evidence": "Type1 stream accepts protocol0 or6; type2 datagram accepts0 or17."
+    },
+    {
+      "name": "bind_wrapper",
+      "core": "A7",
+      "start": "0x381792ec",
+      "end_exclusive": "0x38179374",
+      "NOR_offset": "0xa592f0",
+      "sha256": "f36151277a9eca9d0beac68ecec70227b78cbe3d9a01d52a7c21174338ad5988",
+      "semantic_evidence": "r0fd,r1addr,r2len; fd-to-socket then socket vtable+0xc; negative result converted errno/-1."
+    },
+    {
+      "name": "listen_wrapper",
+      "core": "A7",
+      "start": "0x381794fc",
+      "end_exclusive": "0x381795c4",
+      "NOR_offset": "0xa59500",
+      "sha256": "1f132d746cd8c4e5a4dc4e7b0e5b744ed101ae157139b1902a44a64e22557bda",
+      "semantic_evidence": "r0fd,r1backlog; socket vtable+0x18; sets listening flag0x10 on success; negative converted errno/-1."
+    },
+    {
+      "name": "accept_wrapper",
+      "core": "A7",
+      "start": "0x38394354",
+      "end_exclusive": "0x383944a0",
+      "NOR_offset": "0xc74358",
+      "sha256": "889cb04c4d50c1fcb5dd034e9d50b7bd5909df45c4dbcbc011a15116190c1833",
+      "semantic_evidence": "r0fd,r1addr,r2addrlen; creates new12-byte socket; socket vtable+0x20 receives fifth flags0; accepted descriptor allocated O_RDWR3, so do not assume listener nonblocking flag inherited."
+    },
+    {
+      "name": "recvfrom_wrapper",
+      "core": "A7",
+      "start": "0x38179784",
+      "end_exclusive": "0x38179838",
+      "NOR_offset": "0xa59788",
+      "sha256": "959e39ca46bb2d8529b0f319b31b7e8f3f635dfdc791589aafaeafd0a36e8c66",
+      "semantic_evidence": "Six AAPCS arguments fd,buf,len,flags,source,source_len. Source/source_len may both beNULL. Forms one-iovec msghdr and forwards flags, converts negative errno."
+    },
+    {
+      "name": "send_wrapper",
+      "core": "A7",
+      "start": "0x381798a0",
+      "end_exclusive": "0x38179920",
+      "NOR_offset": "0xa598a4",
+      "sha256": "8888776fff6105b8ddb9daf375e71dbac6d1ff17d7e0052d7dec5aefb1a34180",
+      "semantic_evidence": "Four AAPCS arguments fd,buf,len,flags. Forms one-iovec msghdr with NULL destination; socket sendmsg; negative translated errno/-1."
+    },
+    {
+      "name": "five_argument_destination_helper",
+      "core": "A7",
+      "start": "0x383a64dc",
+      "end_exclusive": "0x383a6560",
+      "NOR_offset": "0xc864e0",
+      "sha256": "a30e515fb78e82874e878e3c2030e1e72b2d63dbc107d039300e767b21f8b79a",
+      "semantic_evidence": "Factory caller supplies fd,buf,len,destination,destination_length. This optimized/private sendto-like helper has5args and flags0; it is not a safe six-argument POSIX sendto entry."
+    },
+    {
+      "name": "setsockopt_wrapper",
+      "core": "A7",
+      "start": "0x3817a1c8",
+      "end_exclusive": "0x3817a338",
+      "NOR_offset": "0xa5a1cc",
+      "sha256": "0b92084dc3c0430f3faa5b7678ca2a3b75a42af8f52fafbfb16ca2318afed571",
+      "semantic_evidence": "Fiveargs; native callback first. SOL_SOCKET1 unsupported-option fallback recognizes opt10/14 as timeval; requires16B, reads seconds@0 and microseconds@8. Opt11 boolean requires4B."
+    },
+    {
+      "name": "usrsock_accept_nonblocking",
+      "core": "A7",
+      "start": "0x3817e300",
+      "end_exclusive": "0x3817e5f8",
+      "NOR_offset": "0xa5e304",
+      "sha256": "a01938b8d1671d43bb401b1e2d165e059bf1630e259485f94263af21ce27078c",
+      "semantic_evidence": "If no receive-ready event and connflag8 set, returns-EAGAIN11; NULLaddr/len route legal. Even nonblocking operation can wait for transport response after issue."
+    },
+    {
+      "name": "usrsock_recvmsg_dontwait",
+      "core": "A7",
+      "start": "0x38180560",
+      "end_exclusive": "0x3818086c",
+      "NOR_offset": "0xa60564",
+      "sha256": "2941761f3288bbd0c9dc491229760f8eb655b7d9bfa7156dea02a6ec73fd7114",
+      "semantic_evidence": "Connflag8 or flags0x40 prevents waiting for new receive-ready event; timeout uses conn+0x14. Request/response synchronization still exists."
+    },
+    {
+      "name": "usrsock_sendmsg_dontwait",
+      "core": "A7",
+      "start": "0x3818086c",
+      "end_exclusive": "0x38180ad4",
+      "NOR_offset": "0xa60870",
+      "sha256": "4acc0943669cae8733633257e29a30fb7c7f52d9567be00689cb30003355f7f3",
+      "semantic_evidence": "Connflag8 or flags0x40 prevents waiting for new send-ready event; timeout uses conn+0x16. Direct failure branches return error; full OS signal behavior not proved by this bounded audit."
+    },
+    {
+      "name": "socket_ioctl",
+      "core": "A7",
+      "start": "0x3817e708",
+      "end_exclusive": "0x3817e8f8",
+      "NOR_offset": "0xa5e70c",
+      "sha256": "34673ed6182c2e0782b37ab66368b41cc7860b7941d0d1ae9bf835e87beb6c8e",
+      "semantic_evidence": "Cmd0x701..709 receives40B request/response payload at3817e7a8; ioctl itself awaits remote response. Other requests have different lengths."
+    },
+    {
+      "name": "POSIX_ioctl",
+      "core": "A7",
+      "start": "0x38025c40",
+      "end_exclusive": "0x38025ca4",
+      "NOR_offset": "0x905c44",
+      "sha256": "ba685b20af5adb0ba1d9174c9766d5d9e5f3c1c8ee1b2d90125bc3524e108e15",
+      "semantic_evidence": "r0fd,r1command,vararg r2=argument forwarded through file ioctl; negative converted errno/-1."
+    },
+    {
+      "name": "nxclose",
+      "core": "A7",
+      "start": "0x38025d20",
+      "end_exclusive": "0x38025de0",
+      "NOR_offset": "0x905d24",
+      "sha256": "bb12f167525a92c6634f0893ff5a7c289c1bd76bc66cf616f9e0e120f1fa9970",
+      "semantic_evidence": "Current taskgroup descriptor removed then file close; returns0 or negative errno directly. Earlier documentation calls itclose; error semantics require this correction."
+    },
+    {
+      "name": "POSIX_close",
+      "core": "A7",
+      "start": "0x38025de0",
+      "end_exclusive": "0x38025e24",
+      "NOR_offset": "0x905de4",
+      "sha256": "bba8aa44fc043b4ce81f4941ca0e4f6e47754aa1f0391fc10f3ca3e7c4fdc3ba",
+      "semantic_evidence": "Calls nxclose38025d20; converts negative return to errno/-1. Prefer this for socketworker."
+    },
+    {
+      "name": "errno_location",
+      "core": "A7",
+      "start": "0x38018c5c",
+      "end_exclusive": "0x38018cc4",
+      "NOR_offset": "0x8f8c60",
+      "sha256": "35568f9aad9ca28b606e4d023db5e41e20f8c480b6af072095ef17115c7ace85",
+      "semantic_evidence": "No arguments. Obtains currentCPU task TLS pointer and returns TLS+0x14 int errno location; fallback global pointer ifTLS missing. Read immediately in sameworker after failed POSIX call."
+    },
+    {
+      "name": "ifconfig_ifreq_layout",
+      "core": "A7",
+      "start": "0x38027b68",
+      "end_exclusive": "0x38027bc8",
+      "NOR_offset": "0x907b6c",
+      "sha256": "1157e385334366b7acae834083f3afcc8c80abee1a67c3e6f921b5ebe0dcb1cb",
+      "semantic_evidence": "socket(AF_INET2,SOCK_CTRL6,0), namecopy limited15+NUL; family placed ifreq+20, IPv4+24; SIOCSIFADDR0x702 demonstrates exact layout."
+    },
+    {
+      "name": "getifaddrs_query",
+      "core": "A7",
+      "start": "0x3811b714",
+      "end_exclusive": "0x3811b92a",
+      "NOR_offset": "0x9fb718",
+      "sha256": "e02dd537266973f01fe67558a9b7bfc3f5b330a320ed019360631bbfae43393d",
+      "semantic_evidence": "SIOCGIFADDR0x701 passed to same ioctl; resulting address copied from ifreq+20. Name and ifindex exist before union."
+    },
+    {
+      "name": "snprintf",
+      "core": "A7",
+      "start": "0x3801a418",
+      "end_exclusive": "0x3801a4b0",
+      "NOR_offset": "0x8fa41c",
+      "sha256": "72e688c809288d1c302c7516e3b4b84b75083e765410060cffa4a08d881639f3",
+      "semantic_evidence": "r0dst,r1size,r2format,varargsr3+stack; constructs size-1 bounded outstream, writes initialNUL then lib_printf. No shared inet_ntoa buffer."
+    },
+    {
+      "name": "original_octet_snprintf_call",
+      "core": "A7",
+      "start": "0x3817d482",
+      "end_exclusive": "0x3817d4a6",
+      "NOR_offset": "0xa5d486",
+      "sha256": "2859717e59579def798807c432db1fb6320eb0f03541fa9fcc87956a67df173a",
+      "semantic_evidence": "Owned16B buffer, size16, known ROformat %u.%u.%u.%u at383f345c, four byte-extracted unsigned arguments."
+    },
+    {
+      "name": "MCU_usrsock_dispatch",
+      "core": "MCU",
+      "start": "0x2c1adfb4",
+      "end_exclusive": "0x2c1ae010",
+      "NOR_offset": "0x1adfb4",
+      "sha256": "9c113ad5681208dd8e067de2d9d7e431f5620c36024f6372c4b16a12fcfc0d0d",
+      "semantic_evidence": "RPMsg requestid atdata+4 accepted0..14; indexes actual table2c624650 and BLX handler. Table pointer encoded in literal atNOR1ae00c."
+    },
+    {
+      "name": "MCU_listen_handler",
+      "core": "MCU",
+      "start": "0x2c1ae0e0",
+      "end_exclusive": "0x2c1ae168",
+      "NOR_offset": "0x1ae0e0",
+      "sha256": "6dc3b7283d1aeea8d634566b581039fbbd13cffc3035229f341fb19dfda2a5eb",
+      "semantic_evidence": "Tableindex10; validates0..63 socketid; callsMCUpsock_listen2c5405e8 withsock* andbacklog then sendsack and setsreceive poll."
+    },
+    {
+      "name": "MCU_accept_handler",
+      "core": "MCU",
+      "start": "0x2c1b3fa0",
+      "end_exclusive": "0x2c1b40d0",
+      "NOR_offset": "0x1b3fa0",
+      "sha256": "ca16688b6b33125c0cbb8a9abfe587ee9c42e747db0dc4a13e5ccba8e20feae5",
+      "semantic_evidence": "Tableindex11; validates socketid, allocates free remotesocket; callsMCUpsock_accept2c540158 with fifthflagsSOCK_NONBLOCK800."
+    },
+    {
+      "name": "MCU_psock_listen",
+      "core": "MCU",
+      "start": "0x2c5405e8",
+      "end_exclusive": "0x2c540674",
+      "NOR_offset": "0x5405e8",
+      "sha256": "9b1d7bd8a456657fa73ec88ff879c2a894d0ad8e0db9b6a231710bb853d48013",
+      "semantic_evidence": "socketops+0x18 native listen callback and setconnection listeningbit0x10."
+    }
+  ],
+  "public_references": [
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-errno.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/errno.h",
+      "sha256": "3417345abf0a3b554b7919d80fde5cf0482a4f49f570ba227200a509cf34c521"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-net-if.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/net/if.h",
+      "sha256": "7c1d25676ce0d4f50d4821525529e5c13a4f6e0cec0709bd41d6a9774202e427"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-netinet-in.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/netinet/in.h",
+      "sha256": "254dc2c50e20279e018064d0043b941c6d6a481d84c68335dc6eb341ca8c1823"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-nuttx-net-ioctl.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/nuttx/net/ioctl.h",
+      "sha256": "be70db735a10266e644bb832e4a4c79e59374c9bd197c4a20ce6de9a983b7fe1"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-sys-socket.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/sys/socket.h",
+      "sha256": "2490c9099820215578ba68694495c6ef74e9cbd5fbfb346ed538c2b2ada5f63c"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-sys-time.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/sys/time.h",
+      "sha256": "9a9cc2ecb0cf359e79c1715d74577768302c18cf3365866de1ecf4b36ef07706"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-include-sys-types.h",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/include/sys/types.h",
+      "sha256": "762a9a779bc05c8f6d30a7ff129fe53aa4fcf47cd3aa71ba838ca9822dc05980"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-net-usrsock-usrsock_accept.c",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/net/usrsock/usrsock_accept.c",
+      "sha256": "0e3f9ab733f9623138a97b11f86bfc69f0b0e1859043fa1ad8f63131103ef8a3"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-net-usrsock-usrsock_listen.c",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/net/usrsock/usrsock_listen.c",
+      "sha256": "e222711df42bfe872bac5b4a047197ed7a68c21dae7d79668475a79b7554f2ca"
+    },
+    {
+      "path": "analysis/image-push/reference/apache-12.7-net-usrsock-usrsock_setsockopt.c",
+      "url": "https://raw.githubusercontent.com/apache/nuttx/nuttx-12.7.0/net/usrsock/usrsock_setsockopt.c",
+      "sha256": "821d8e43cd321301bbf8f7b3cb11aa28e77b7678078d71b9485253b0f763b992"
+    },
+    {
+      "path": "analysis/image-push/reference/open-vela-drivers-usrsock-usrsock_rpmsg_server.c",
+      "url": "https://raw.githubusercontent.com/open-vela/nuttx/9e79ad292fd103d3b9ef737757081a3f7fbbf9a4/drivers/usrsock/usrsock_rpmsg_server.c",
+      "sha256": "e607abb71edfebe8972e3139bb96e9d28c9c87da562f466e2ba38d142006418c"
+    }
+  ]
+}

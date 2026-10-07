@@ -1,0 +1,228 @@
+{
+  "scope": "Offline first-party feasibility metadata for this panel exact1.50.10 only. No hardware/native calls, no live file listing, no font extraction, no vendor code/byte arrays, no old frozen input or network ABI evidence changes.",
+  "firmware_version": "1.50.10",
+  "backup": {
+    "path": "backups/mi-panel-flash-16m-1.50.10-20261004.bin",
+    "bytes": 16777216,
+    "sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b"
+  },
+  "network_evidence_preserved": {
+    "path": "analysis/image-push/network-abi-1.50.10.json",
+    "sha256": "10a64906deb91c6d1006cb436da829723b9718091ef48c86c61b935ef788da66"
+  },
+  "resource_mount": {
+    "rcS_path": "analysis/display-takeover/romfs-1.50.10/image-00cce4f4/init.d/rcS",
+    "NOR_data_offset": "0xcce6e4",
+    "bytes": 2115,
+    "sha256": "b5e4a1b3e8b8e6064115a774c8783b30b925b451f613aa910ef951221c2dcac0",
+    "extraction_exactly_matches_NOR": true,
+    "boot_intent": "GPT font partition10MiB if fallback repartition path is entered; when /dev/font exists mountROMFS at/font, otherwise mountedfont availability is not assured. This is boot intent, not verified currentGPT/mount/file state.",
+    "preferred_font_path": "/font/MiSansW_Regular.ttf",
+    "resource_medium": "MMC font partition provided through existing VFS, separate from this16MiB NOR backup. TTF bytes/file size and currentmount remain unverified."
+  },
+  "native_glyph_API_candidates": {
+    "lv_freetype_init": {
+      "thumb": "0x380685fd",
+      "candidate_signature": "bool(uint16_t max_faces,uint16_t max_sizes,uint32_t max_bytes)",
+      "evidence": "Original factory call(128,2,0) followed by errorbranch; native code writes globalcache state.",
+      "use_limit": "Never call global init/destroy as incidental drawer setup while original GUI remainsactive."
+    },
+    "lv_ft_font_init_cache": {
+      "thumb": "0x3806915d",
+      "candidate_signature": "bool(lv_ft_info_vendor32_t *info)",
+      "info_layout_bytes": 20,
+      "info_fields": {
+        "name_pointer": 0,
+        "memory_pointer": 4,
+        "memory_size_u32": 8,
+        "font_out_pointer": 12,
+        "weight_u16": 16,
+        "style_u16": 18
+      },
+      "status": "Binary initializer/layout and original callers match pinned public LVGL source; not executed or admitted as runtime ABI by this analysis."
+    },
+    "get_glyph_descriptor": {
+      "thumb": "0x38068b9d",
+      "candidate_signature": "bool(const native_font*,native_glyph_descriptor*,uint32_t unicode,uint32_t unicode_next)",
+      "status": "Callback installed at font+0; full descriptor/configuration ABI and runtime correctness are not independently admitted."
+    },
+    "get_glyph_bitmap": {
+      "thumb": "0x38063491",
+      "candidate_signature": "const uint8_t*(const native_font*,uint32_t unicode)",
+      "status": "Callback installed atfont+4; returns currentsharedcache glyph, not lifetime-stable independent image."
+    },
+    "font_manager": "Original manager/path/check/init/reference-count code exists. Complete manager API and ownership ABI not resolved; avoid guessing a public entry or using stale originalGUI font pointers."
+  },
+  "routes": {
+    "resource_only_reuse": "Can request existing MiSans TTF through native VFS/font loader after currentmount/file and callback ABI verification; this avoids embedding a full font. Not a screen-drawingAPI by itself.",
+    "LVGL_widget_route": "Font can style native LVGL widgets if mutations, font creation/reference management, rendering and release execute through the original GUI task/lock. Current drawer directcanvas bypasses LVGL widget rendering.",
+    "direct_canvas_route": "Can rasterize native glyph descriptors/coverage then blend into ownedcanvas, but descriptor+bitmap pair and copying must be serialized with originalGUI fontcache operations; release cache lock only after copying/blending coverage, preserve fontreferences. A separate FT library could provide independent cache but needs additional verifiedloader/allocation/lifetimeABI and codebudget.",
+    "current_image_protocol": "Host decodes image to fixed480x320RGB565, device receives pixels only. Incomingimage needs no TTF. DefaultIP currently uses compact embeddeddigits; this artifact does not change renderer or install nativefont calls."
+  },
+  "verification_before_native_font_use": [
+    "Read-only establish current/font mount and file availability; do not runrcS/fsck/mkgpt tocheck.",
+    "Confirm exact nativefont/descriptor ABI and originalGUI execution/lock boundary in thecurrent installedbaseline.",
+    "Exercise one ASCII glyph through a boundedreviewedGUI-thread path, copy coverage whilecache remainsowned, then validatefallback/missingglyph handling.",
+    "Account for memory, lifetime and failurepaths; do not reinitialize/destroy shared originalFreeType/cache or retain a mutable globalglyphbuffer betweenrendercalls."
+  ],
+  "semantic_windows": [
+    {
+      "name": "factory_font_setup",
+      "runtime_start": "0x3804b484",
+      "runtime_end_exclusive": "0x3804b4d8",
+      "NOR_offset": "0x92b488",
+      "bytes": 84,
+      "sha256": "9300c3abc128938c91e18c6a4764939f52ec7dfdf87d03225566093702ca859d",
+      "semantic_summary": "Original factory GUI initializes FreeType then sets MiSans path, weight22/40, memoryNULL and calls native font initializer. Factory container is already repurposed; evidence does not authorize replay."
+    },
+    {
+      "name": "lv_freetype_global_init",
+      "runtime_start": "0x380685fc",
+      "runtime_end_exclusive": "0x38068898",
+      "NOR_offset": "0x948600",
+      "bytes": 668,
+      "sha256": "15bfbb660baea5864632a3cafaa11220cdc8dc704a9246ce3a410e6699bd504f",
+      "semantic_summary": "Allocates native FT library/cache structures and writes shared global pointers. Do not reinitialize or destroy while original GUI uses them."
+    },
+    {
+      "name": "font_face_requester",
+      "runtime_start": "0x38068abc",
+      "runtime_end_exclusive": "0x38068b98",
+      "NOR_offset": "0x948ac0",
+      "bytes": 220,
+      "sha256": "4e4e2205c4a249169814d563d34a26a1970b65c9054f35005cdfd510a8e0c312",
+      "semantic_summary": "Native face loader uses stored path or memory and emits FT_New_Face error; pointer layout and call flow agree with LVGL FreeType cache variant."
+    },
+    {
+      "name": "glyph_descriptor_entry",
+      "runtime_start": "0x38068b9c",
+      "runtime_end_exclusive": "0x38068c22",
+      "NOR_offset": "0x948ba0",
+      "bytes": 134,
+      "sha256": "565f981535ff344ce30e672ebf6c22886ca8d2ed7f05f4e1be5dc0763cb1bb8d",
+      "semantic_summary": "Font glyph callback gets descriptor viafont+0x14, looks up shared font size/cache, receives Unicode current/next args. API candidate only."
+    },
+    {
+      "name": "glyph_cache_path",
+      "runtime_start": "0x38068c56",
+      "runtime_end_exclusive": "0x38068d72",
+      "NOR_offset": "0x948c5a",
+      "bytes": 284,
+      "sha256": "1e0777b408c5a92436f0b60c0fb447eabb00409d63d170ebbd4efbf275c7fe94",
+      "semantic_summary": "Shared charmap/image cache lookups plus LRU/list mutations. Independent glyph calls are not concurrency-safe by default."
+    },
+    {
+      "name": "glyph_style_and_global_state",
+      "runtime_start": "0x38068d8c",
+      "runtime_end_exclusive": "0x38068e3e",
+      "NOR_offset": "0x948d90",
+      "bytes": 178,
+      "sha256": "0aef5f704ea25c516df2e2847186183ff4c4c380fb624ca779e8757bb68794a9",
+      "semantic_summary": "Writes glyph dimensions/8-bit coverage information and current_face global for styled glyphs."
+    },
+    {
+      "name": "font_initializer",
+      "runtime_start": "0x3806915c",
+      "runtime_end_exclusive": "0x38069378",
+      "NOR_offset": "0x949160",
+      "bytes": 540,
+      "sha256": "aae731833378ac89cc1fa439271fea4825c8c82abd07f74b0434b9a0fc09a1fc",
+      "semantic_summary": "Allocates52 bytes, copies lv_ft_info-like fields, saves shared name reference, initializes font callbacks and outputsfont atinfo+12; returns1 on success,0 onfailure."
+    },
+    {
+      "name": "glyph_bitmap_callback",
+      "runtime_start": "0x38063490",
+      "runtime_end_exclusive": "0x380634f0",
+      "NOR_offset": "0x943494",
+      "bytes": 96,
+      "sha256": "b2f0a7d2c1841591a32ab57835a35a48a95e03b28234c12812afd2b125380093",
+      "semantic_summary": "Returns buffer from shared current_face at0x384fce10 or current image glyph at0x384fcee8, rather than an independent immutable per-font bitmap."
+    },
+    {
+      "name": "font_manager_path_creation",
+      "runtime_start": "0x382b650c",
+      "runtime_end_exclusive": "0x382b656c",
+      "NOR_offset": "0xb96510",
+      "bytes": 96,
+      "sha256": "4fe4f964c56c6e453b27ec8909428d6dd34f28e512f6efbfd011d0eaf64e7edb",
+      "semantic_summary": "Builds default /font base directory from root plus %s/font and allocates manager; comparison source names identify original font_manager."
+    },
+    {
+      "name": "font_manager_file_and_init",
+      "runtime_start": "0x382b6684",
+      "runtime_end_exclusive": "0x382b67b8",
+      "NOR_offset": "0xb96688",
+      "bytes": 308,
+      "sha256": "5d8ad22d723c01b8e84cc56dd686bc815c58ae97b3a1ad01707feb4152bbf6aa",
+      "semantic_summary": "Builds %s/%s.ttf path, checks file access, calls native font initializer, reports requested name/weight/style on failure."
+    },
+    {
+      "name": "font_manager_return_delete",
+      "runtime_start": "0x382117ce",
+      "runtime_end_exclusive": "0x38211892",
+      "NOR_offset": "0xaf17d2",
+      "bytes": 196,
+      "sha256": "313a72edeba61b9502628628175523e6188c4bc9fca47d270b33aa29d1b4c4dd",
+      "semantic_summary": "Updates reference count and name/cache lists; manager font lifetime cannot be bypassed by borrowing a pointer indefinitely."
+    }
+  ],
+  "identified_safe_strings": [
+    {
+      "runtime": "0x383f9434",
+      "NOR_offset": "0xcd9438",
+      "value": "/font/MiSansW_Regular.ttf",
+      "sha256_including_NUL": "caf9fc70bd12f743ae2dda747f4fdcce208e74f83d10e5f08c9d623c170917cc"
+    },
+    {
+      "runtime": "0x38402194",
+      "NOR_offset": "0xce2198",
+      "value": "lvgl/src/extra/libs/freetype/lv_freetype.c",
+      "sha256_including_NUL": "37cb3a73229502abde48929157ae60c98202afd17f8be2e043d71845e3c8b3df"
+    },
+    {
+      "runtime": "0x38402a28",
+      "NOR_offset": "0xce2a2c",
+      "value": "lv_ft_font_init_cache",
+      "sha256_including_NUL": "b1f836594c0fc266511d247bfa0ae0a32c2650c2ae644a165c9f30e8ccc96730"
+    },
+    {
+      "runtime": "0x3847d39c",
+      "NOR_offset": "0xd5d3a0",
+      "value": "MiSansW_Regular",
+      "sha256_including_NUL": "963d82528432086eae6fdecb3d0bf43307d7e6e4332315c5f801758ef372fc61"
+    },
+    {
+      "runtime": "0x3847d17c",
+      "NOR_offset": "0xd5d180",
+      "value": "ext/lvx_font_manager.c",
+      "sha256_including_NUL": "70237650e273c4934b28e737fefcff315baa6c3773d3d9b239f5e3e5afb82a73"
+    },
+    {
+      "runtime": "0x38496bd0",
+      "NOR_offset": "0xd76bd4",
+      "value": "%s/%s.ttf",
+      "sha256_including_NUL": "f84fad80066d1bc42ee672113b42ffb5a2cba361fcb43dccfaefcc4cdeb255d2"
+    }
+  ],
+  "public_comparison_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/lvgl/lvgl/v8.3.11/src/extra/libs/freetype/lv_freetype.h",
+      "sha256": "b3426c118996f1567abc652c1f2ce4d9ac225415c6dbc2eab0115afd8a6386e8",
+      "local_ignored_path": "analysis/image-push/reference/lvgl-v8.3.11-src-extra-libs-freetype-lv_freetype.h",
+      "role": "Pinned public source comparison; not proof of exact vendor revision/configuration."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/lvgl/lvgl/v8.3.11/src/extra/libs/freetype/lv_freetype.c",
+      "sha256": "d6787432256d425bd2d2db12ab64b364deaa37d965bb89026435ecb07abea971",
+      "local_ignored_path": "analysis/image-push/reference/lvgl-v8.3.11-src-extra-libs-freetype-lv_freetype.c",
+      "role": "Pinned public source comparison; not proof of exact vendor revision/configuration."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/lvgl/lvgl/v8.3.11/src/font/lv_font.h",
+      "sha256": "1c29529613fc27d8b72d21016b1298ff828ea098069319beb60cb3c6ed90a982",
+      "local_ignored_path": "analysis/image-push/reference/lvgl-v8.3.11-src-font-lv_font.h",
+      "role": "Pinned public source comparison; not proof of exact vendor revision/configuration."
+    }
+  ],
+  "result": "Reusing originalfontresources is feasible in principle and native loader/callbacks are staticallyidentified. It is a separate integrationstep requiringGUI/cache coordination; no currentdrawer fontreuse, livefont availability or deviceexecution is claimed."
+}

@@ -1,0 +1,58 @@
+{
+  "scope": "Supplemental first-party metadata from parent hardware-owner reports plusofflinebinarycondition. Thisagent didnotoperatehardware ornetwork anddidnotchangefrozenABI/program/previousartifacts. Reportedruntime observations arenotindependentlycollectedhere.",
+  "firmware_version": "1.50.10",
+  "links": {
+    "prior_static_path": "analysis/image-push/ack-path-static-recheck-1.50.10.json",
+    "prior_static_sha256": "da528a739b4fa1959226f57a1f9057b930a5a1410541b89475f13bb061307fa6",
+    "immutable_network_ABI_sha256": "10a64906deb91c6d1006cb436da829723b9718091ef48c86c61b935ef788da66",
+    "unchanged_program_source_sha256": "3bc6affa3969ce4e54264781117b8738fcea9576aeeed1d7f323cdf580a24a8d"
+  },
+  "parent_reported_observations": [
+    {
+      "case": "Firstordinaryinvalid16Bheader",
+      "result": "ConnectionEOFbeforeVACK; failureunexplained",
+      "wall_seconds_approx": 0.2
+    },
+    {
+      "case": "Completevalid307200Bpattern",
+      "result": "VACK0andimagevisuallyobserved",
+      "fnv1a32": "8f634a70",
+      "wall_seconds": 5.58
+    },
+    {
+      "case": "Repeatedordinaryinvalid16Bheader",
+      "result": "VACK1",
+      "wall_seconds": 0.034
+    },
+    {
+      "case": "Truncatedbody thenclientSHUT_WR",
+      "result": "ImmediateEOFwithoutVACK",
+      "wall_seconds": 0.017
+    },
+    {
+      "case": "IdleTCPconnection",
+      "result": "VACK1",
+      "wall_seconds": 10.038
+    },
+    {
+      "case": "Completebodywithbadchecksum",
+      "result": "VACK2",
+      "wall_seconds": 7.565
+    }
+  ],
+  "static_halfclose_condition": {
+    "runtime_window_start": "0x381808c6",
+    "runtime_window_end_exclusive": "0x381808e2",
+    "NOR_offset": "0xa608ca",
+    "window_sha256": "cc1dcf6cacfe7ab7b068bc1097af6a24299a33164bb662ef22bf95c3e480cf5c",
+    "branch": "At381808c6 senderreadsconnflags+0x22 andtestsbit4; when setbranches38180a50 returning-EPIPE32 beforeRPCsend. Itisconsistentwithremote-closedhandling alreadyfoundincallbacklogic.",
+    "interpretation": "IfSHUT_WR/FINcauses daemonREMOTE_CLOSEDflag, A7cannotdeliverACKafterreceiveEOF evenifnormalTCPhalfclosewouldpermitreverse-directiondata. Exactfailingcallerrno/connflagswerenotcapturedhere, sowe do notclaimrootcauseproven."
+  },
+  "conclusions": [
+    "Successfulcompleteupload+VACK0, repeatinvalidheaderVACK1 andbadchecksumVACK2 substantiate selectednativefourargsSEND/sixargsRECVFROM path; noABIreplacementrecommended.",
+    "ACKdelivery isnotguaranteedfortruncatedhalfclosedinput; firstsmallheaderfailure remainsunexplainedandnotreproducedinthereportedordinaryrepeat.",
+    "CLOCKchecksbound cooperativeexactloopprogress, notblockingnative/RPMsg/schedulingwalltime. Idleconnection10.038sexceeds5s no-progressvalue; twoexactphasesandnativeRPCworkarenotseparatelytimed.",
+    "Existingserver_errorrecordsprotocolstatus; ACKsendresult/nativeerrno arediscarded. Thisprototype cannotpreciselyattribute initialEOF."
+  ],
+  "limits": "No newfrozenvariant, nofirmwarepatch, nosafetyretryorhardwareexperiment. Parentowns furthersequentialvaliduploads andhardwareacceptancerecord."
+}

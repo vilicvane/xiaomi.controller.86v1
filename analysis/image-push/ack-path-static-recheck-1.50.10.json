@@ -1,0 +1,144 @@
+{
+  "scope": "Offline boundedrecheck only; nohardware/native/socketcalls andnoedits to program, frozeninputs or priorABIevidence. No vendor byte arrays orcredentials.",
+  "backup_sha256": "777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b",
+  "firmware_version": "1.50.10",
+  "network_ABI_preserved": {
+    "path": "analysis/image-push/network-abi-1.50.10.json",
+    "sha256": "10a64906deb91c6d1006cb436da829723b9718091ef48c86c61b935ef788da66"
+  },
+  "local_program": {
+    "path": "analysis/image-push/native-image-drawer.c",
+    "sha256": "3bc6affa3969ce4e54264781117b8738fcea9576aeeed1d7f323cdf580a24a8d",
+    "role": "Read-only currentlocal source; actualinstalledfreeze andruntimevalidation areownedbyparentagent."
+  },
+  "parent_runtime_reports_not_collected_by_this_agent": {
+    "initial_invalid_header": "Parent reports16B NOPE header connectedthenEOF before8B VACK inabout0.2s. No failingnativecallresult/errno captured here.",
+    "subsequent_valid_image": "Parent reports complete307200B pattern/FNV8f634a70 acceptedwithVACK0 in5.58s anduserobservedimage. This strongly narrowsbroadABIerrorhypothesis butdoesnotdiagnoseinitialfailure."
+  },
+  "source_control_flow": {
+    "bad_header": "Header/statusfailure stillbuildsVACK1 andattempts8B exactsend iffreshclockcall succeeds; closesfd afterward.",
+    "ack_result": "TheCignoresexact ACKsend returnvalue andthenCLOSE returnvalue; server_error recordsprotocolstatus instead ofnativeACKerrno. Existingtelemetrycannotdifferentiateread/header rejection fromACKfailure.",
+    "retry": "exact retriesonlyEAGAIN11/EINTR4 with20ms sleep andmonotonic5s no-progress/30stotaldeadlines. A0.2sEOFdoesnotmatchmerelywaitingoutthisEAGAIN timeout, assuming clocksbehaveasvalidated."
+  },
+  "confirmed_findings": [
+    "SEND iscorrect4arg andRECVFROM correct6arg; noargumentcountchangeindicated.",
+    "A7 removes MSG_DONTWAIT40 beforeMCU request; currentbackendflags0 rulesout rejecting40asasolecause.",
+    "Acceptedsocketconnectedstateandready-eventsetup present; validupload+ACK reportedbyrootdemonstratesmaintransportworks."
+  ],
+  "remaining_hypotheses_not_confirmed": [
+    "A particularrecv/send returned0 oranonretryerrno; currentprotocolstatus telemetrydoesnotpreservethecause.",
+    "The8B ACKmayhavebeenqueuedbeforeimmediatebackendclose; actualnativeTCPdrain/lingersemantics arenotderivedhere.",
+    "Initialconnection/transienteventtimingcouldinteractwithreceive/sendresults; nofailurecaptureexistsinthisrecheck."
+  ],
+  "recommended_next_evidence": "Parent sequentialrepeatinvalidheader/halfclose/idle/checksumtests againstcurrentfreeze, preservingfailuretiming andACK bytes. Ifreproduced, anewseparatelyreviewedvariant couldrecordACK result/errno andstage; do notchangeABIoraddblinddelaysbasedononeunexplainedEOF.",
+  "semantic_windows": [
+    {
+      "name": "recvfrom_wrapper",
+      "runtime_start": "0x38179784",
+      "runtime_end_exclusive": "0x38179834",
+      "NOR_offset": "0xa59788",
+      "bytes": 176,
+      "sha256": "379198be670c96eb07fa820013640cc3c43dd939598fa875e0a17d6d37152d64",
+      "summary": "Six AAPCS args(fd,buffer,size,flags,source,source_len); flags savedr3, lasttwo loadedfromcallerstacks; NULLsource_length buildsoneiovec and zeroaddresslength; negative convertederrno/-1."
+    },
+    {
+      "name": "send_wrapper",
+      "runtime_start": "0x381798a0",
+      "runtime_end_exclusive": "0x38179920",
+      "NOR_offset": "0xa598a4",
+      "bytes": 128,
+      "sha256": "8888776fff6105b8ddb9daf375e71dbac6d1ff17d7e0052d7dec5aefb1a34180",
+      "summary": "Four AAPCS args(fd,buffer,size,flags); flags r3 savedr5, buffer r1 savedr8, length r2 savedr6. Builds NULLdest oneiovec andcallspsock_sendmsg; negative convertederrno/-1."
+    },
+    {
+      "name": "psock_sendmsg",
+      "runtime_start": "0x38179838",
+      "runtime_end_exclusive": "0x3817989c",
+      "NOR_offset": "0xa5983c",
+      "bytes": 100,
+      "sha256": "dca94b5a5abbc9d9056381b02c0a90ef2c0c1b1651bb8934c84e714e1f644b98",
+      "summary": "Validates socket and oneiovec buffer then calls sockif+0x28 withsocket,msg,flags."
+    },
+    {
+      "name": "A7_send_ready_and_flag_filter",
+      "runtime_start": "0x3818086c",
+      "runtime_end_exclusive": "0x381809d8",
+      "NOR_offset": "0xa60870",
+      "bytes": 364,
+      "sha256": "0147d546f08eef49a53cb7290a5f88c051f0469f1f341602989b2ae940a5b221",
+      "summary": "MSG_DONTWAIT40 is local send-ready wait suppression. At38180962 BICflags,#0x40, then writesfilteredflagsinto RPCrequestat38180994. Only flags0 reachesMCU forcurrentlyselectedcall."
+    },
+    {
+      "name": "A7_send_failure_branches",
+      "runtime_start": "0x381809d8",
+      "runtime_end_exclusive": "0x38180aca",
+      "NOR_offset": "0xa609dc",
+      "bytes": 242,
+      "sha256": "9d402406db8fe8d7431e21fc94c26481ca7750d27455c2a5183d2728885b518d",
+      "summary": "Receivesdaemonresult, retriesEAGAIN againstsend-ready event; localfailuresincludeEAGAIN11,EPIPE32,ENOTCONN107,ECONNRESET104. Wrapperthenrecordspositiveerrno."
+    },
+    {
+      "name": "A7_recv_ready_and_flag_filter",
+      "runtime_start": "0x38180600",
+      "runtime_end_exclusive": "0x381806de",
+      "NOR_offset": "0xa60604",
+      "bytes": 222,
+      "sha256": "2ff935be37d7628d96d3a467e88ecf3918306b23f6426cb2b2460b66470d413d",
+      "summary": "MSG_DONTWAIT40 suppresseslocalreceive-ready wait; BICflags,#0x40 at381806c6 thenwritesfilteredflagsto RPCrequest. NULLsource handledbywrapper."
+    },
+    {
+      "name": "accepted_A7_connection_setup",
+      "runtime_start": "0x3817e434",
+      "runtime_end_exclusive": "0x3817e504",
+      "NOR_offset": "0xa5e438",
+      "bytes": 208,
+      "sha256": "014bfcb77a5b9ddbfb0d3494bbbe947917dc9226cecd80db537b94465bd71850",
+      "summary": "Newconnstate2READY before daemonaccept; successfulaccept setsconnected1 andcrefs1, copieslisteners type/domain/sockif, connectsownednewconn; currentworker descriptor allocation usesflags3 so explicitDONTWAIT remainsrequired."
+    },
+    {
+      "name": "MCU_sendto_request",
+      "runtime_start": "0x2c1addb8",
+      "runtime_end_exclusive": "0x2c1adfa8",
+      "NOR_offset": "0x1addb8",
+      "bytes": 496,
+      "sha256": "f74a6e699950a1732c945b8ee198307f42e90e00802137604e8c39f245c1919b",
+      "summary": "MCU requesthandler loadsreqflags@8; singlepacket path invokes sendto-like native trampoline with6args, destination NULL/len0 ifrequestaddrlen0. Fragmentedpath invokes psock_sendmsg withreqflags."
+    },
+    {
+      "name": "MCU_sendto_trampoline",
+      "runtime_start": "0x2c596840",
+      "runtime_end_exclusive": "0x2c596848",
+      "NOR_offset": "0x596840",
+      "bytes": 8,
+      "sha256": "7048e1af70b53cddd1ff4e2fdfcb321cb8e9359b7007f259147e1874427f672b",
+      "summary": "PC-load trampoline points toRAM Thumb0x00214751. This boundedNOR recheck doesnotderiveRAMloader mapping orfullTCP implementation, so close/drain/signalsemantics remainunproven."
+    },
+    {
+      "name": "MCU_accept_backend",
+      "runtime_start": "0x2c1b3fa0",
+      "runtime_end_exclusive": "0x2c1b40c4",
+      "NOR_offset": "0x1b3fa0",
+      "bytes": 292,
+      "sha256": "f67751f285d503b80f69b9182c61af1ec7f89a87fa245e3812c1eac19615c2ff",
+      "summary": "Accept createsbackendnew socketwith fifthflags800 SOCK_NONBLOCK; completion startsPOLLIN andsends SENDTO_READY4 eventfornewremoteid."
+    },
+    {
+      "name": "MCU_close_request",
+      "runtime_start": "0x2c1b3f10",
+      "runtime_end_exclusive": "0x2c1b3f9c",
+      "NOR_offset": "0x1b3f10",
+      "bytes": 140,
+      "sha256": "e6779b3c7561d4ced9d6024dd8ed9b7265fff02db3261c98c335ad76cc5ec940",
+      "summary": "Closehandler stopsremote poll, calls psock_close, releases endpointownership, thenreturnsRPCack. ThisdoesnotproveTCP queuedoutputdrainbehavior."
+    },
+    {
+      "name": "MCU_psock_close",
+      "runtime_start": "0x2c540850",
+      "runtime_end_exclusive": "0x2c5408b8",
+      "NOR_offset": "0x540850",
+      "bytes": 104,
+      "sha256": "2263f9bb6b8afaf5955afd826f4f0794792a96ce08933e421456ce6b91e6f155",
+      "summary": "Dispatches sockif+0x30 close callback, thenclears12B socket on success. Theactualbackendclose implementation isnotidentifiedbythiswindow."
+    }
+  ]
+}

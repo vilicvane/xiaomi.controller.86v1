@@ -16,7 +16,14 @@ SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确�
 自己的图片。API 指南常显，按 METHOD、URL、PAYLOAD 展示接口与二进制 body 说明。
 下载的 Payload 为 307216B，包含 VIMG 头、RGB565LE 像素和 FNV 校验，可直接用于
 页面的 cURL 示例；不再提供仅像素的 raw RGB565 下载。
-网页和 cURL 示例不指定 Content-Type；接收端直接校验 VIMG、固定长度及 FNV 校验和。
+图片网页请求和图片 cURL 示例不指定 Content-Type；接收端直接校验 VIMG、固定长度及 FNV。
+
+“自动返回”卡片读取或保存原界面未触摸后的等待时间，默认 60 秒、0 关闭、范围 0–3600。
+设置按重启保留实现，图片仍为 RAM-only；只计触屏，物理按键不影响计时。设置请求只由
+明确点击发出，初始为“尚未读取”；GET/POST JSON 各有 10 秒超时，不自动重试，地址改变
+取消旧请求，迟到响应不覆盖新编辑。客户端位于 `src/settings.ts`，协议与当前验收范围见
+[自动返回说明](../docs/auto-return.md)。a 安装、真实设置接口和暖复位加载已验证，旧 g 无此接口；
+网页读写及定时返回的用户观察仍单列。
 
 预览在裁切框外继续显示整图，框外以 55% 黑色遮罩变暗；中央 480×320 区域与导出和
 发送使用同一画布。源图缩放和移动使用高质量重采样生成 480×320 成品，预览仍以
@@ -47,15 +54,15 @@ npm --prefix web run build
 [HTTP 图片 API](../docs/http-image-api.md)。
 
 HTTP 202 表示设备已接收并排队供 GUI 消费；图片保存在 RAM，重启不会保留。
-当前已安装 g 配置了 `https://wan.sh/xiaomi-86v1/`；访问面板 `IP:18086` 会用 303 跳转，
+本轮 a 沿用 `https://wan.sh/xiaomi-86v1/`；访问面板 `IP:18086` 会用 303 跳转，
 通过 `?device=` 自动填入设备地址，使用设备不需要电脑开发服务器。未来更换目标
 hostname 需要新的冻结固件 release；网页发布不会自动修改设备中的目标 URL。
 浏览器请求本地网络权限时，授权后才能上传。
 未连接设备时仍可编辑和下载。
 
-g 的页面配置为 `PANEL_FRONTEND_URL=https://wan.sh/xiaomi-86v1/`、CORS `*`，
+a 的页面配置为 `PANEL_FRONTEND_URL=https://wan.sh/xiaomi-86v1/`、CORS `*`，
 由设备端 release 在编译时确定，使用 `?device=` 自动填写面板地址。修改网页本身不能
-替代独立冻结和硬件安装。g 的四页读回/native/GLOBAL/暖启动通过；真实 GET/303 和
+替代独立冻结和硬件安装。此前 g 的四页读回/native/GLOBAL/暖启动通过；真实 GET/303 和
 Chrome 跟随/填入地址通过，用户另行确认正式页面跳转及 HTTPS 网页上传正常；随后
 只读状态显示 generation/displayed_generation=1、pending=0、server=1/error=0。
 自动化 Chrome 没有发送 POST，GUI 消费也不等于 LCD 扫描验证。
@@ -69,7 +76,10 @@ Worker `xiaomi-86v1` 已发布到
 此次检查没有面板上传、下载或固件操作。
 目标地址 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)已能正常访问，HTTP 200、无尾
 斜线路径 307、静态资源和 Chrome 页面加载及测试用 `?device=` 参数均已验证。
-当前网页发布版本为 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12`。
+当前含设置卡片的发布版本为 `ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`。正式页面 200、四项
+线上资源与构建字节一致，Chrome 显示设置卡片、初始不自动请求 LAN、页面错误为 0；
+这次页面检查没有请求面板。此前图片网页版本 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12` 的
+跳转和上传证据保持原范围。
 部署仅绑定 `wan.sh/xiaomi-86v1` 和 `wan.sh/xiaomi-86v1/*` 两条狭窄 route，
 采用 `dist-cloudflare` 内的静态资源，不包含 Worker 业务代码或后端服务。
 
@@ -96,6 +106,13 @@ Blob/下载属性，没有新做真实设备上传或 `.vimg` 的普通浏览器
 结果见 [d 发布结果](../firmware/releases/maintained-http-20261007-d.json)，不扩展为手机上传、
 其他 d 交互或云 HTTPS 到 LAN 上传验收。
 
-当前 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)单独记录正式 query
+历史 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)单独记录正式 query
 跳转及用户 HTTPS 网页上传确认。其他 g 交互、实屏内容和米家状态仍待验收，未进行
-完整断电测试；g 自身硬件 restore 尚未测试，不借用 d→g 升级中的 d restore 结论。
+完整断电测试；该记录不包含后续 g→a 迁移中的 g restore。
+
+本轮 a 的 19 项网页单元测试、生产构建及 Windows Chrome 模拟设置服务检查通过：
+初始零设置请求、读取/保存/0关闭、处理中与失败状态、旧地址与新编辑保护、390/360px
+无横向溢出、图片预览不变、无页面错误。没有在该检查中访问真实面板。
+固件与设置实机结果见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
+真实设置 GET/POST 0 和 5 秒、越界 422 且保留运行值，以及保存 5 秒后暖复位重新加载均
+通过，随后保存回 60 秒。直接 Node 图片 POST/202 与用户网页操作、LCD 和完整断电分开记录。

@@ -5,7 +5,9 @@
 
 维护版不要求 Content-Type。默认前端为
 `https://wan.sh/xiaomi-86v1/`，`GET /` 通过 303 跳转并携带设备地址查询参数。
-安装及实际验证范围见 [当前发布结果](../firmware/releases/maintained-http-20261007-g.json)。
+安装及实际验证范围见 [当前发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
+同一端口也提供自动返回设置的 `GET` / `POST /api/settings`，见
+[设置 API](auto-return.md#设置-api)；它的 JSON body 与图片格式分别解析。
 
 监听局域网 TCP18086。双击自定义画面可显示地址；地址按名义 1 秒查询 IPv4，查询失败
 显示 0 地址，更新时仅改变地址展示状态。原生 RPC 没有证明严格墙钟上限。
@@ -63,7 +65,7 @@ node firmware/tools/upload.ts PANEL_IPV4 --pattern
 GUI/publisher 锁；这些应用检查不约束底层 native RPC 的最长延迟。连接失效或超时后
 不保证错误 response 送达；客户端未收到成功时应报告结果不确定。
 
-API 提供 Access-Control-Allow-Origin、POST 及 Content-Type 的预检响应。浏览器前端须和
+API 提供 Access-Control-Allow-Origin、GET/POST 及 Content-Type 的预检响应。浏览器前端须和
 设备在可互访的局域网；g 的正式 HTTPS 页面上传已由用户确认，并观察到 GUI 消费新图。
 自动化只验证了跳转与地址填入，浏览器本地网络权限仍需用户允许；不代表所有浏览器均兼容。
 CORS 成功不代表整个浏览器链路已验证。当前 API 没有 sender 认证，FNV 只检查

@@ -1,0 +1,200 @@
+{
+  "release": "maintained-idle-return-four-page-20261007-a",
+  "factory_firmware": "1.50.10",
+  "date": "2026-10-07",
+  "candidate_sha256": "6022cbd3e41cfc913a260ff17855582c47656318227dfb6defc55230be503f55",
+  "freeze_sha256": "660534d525762b83b8029b3adebd82a20d84723d5706e53afc6f6790a5c64cb4",
+  "candidate_inputs": 376,
+  "frozen_inputs": 382,
+  "program": {
+    "mainBytes": 3344,
+    "auxBytes": 396,
+    "netBytes": 4072,
+    "elfSha256": "21fc8b2378f829a192299d5ebdc07bd616ce6c046bac806a1e0c94a543aa0a5b"
+  },
+  "pages": {
+    "code": {
+      "offset": "0x92b000",
+      "before_sha256": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "after_sha256": "901d2dfd3880a8fb64cf93446967198eb86738371ac412c5bce4657a9cf69730"
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "before_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "after_sha256": "5ff194aab4c29f7b38972c4f3f3299339ef2c6c260310d1c9b30a8ed8bb93da9"
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "before_sha256": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+      "after_sha256": "68024f838daf56699f272fe2da0c746df2347b2e7fd710f59bd22a4c96493673"
+    },
+    "net": {
+      "offset": "0x92d000",
+      "before_sha256": "76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d",
+      "after_sha256": "96ea93ef826bb501960a6313eb750b57a22fcdd747dfb024f0a3ec23b0f764be"
+    }
+  },
+  "baseline": {
+    "name": "native-image-drawer",
+    "freeze_sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "additional_page": "stock 0x92d000"
+  },
+  "upgrade": {
+    "from": "maintained-http-four-page-20261007-g",
+    "previous_release_restore": {
+      "passed": true,
+      "full_four_page_readback": true,
+      "warm_readback": true,
+      "native_app_complete": true,
+      "safe_to_resume": true
+    },
+    "install_followed_exact_restore": true,
+    "scope": "Each release used its own frozen executor; two warm reboots cleared RAM images. Byte-exact short-path execution copy avoided Jim path limits."
+  },
+  "offline": {
+    "actual_arm_ui_groups": 36,
+    "actual_arm_http_groups": 23,
+    "actual_arm_settings_groups": 17,
+    "writer_mocks": 93,
+    "node_release_tests": 12,
+    "host_http_checks": 290,
+    "web_tests": 19,
+    "hardware_proof": false,
+    "long_path_mock": {
+      "initial_passed": 77,
+      "total": 93,
+      "cause": "Jim Path too long before intended test stages",
+      "short_path_passed": 93,
+      "inputs_changed": false
+    }
+  },
+  "automatic_return": {
+    "default_seconds": 60,
+    "range_seconds": [
+      0,
+      3600
+    ],
+    "disabled_value": 0,
+    "activity": "screen touch only, physical and virtual streams",
+    "starts_after": "stock owner is active and contacts released",
+    "held_or_pending_touch": "prevents switch and restarts interval",
+    "automatic_animation": false,
+    "stock_sleep_return": "independent and preserved",
+    "configuration_change": "starts a complete new interval"
+  },
+  "settings": {
+    "api": "/api/settings",
+    "get_post_status": 200,
+    "persistent_paths": [
+      "/data/86v1-return.0",
+      "/data/86v1-return.1"
+    ],
+    "record_bytes": 16,
+    "filesystem": "native FAT on MMC",
+    "factory_identity_modified": false,
+    "default_get_seconds": 60,
+    "saved_and_read_back_seconds": [
+      0,
+      5,
+      60
+    ],
+    "out_of_range": {
+      "request_seconds": 3601,
+      "status": 422,
+      "prior_runtime_unchanged": true
+    },
+    "warm_global_reload": {
+      "passed": true,
+      "saved_seconds": 5,
+      "loaded_runtime_ms": 5000,
+      "http_get_seconds": 5,
+      "gui_cycles_before": 51995,
+      "gui_cycles_after": 12826,
+      "kind": "single direct AON GLOBAL reset; bypasses OS shutdown hooks"
+    },
+    "failed_save_durable_rollback": "not promised",
+    "cold_power_persistence": "not tested"
+  },
+  "frontend": {
+    "url": "https://wan.sh/xiaomi-86v1/",
+    "endpoint_parameter": "device query",
+    "cors_origin": "*",
+    "cloudflare_version": "ecf90b3d-d93f-4a09-aab7-7d5b513a9d49",
+    "public_static_verification": {
+      "http_status": 200,
+      "assets_exact": 4,
+      "settings_card_visible": true,
+      "page_errors": 0,
+      "initial_settings_requests": 0
+    },
+    "actual_https_browser_settings": "pending user",
+    "default_image_node_post": 202
+  },
+  "hardware": {
+    "installed": true,
+    "preflight_exact": true,
+    "full_four_page_readback": true,
+    "post_reboot_exact": true,
+    "native_app_complete": true,
+    "safe_to_resume": true,
+    "warm_global_requested": true,
+    "warm_global_transport_error": 0,
+    "warm_global_dispatch_complete": true,
+    "live_controller_table_verified": true,
+    "primary_controller": "0x40148000",
+    "runtime": {
+      "context_bytes": 224,
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 91519,
+      "screen_off": 0,
+      "image_pending": 0,
+      "generation": 1,
+      "displayed_generation": 1,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "ipv4_present": true,
+      "return_after_ms": 60000,
+      "activity_valid": 0
+    }
+  },
+  "user_observations": {
+    "web_read_save": "pending",
+    "idle_return": "pending",
+    "touch_delays_return": "pending",
+    "image_display": "pending",
+    "manual_gestures": "pending",
+    "mi_home_online_control": "not separately confirmed"
+  },
+  "cold_power_cycle": "skipped_by_explicit_user_request",
+  "restore": {
+    "command": "node build/releases/maintained-idle-return-four-page-20261007-a/snapshot/firmware/tools/hardware.ts restore maintained-idle-return-four-page-20261007-a",
+    "execution_root": "C:/p86-idle-a",
+    "exact_target": "native-image-drawer three pages plus stock 0x92d000",
+    "hardware_restore_this_release": "not_tested",
+    "old_writer_directly_against_maintained": "prohibited",
+    "mmc_settings_files_removed": false
+  },
+  "limitations": [
+    "Only this exact panel image/private material set is admitted; no public stock-to-maintained installer.",
+    "Physical keys do not reset the inactivity timer.",
+    "Images remain RAM-only; compression belongs to separate research.",
+    "Native filesystem/driver timing, future OTA, arbitrary power interruption and LCD scanout are outside model proof.",
+    "The new release own restore has not been executed; no complete power-cycle result is claimed."
+  ],
+  "evidence_sha256": {
+    "g_restore_result": "08a493dc222a70600a0aebb65dd711c7098d9ec65618c501c591644d33ab1e97",
+    "g_restore_outer": "3542e947e3efb634fc29ecc035e46941535042a27467367c3180338190488ab7",
+    "install_result": "3fd60eddb84a55e4e0d568e5247add59f3da4f6d5c0572874bdcb7c4c5735865",
+    "install_outer": "0871361559a6d62951ab56f328e3a3de0f60f31462e0b0d3fcff0b2d3885af0f",
+    "fresh_four_pages": "0df940db7a2c9a8616e10ad4258efb2b220079cf8d22b77c707b6152c0f25d62",
+    "runtime_context": "2554a2b3f751d1b678e790fbaf99a964d450c5cb7313edce254ec6bd966890a1",
+    "real_settings_http": "abe69d383144dd9bacf1dce4b61c39b5a3913c68a95be8de371779bf55bb5094",
+    "public_and_warm_result": "7005ca63cb79b55c768426c87f2f4f0dc1bdc873b9828a72239f3f1f7bc80b53",
+    "warm_reset_cfg": "1fff9c3db0f29de3eac6b23a6baf2bbe0addf3633b744e33b4986a8f441cbc78",
+    "warm_reset_log": "cda2c9008b787d4dbe79eb64d0ba1ecb17e5f90d05075c9519ee9251818e7e72"
+  }
+}

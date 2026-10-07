@@ -42,7 +42,7 @@ JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供�
 
 具体命令、环境准备以及升级和恢复步骤见 **[完整刷写指南](docs/flashing.md)**。
 程序保存在 Flash 中，重启后仍会运行；上传的图片目前只保存在 RAM 中，重启后需要重新发送。
-当前发布与验证记录见 [发布结果](firmware/releases/maintained-http-20261007-g.json)。
+当前 a 版已安装，安装与验证范围见 [发布结果](firmware/releases/maintained-idle-return-20261007-a.json)。
 
 ## 功能：自定义图片
 
@@ -62,6 +62,15 @@ JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供�
 
 当前固件取消了第三物理键三击切换。原界面息屏后会切回自定义画面，下次唤醒时显示它，
 继续使用原系统的背光和息屏设置。双击和上下滑不会清除已上传图片。
+
+### 自动返回
+
+新版本可设置原界面连续未触摸多少秒后返回自定义图片，默认 60 秒；`0` 关闭定时返回，
+范围为 0–3600 秒。网页中的“自动返回”卡片支持读取和保存设置，保存后按重启保留设计。
+物理按键不计入触摸，原系统的息屏规则独立生效。
+
+a 版的设置读写与暖重启保留已验证；自动返回和触摸延期的使用体验仍待用户确认。
+使用方法和接口约定见 [自动返回说明](docs/auto-return.md)。
 
 ## 图片 API
 
@@ -103,7 +112,8 @@ Cloudflare 发布使用 `npm --prefix web run deploy`，正式路径为 `/xiaomi
 | [前端说明](docs/frontend.md) | 裁切预览、导出、浏览器权限和部署 |
 | [HTTP 图片 API](docs/http-image-api.md) | 请求格式、响应及连接限制 |
 | [研究记录](docs/research-index.md) | 配网恢复、硬件探索和历史版本 |
-| [当前发布结果](firmware/releases/maintained-http-20261007-g.json) | 本次安装和验证范围 |
+| [自动返回说明](docs/auto-return.md) | 定时返回、重启保留的设置及 API |
+| [当前发布结果](firmware/releases/maintained-idle-return-20261007-a.json) | 本次安装和验证范围 |
 
 历史实验保留在 `analysis/`、`scripts/` 和研究文档中，包括此前的第三键三击逻辑。
 备份、设备身份、原始日志及第三方工具链不在 Git 中分发。

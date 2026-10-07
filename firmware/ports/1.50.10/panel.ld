@@ -5,11 +5,12 @@ SECTIONS {
   .broker 0x3804b2f8 : {
     *ui.o(.text.entry) *entry.o(.text)
     *ui.o(.text .rodata .rodata.str* .rodata.cst*)
+    *(.text.broker.settings)
   }
   .network 0x3804d000 : {
-    *http.o(.text* .rodata*) *http-parser.o(.text* .rodata*)
+    *http.o(.text* .rodata*) *http-parser.o(.text* .rodata*) *settings.o(.text* .rodata*)
   }
-  .feedback 0x3807a764 : { *(.text.feedback*) *(.rodata.feedback*) }
+  .feedback 0x3807a764 : { *(.text.feedback*) *(.rodata.feedback*) *(.feedback.settings) }
   /DISCARD/ : { *(.ARM.exidx*) *(.ARM.extab*) *(.comment*) *(.note*) }
   ASSERT(SIZEOF(.prefix) <= 0x1ec, "Prefix exceeds reviewed diagnostic container")
   ASSERT(SIZEOF(.start) == 4 && SIZEOF(.broker) <= 0xb78, "UI exceeds reviewed diagnostic containers")

@@ -350,6 +350,81 @@ canvas.active + .crop-frame .crop-guides {
 .connection .card-heading {
   margin-bottom: 12px;
 }
+.settings-card {
+  padding: 21px 24px;
+}
+.settings-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.settings-card h3 svg {
+  width: 16px;
+  height: 16px;
+  color: #8e9cb0;
+}
+.settings-card > p,
+.settings-help,
+.settings-feedback {
+  color: #626e81;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.settings-card > p {
+  margin: 8px 0 16px;
+}
+.settings-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e0e5ed;
+  border-radius: 8px;
+  padding: 9px 11px;
+  background: #fcfdff;
+}
+.settings-field:focus-within {
+  border-color: #9daec5;
+  box-shadow: 0 0 0 3px #303b4b0b;
+}
+.settings-field input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #4c586d;
+}
+.settings-field span {
+  font-size: 12px;
+  color: #626e81;
+}
+.settings-help {
+  margin: 6px 0 14px;
+}
+.settings-actions {
+  display: flex;
+  gap: 8px;
+}
+.settings-actions button {
+  flex: 1;
+  padding: 8px;
+}
+.settings-actions button[data-state="success"] {
+  color: #23664f;
+}
+.settings-actions button[data-state="error"],
+.settings-feedback[data-state="error"] {
+  color: #943e49;
+}
+.settings-actions button[data-state="working"] svg {
+  animation: spin 0.8s linear infinite;
+}
+.settings-feedback {
+  margin: 11px 0 0;
+  overflow-wrap: anywhere;
+}
 .tiny-panel {
   color: #afbacb;
 }
@@ -601,6 +676,7 @@ footer svg {
     gap: 18px;
   }
   .connection,
+  .settings-card,
   .export-card {
     padding: 20px;
   }

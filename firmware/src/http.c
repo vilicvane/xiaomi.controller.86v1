@@ -74,19 +74,30 @@ static unsigned image(struct broker *c, struct incoming *input)
     return status;
 }
 
-static void reply(struct broker *c, int fd, char *buffer, unsigned status)
+static void reply(struct broker *c, int fd, char *buffer, unsigned status,
+                  unsigned settings, unsigned seconds)
 {
     static const char welcome[] =
-        "Panel image drawer\nFrontend URL is not configured.\n"
+        "86V1 custom firmware\nFrontend URL is not configured.\n"
         "POST /api/image accepts VIMG + 480x320 RGB565LE.\n";
-    unsigned size = status == 200 ? sizeof(welcome) - 1u : 0;
+    char json[PANEL_SETTINGS_BODY_BYTES];
+    unsigned size = 0;
+    const char *payload = welcome;
+    if (status == 200) {
+        if (settings) {
+            int length = SNPRINTF(json, sizeof(json), "{\"return_after_seconds\":%u}\n", seconds);
+            if (length < 0 || (unsigned)length >= sizeof(json)) return;
+            size = (unsigned)length; payload = json;
+        } else size = sizeof(welcome) - 1u;
+    }
     /* HTTP/1.1 permits an empty reason phrase after the status code and space. */
     int n = SNPRINTF(buffer, PANEL_HTTP_HEADER_BYTES,
         "HTTP/1.1 %u \r\nConnection: close\r\nContent-Length: %u\r\n"
-        "Content-Type: text/plain; charset=utf-8\r\nCache-Control: no-store\r\n"
+        "Content-Type: %s\r\nCache-Control: no-store\r\n"
         "Access-Control-Allow-Origin: %s\r\n"
-        "Access-Control-Allow-Methods: POST\r\nAccess-Control-Allow-Headers: Content-Type\r\n"
-        "Allow: GET, POST, OPTIONS\r\n", status, size, PANEL_FRONTEND_ORIGIN);
+        "Access-Control-Allow-Methods: GET, POST\r\nAccess-Control-Allow-Headers: Content-Type\r\n"
+        "Allow: GET, POST, OPTIONS\r\n", status, size,
+        settings ? "application/json" : "text/plain; charset=utf-8", PANEL_FRONTEND_ORIGIN);
     if (n < 0 || (u32)n >= PANEL_HTTP_HEADER_BYTES) return;
     u32 used = (u32)n;
     if (status == 303) {
@@ -104,11 +115,17 @@ static void reply(struct broker *c, int fd, char *buffer, unsigned status)
     buffer[used++] = '\r'; buffer[used++] = '\n';
     u32 start;
     if (panel_clock(&start) || panel_exact(fd, (u8 *)buffer, used, start, 1)) return;
-    if (size) panel_exact(fd, (u8 *)welcome, size, start, 1);
+    if (size) panel_exact(fd, (u8 *)payload, size, start, 1);
 }
 
 void panel_server(struct broker *c)
 {
+    struct panel_settings_store store;
+    panel_settings_load(&store);
+    if (!LOCK(c->mutex, 0)) {
+        c->return_after_ms = store.seconds * 1000u; c->activity_valid = 0;
+        UNLOCK(c->mutex);
+    }
     u8 *buffer = ALLOC(PANEL_HTTP_HEADER_BYTES);
     if (!buffer) { c->server_error = 4; return; }
     struct { u16 family, port; u32 address; u8 zero[8]; } addr = {2, 0xa646, 0, {0}};
@@ -142,14 +159,33 @@ void panel_server(struct broker *c)
         }
         c->server_state = 2;
         struct incoming input = {fd, buffer, 0, 0};
-        struct panel_http_request request;
+        struct panel_http_request request = {0};
+        unsigned settings = 0, seconds = 0;
         unsigned status = panel_clock(&input.start) ? 503 : headers(&input, buffer, &request);
         if (!status) {
-            if (request.method == PANEL_HTTP_POST) status = image(c, &input);
-            else if (request.method == PANEL_HTTP_OPTIONS) status = 204;
+            settings = request.resource == PANEL_HTTP_SETTINGS;
+            if (request.method == PANEL_HTTP_OPTIONS) status = 204;
+            else if (settings) {
+                if (request.method == PANEL_HTTP_POST) {
+                    char data[PANEL_SETTINGS_BODY_BYTES];
+                    status = body(&input, (u8 *)data, request.length) ? 400 :
+                             panel_settings_parse(data, request.length, &seconds);
+                    if (!status) status = panel_settings_save(&store, seconds);
+                }
+                if (!status) {
+                    status = 503;
+                    if (!LOCK(c->mutex, 0)) {
+                        if (request.method == PANEL_HTTP_POST) {
+                            c->return_after_ms = seconds * 1000u; c->activity_valid = 0;
+                        }
+                        seconds = c->return_after_ms / 1000u;
+                        UNLOCK(c->mutex); status = 200;
+                    }
+                }
+            } else if (request.method == PANEL_HTTP_POST) status = image(c, &input);
             else status = PANEL_FRONTEND_URL[0] ? 303 : 200;
         }
-        reply(c, fd, (char *)buffer, status);
+        reply(c, fd, (char *)buffer, status, settings, seconds);
         CLOSE(fd);
         c->server_error = status < 400 ? 0 : status;
         c->server_state = 1;

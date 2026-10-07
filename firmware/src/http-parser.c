@@ -80,13 +80,57 @@ unsigned panel_http_parse(const char *data, unsigned bytes,
     }
     if (http11 && !has_host) return 400;
     if (!method) return 405;
-    if (!equal(data + target, target_bytes,
-               method == PANEL_HTTP_GET ? "/" : "/api/image", 0)) return 404;
+    unsigned resource;
+    if (equal(data + target, target_bytes, "/api/settings", 0)) resource = PANEL_HTTP_SETTINGS;
+    else if (equal(data + target, target_bytes,
+                   method == PANEL_HTTP_GET ? "/" : "/api/image", 0))
+        resource = method == PANEL_HTTP_GET ? PANEL_HTTP_ROOT : PANEL_HTTP_IMAGE;
+    else return 404;
     if (method == PANEL_HTTP_POST) {
         if (!has_length) return 411;
-        if (length != PANEL_HTTP_BODY_BYTES) return length > PANEL_HTTP_BODY_BYTES ? 413 : 400;
+        if (resource == PANEL_HTTP_SETTINGS) {
+            if (length > PANEL_SETTINGS_BODY_BYTES) return 413;
+            if (!length) return 400;
+        } else if (length != PANEL_HTTP_BODY_BYTES) return length > PANEL_HTTP_BODY_BYTES ? 413 : 400;
     } else if (length) return 400;
     request->method = method;
     request->length = length;
+    request->resource = resource;
+    return 0;
+}
+
+__attribute__((section(".feedback.settings")))
+static void space(const char *data, unsigned bytes, unsigned *position)
+{
+    while (*position < bytes && (data[*position] == ' ' || data[*position] == '\t' ||
+           data[*position] == '\r' || data[*position] == '\n')) ++*position;
+}
+
+/* The settings object has one integer member. Extra members are rejected. */
+unsigned panel_settings_parse(const char *data, unsigned bytes, unsigned *seconds)
+{
+    if (bytes > PANEL_SETTINGS_BODY_BYTES) return 413;
+    const char *prefix = "\"return_after_seconds\"";
+    unsigned p = 0, value = 0;
+    space(data, bytes, &p);
+    if (p == bytes || data[p++] != '{') return 400;
+    space(data, bytes, &p);
+    for (unsigned i = 0; prefix[i]; ++i)
+        if (p == bytes || data[p++] != prefix[i]) return 400;
+    space(data, bytes, &p);
+    if (p == bytes || data[p++] != ':') return 400;
+    space(data, bytes, &p);
+    unsigned first = p;
+    while (p < bytes && data[p] >= '0' && data[p] <= '9') {
+        if (p > first && data[first] == '0') return 400;
+        value = value * 10u + (unsigned)(data[p++] - '0');
+        if (value > 3600u) return 422;
+    }
+    if (p == first) return 400;
+    space(data, bytes, &p);
+    if (p == bytes || data[p++] != '}') return 400;
+    space(data, bytes, &p);
+    if (p != bytes) return 400;
+    *seconds = value;
     return 0;
 }

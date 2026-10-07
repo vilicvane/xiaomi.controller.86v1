@@ -1,7 +1,8 @@
 # 86V1 自定义固件刷写与配置
 
-本指南记录当前设备的已验证接线、构建、材料检查和安装命令。所有命令从仓库根目录
-执行；阅读步骤不代表可以跳过设备备份、精确状态匹配或版本审查。
+本指南记录当前设备的已验证接线、构建、材料检查和安装命令。开发命令从仓库根目录
+执行；a 版冻结刷写命令使用后文的完整短路径执行副本。阅读步骤不代表可以跳过
+设备备份、精确状态匹配或版本审查。
 硬件工作前还需阅读 [工程约束](engineering-notes.md)、[开发流程](development.md)及
 [项目工作约束](../AGENTS.md)。日常图片功能使用见 [项目 README](../README.md)。
 
@@ -122,21 +123,27 @@ sh firmware/tests/test-http.sh
 URL 保留 `/xiaomi-86v1/` 子路径，origin 可为 `*` 或不带路径的协议与域名。
 设备 `GET /` 返回 303，自动把当前面板地址放入 `?device=` 查询参数，例如
 `https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2FPANEL_IPV4%3A18086`。
-g 保持 CORS `*`，允许正式页面及本地开发 origin 读取响应。也可在新 release 中把 origin
+a 保持 CORS `*`，允许正式页面及本地开发 origin 读取响应。也可在新 release 中把 origin
 设为 `https://wan.sh`，限定正式来源；origin 不能带路径。命令行 cURL 不受浏览器 CORS 限制。
 
 新版本还必须完成程序/容器审查、实际 ARM 模型、93 个 writer mock、独立 storage 和
 writer 审查，再通过 [离线发布流程](../firmware/tools/README.md)创建唯一 release 和 freeze。
-构建成功不等于已审核或可刷写，不能覆盖既有 release 快照。g 的冻结 hash 见下方发布标识；
+构建成功不等于已审核或可刷写，不能覆盖既有 release 快照。a 的冻结 hash 见下方发布标识；
 实机安装和恢复仍要分别验证。
 
 ## 安装、升级与恢复
 
 下面命令须在匹配本机材料及完整 freeze 的前提下执行。`$panelRelease` 必须选用
-已经独立审核的目标 release；下面列出当前已安装 g 的冻结入口。
+已经独立审核的目标 release；下面列出本轮 a 版的冻结入口。
+
+Windows/Jim 在深目录可能报路径过长。a 的完整执行材料已逐项 hash 核对并放在短根目录
+`C:\p86-idle-a`，在那里 93 项 writer mock 全部通过。下面命令从这个**已准备且完整**的
+执行副本根目录运行；它必须包含同一套备份、历史依赖、release 和工具，不能只复制
+`hardware.ts`，也不能改 hash 绕过检查。新 clone 不会自动得到这个目录或这些材料。
 
 ```powershell
-$panelRelease = 'maintained-http-four-page-20261007-g'
+Set-Location 'C:\p86-idle-a'
+$panelRelease = 'maintained-idle-return-four-page-20261007-a'
 $panelExecutor = "build/releases/$panelRelease/snapshot/firmware/tools/hardware.ts"
 $panelVerifier = "build/releases/$panelRelease/snapshot/firmware/tools/release.ts"
 node $panelVerifier verify $panelRelease
@@ -151,7 +158,7 @@ node $panelExecutor check $panelRelease
 node $panelExecutor install $panelRelease
 ```
 
-当前 g 的正常检查应为 `patched=true`、`original=false`，此时不再执行 install。
+安装 a 完成后的正常检查应为 `patched=true`、`original=false`，此时不再执行 install。
 升级到新版 86V1 自定义固件时，先选择**当前安装版本**自己的冻结 executor 执行
 `node $panelExecutor restore $panelRelease`，确认旧图片实验版三个 Flash 区域与原厂网络区域
 完整恢复，并经重启后读回确认，再选择**新版本** executor 执行 check/install。每一步都会中断服务
@@ -167,21 +174,23 @@ node $panelExecutor install $panelRelease
 不能证明故意损坏 MAIN 后仍可救砖。完整断电验证按本次用户要求跳过，未借用历史结论。
 自定义固件的 restore 只回到旧图片实验版，继续回原厂要走各历史版本自己的精确恢复链，见
 [开发与维护流程](development.md)。不要在当前自定义固件上直接运行旧 `Set-Panel*.ps1`。
-本次 d→g 升级先用 d 自身冻结的执行工具恢复旧图片实验版三个 Flash 区域及原厂网络区域，完整
-四页/native/GLOBAL 和暖读回通过，再安装 g。这个结果不代表 g 自身 restore 已验证；
-g 自身硬件恢复尚未测试。
+本次 g→a 先用 g 自身冻结工具恢复精确基线，再由 a 自身工具安装，完整页读回和暖启动
+通过，两次新鲜 a check 均为 `patched=true`。a 自身恢复尚未测试。此前 d→g 的 d restore
+和 g install 结果保留在旧 g 记录中，本轮 g restore 另记在 a 结果中。
+NOR restore 不会删除新增的 MMC 自动返回设置，配置保存与重启加载须另行验证。
 原厂 OTA 不属于当前补丁维护流程，升级原厂映像后必须重新核对端口和完整基线。
 
 ## 当前发布标识与验证范围
 
 | 项目 | 值 |
 | --- | --- |
-| release | `maintained-http-four-page-20261007-g` |
-| candidate SHA-256 | `dbd66152502676875df1e2eddd97a02b00a0a14c547d7f6fee11e49f23994a8f` |
-| 380-input freeze SHA-256 | `4c523fdc97fee23173f05c2fa3883c48a1368f1865f01b4ef646c16b24583b38` |
-| 主/辅助/网络 BIN | 2946/236/2976B |
+| release | `maintained-idle-return-four-page-20261007-a` |
+| candidate SHA-256 | `6022cbd3e41cfc913a260ff17855582c47656318227dfb6defc55230be503f55` |
+| 382-input freeze SHA-256 | `660534d525762b83b8029b3adebd82a20d84723d5706e53afc6f6790a5c64cb4` |
+| 主/辅助/网络 BIN | 3344/396/4072B |
 
-g 的四个 Flash 区域安装及完整读回、保护和原生调用状态闭合、暖启动已通过。
-用户已确认正式网页跳转和上传，随后只读状态确认图像已由 GUI 消费。
-g 自身硬件恢复尚未测试；其他交互、实屏与米家验收单独记录，完整断电按用户要求跳过。
-详细范围见 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)。
+a 的 76 组实际 ARM、93 项短路径 writer mock、12 项 release、290 项 host HTTP 和
+19 项网页测试通过；四页安装及暖读回、设置接口读写、独立暖复位加载通过。正式网页
+设置卡片已发布，用户读取/保存、定时返回、触摸延期及其他界面验收仍单列待确认。
+a 自身恢复尚未测试，完整断电仍按用户要求跳过。
+详细范围见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。

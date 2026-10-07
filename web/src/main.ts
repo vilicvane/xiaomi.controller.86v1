@@ -7,6 +7,9 @@ import {
   Download,
   Image as ImageIcon,
   LoaderCircle,
+  RefreshCw,
+  Save,
+  Timer,
   Upload,
   Wifi,
   createElement,
@@ -27,6 +30,12 @@ import {
   rgbaToRgb565,
   sendImage,
 } from "./panel-api.ts";
+import {
+  SettingsRequests,
+  parseReturnSeconds,
+  readSettings,
+  saveSettings,
+} from "./settings.ts";
 
 const icons = {
   panel: ImageIcon,
@@ -39,6 +48,9 @@ const icons = {
   check: Check,
   loading: LoaderCircle,
   error: CircleAlert,
+  refresh: RefreshCw,
+  save: Save,
+  timer: Timer,
 } satisfies Record<string, IconNode>;
 const icon = (name: keyof typeof icons) =>
   createElement(icons[name], {
@@ -72,6 +84,7 @@ document.querySelector("#app")!.innerHTML = `
           <form id="send-form"><label class="field-label" for="device">面板地址</label><div class="device-field">${icon("wifi")}<input id="device" type="text" placeholder="输入 IP 地址或 IP:端口" inputmode="url" autocomplete="off" spellcheck="false" aria-describedby="device-help" required/></div><p class="field-help" id="device-help">双击面板画面查看地址，默认端口 18086。</p><button id="send" class="button primary" type="submit" data-state="idle" aria-live="polite"><span id="send-icon">${icon("upload")}</span><span id="send-label">发送画面</span>${icon("arrow")}</button><p id="send-feedback" class="send-feedback" role="status" aria-live="polite" hidden></p></form>
           <p class="local-note">电脑或手机需与面板在同一局域网。<br>如浏览器询问本地网络访问，请选择允许。</p>
         </section>
+        <section class="settings-card card" aria-labelledby="settings-title"><h3 id="settings-title">${icon("timer")}自动返回</h3><p>原界面一段时间未触摸后，返回自定义图片。</p><form id="settings-form"><label class="field-label" for="return-seconds">等待时间</label><div class="settings-field"><input id="return-seconds" type="number" min="0" max="3600" step="1" placeholder="0–3600" inputmode="numeric" aria-describedby="settings-help"/><span>秒</span></div><p id="settings-help" class="settings-help">0 表示关闭；保存的设置在重启后保留。</p><div class="settings-actions"><button id="read-settings" class="button secondary" type="button" data-state="idle">${icon("refresh")}<span>读取设置</span></button><button id="save-settings" class="button secondary" type="submit" data-state="idle">${icon("save")}<span>保存设置</span></button></div><p id="settings-feedback" class="settings-feedback" role="status" aria-live="polite">尚未读取当前面板设置。</p></form></section>
         <section class="export-card card"><h3>下载当前画面</h3><p>保留原图名称，附带尺寸和格式后缀。</p><div class="export-buttons"><button id="download-png" class="button secondary">${icon("download")}PNG 图片</button><button id="download-payload" class="button secondary">VIMG Payload</button></div></section>
       </aside>
     </div>
@@ -466,6 +479,134 @@ function updateApiUrl() {
 }
 endpointInput.addEventListener("input", updateApiUrl);
 updateApiUrl();
+
+const secondsInput = element<HTMLInputElement>("return-seconds");
+const settingsRequests = new SettingsRequests();
+let settingsController: AbortController | undefined;
+type SettingsOperation = "read" | "save";
+type SettingsState = "idle" | "working" | "success" | "error";
+
+function settingsButton(operation: SettingsOperation, state: SettingsState) {
+  const button = element<HTMLButtonElement>(`${operation}-settings`);
+  const labels =
+    operation === "read"
+      ? { idle: "读取设置", working: "正在读取…", success: "已读取", error: "重新读取" }
+      : { idle: "保存设置", working: "正在保存…", success: "已保存", error: "重新保存" };
+  const symbol =
+    state === "working" ? "loading"
+      : state === "success" ? "check"
+      : state === "error" ? "error"
+      : operation === "read" ? "refresh" : "save";
+  button.dataset.state = state;
+  button.setAttribute("aria-busy", String(state === "working"));
+  button.innerHTML = `${icon(symbol)}<span>${labels[state]}</span>`;
+}
+
+function settingsFeedback(message: string, state: SettingsState = "idle") {
+  const feedback = element("settings-feedback");
+  feedback.textContent = message;
+  feedback.dataset.state = state;
+}
+
+function settingsBusy(busy: boolean) {
+  for (const operation of ["read", "save"])
+    element<HTMLButtonElement>(`${operation}-settings`).disabled = busy;
+}
+
+secondsInput.addEventListener("input", () => {
+  settingsRequests.edit();
+  secondsInput.removeAttribute("aria-invalid");
+  if (!settingsController) {
+    settingsButton("read", "idle");
+    settingsButton("save", "idle");
+    settingsFeedback("设置已编辑，尚未保存。");
+  }
+});
+endpointInput.addEventListener("input", () => {
+  settingsRequests.invalidate();
+  settingsController?.abort();
+  settingsController = undefined;
+  settingsBusy(false);
+  settingsButton("read", "idle");
+  settingsButton("save", "idle");
+  settingsFeedback("面板地址已更改，尚未读取此面板设置。");
+});
+
+async function updateSettings(operation: SettingsOperation) {
+  if (settingsController) return;
+  let endpoint: string;
+  let seconds: number | undefined;
+  try {
+    endpoint = normalizeDeviceEndpoint(endpointInput.value);
+  } catch (cause) {
+    settingsButton(operation, "error");
+    settingsFeedback((cause as Error).message, "error");
+    endpointInput.focus();
+    return;
+  }
+  if (operation === "save") {
+    try {
+      seconds = parseReturnSeconds(secondsInput.value);
+    } catch (cause) {
+      settingsButton(operation, "error");
+      settingsFeedback((cause as Error).message, "error");
+      secondsInput.setAttribute("aria-invalid", "true");
+      secondsInput.focus();
+      return;
+    }
+  }
+  const request = settingsRequests.begin();
+  const controller = new AbortController();
+  settingsController = controller;
+  settingsBusy(true);
+  settingsButton("read", "idle");
+  settingsButton("save", "idle");
+  settingsButton(operation, "working");
+  settingsFeedback(
+    operation === "read" ? "正在读取面板设置…" : "正在保存设置…",
+    "working",
+  );
+  try {
+    const settings =
+      operation === "read"
+        ? await readSettings(endpoint, fetch, controller.signal)
+        : await saveSettings(endpoint, seconds!, fetch, controller.signal);
+    const result = settingsRequests.result(request);
+    if (result === "stale") return;
+    if (result === "unchanged") {
+      secondsInput.value = String(settings.return_after_seconds);
+      secondsInput.removeAttribute("aria-invalid");
+    }
+    const value =
+      settings.return_after_seconds === 0
+        ? "自动返回已关闭"
+        : `未触摸 ${settings.return_after_seconds} 秒后自动返回`;
+    settingsButton(operation, "success");
+    settingsFeedback(
+      `${operation === "read" ? "面板当前设置" : "已保存"}：${value}。${result === "edited" ? "输入已更改，未覆盖；新输入尚未保存。" : ""}`,
+      "success",
+    );
+  } catch (cause) {
+    if (settingsRequests.result(request) === "stale") return;
+    settingsButton(operation, "error");
+    settingsFeedback(
+      cause instanceof Error ? cause.message : "设置请求未获确认，请手动重试。",
+      "error",
+    );
+  } finally {
+    if (settingsRequests.result(request) !== "stale") {
+      settingsController = undefined;
+      settingsBusy(false);
+    }
+  }
+}
+element("read-settings").addEventListener("click", () =>
+  void updateSettings("read"),
+);
+element<HTMLFormElement>("settings-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  void updateSettings("save");
+});
 
 const sample = new Image();
 sample.onload = () => {

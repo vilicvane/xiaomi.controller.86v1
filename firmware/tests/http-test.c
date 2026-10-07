@@ -8,14 +8,14 @@ static unsigned checks;
 static void check(const char *data, unsigned bytes, unsigned expected,
                   unsigned method, unsigned length)
 {
-    struct panel_http_request request = {0xabcdefu, 0x123456u};
+    struct panel_http_request request = {0xabcdefu, 0x123456u, 0x6789u};
     unsigned status = panel_http_parse(data, bytes, &request);
     if (status != expected) {
         fprintf(stderr, "Expected HTTP %u, received %u: %.*s\n", expected, status, (int)bytes, data);
         assert(status == expected);
     }
     if (!status) assert(request.method == method && request.length == length);
-    else assert(request.method == 0xabcdefu && request.length == 0x123456u);
+    else assert(request.method == 0xabcdefu && request.length == 0x123456u && request.resource == 0x6789u);
     ++checks;
 }
 
@@ -81,6 +81,42 @@ int main(void)
     CHECK(POST "Content-Length: 307216\r\nContent-Type: a\1b\r\n\r\n", 400, 0, 0);
     CHECK("OPTIONS /api/image HTTP/1.1\r\nHost: panel\r\nContent-Length: 1\r\n\r\n", 400, 0, 0);
     CHECK("GET / HTTP/1.1\r\nHost: panel\r\nContent-Length: 1\r\n\r\n", 400, 0, 0);
+
+    CHECK("GET /api/settings HTTP/1.1\r\nHost: panel\r\n\r\n", 0, PANEL_HTTP_GET, 0);
+    CHECK("OPTIONS /api/settings HTTP/1.1\r\nHost: panel\r\n\r\n", 0, PANEL_HTTP_OPTIONS, 0);
+    CHECK("POST /api/settings HTTP/1.1\r\nHost: panel\r\nContent-Length: 27\r\n\r\n", 0, PANEL_HTTP_POST, 27);
+    CHECK("POST /api/settings HTTP/1.1\r\nHost: panel\r\nContent-Length: 64\r\n\r\n", 0, PANEL_HTTP_POST, 64);
+    CHECK("POST /api/settings HTTP/1.1\r\nHost: panel\r\nContent-Length: 65\r\n\r\n", 413, 0, 0);
+    CHECK("POST /api/settings HTTP/1.1\r\nHost: panel\r\nContent-Length: 0\r\n\r\n", 400, 0, 0);
+    CHECK("POST /api/settings HTTP/1.1\r\nHost: panel\r\n\r\n", 411, 0, 0);
+    CHECK("GET /api/settings HTTP/1.1\r\nHost: panel\r\nContent-Length: 27\r\n\r\n", 400, 0, 0);
+    CHECK("POST /api/settings?x=1 HTTP/1.1\r\nHost: panel\r\nContent-Length: 27\r\n\r\n", 404, 0, 0);
+
+    const char *settings[] = {"{\"return_after_seconds\":0}", "{\"return_after_seconds\":1}",
+        "{\"return_after_seconds\":3600}", " \r\n{ \t\"return_after_seconds\" : 60 } \n"};
+    const unsigned seconds[] = {0, 1, 3600, 60};
+    for (unsigned i = 0; i < sizeof(settings) / sizeof(*settings); ++i) {
+        unsigned value = 999;
+        assert(!panel_settings_parse(settings[i], strlen(settings[i]), &value) && value == seconds[i]);
+        ++checks;
+    }
+    const char *invalid[] = {"", "null", "[]", "{}", "{\"return_after_seconds\":-1}",
+        "{\"return_after_seconds\":1.5}", "{\"return_after_seconds\":1e2}",
+        "{\"return_after_seconds\":true}", "{\"return_after_seconds\":\"60\"}",
+        "{\"return_after_seconds\":00}", "{\"return_after_seconds\":1,\"extra\":0}",
+        "{\"return_after_seconds\":1,\"return_after_seconds\":2}",
+        "{\"wrong\":60}", "{\"return_after_seconds\":60}x"};
+    for (unsigned i = 0; i < sizeof(invalid) / sizeof(*invalid); ++i) {
+        unsigned value = 999;
+        assert(panel_settings_parse(invalid[i], strlen(invalid[i]), &value) == 400 && value == 999);
+        ++checks;
+    }
+    unsigned value = 999;
+    assert(panel_settings_parse("{\"return_after_seconds\":3601}", 29, &value) == 422 && value == 999);
+    ++checks;
+    const char binary[] = "{\"return_after_seconds\":60}\0";
+    assert(panel_settings_parse(binary, sizeof(binary) - 1, &value) == 400 && value == 999);
+    ++checks;
 
     const char complete[] = POST "Content-Length: 307216\r\n\r\n";
     for (unsigned i = 0; i < sizeof(complete) - 1; ++i) {

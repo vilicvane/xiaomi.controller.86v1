@@ -12,6 +12,10 @@
   一个层次通过不能替代另一个层次，旧版本结果不自动继承给新版本。
 - 完整 NOR 备份不包含通过 MMC/RPMsgFS 提供的 `/data`。程序持久化不表示图片持久化，
   备份固件也不表示已经备份全部配置。
+- a 版的自动返回设置单独保存在 `/data/86v1-return.0`、`.1`，不是原厂身份配置。
+  NOR 安装/恢复不删除这些文件；224B context 新增 +212/+216/+220 三个计时字段，
+  旧 212B context 解释只属于旧版本。a 实机保存的 5 秒设置在独立 AON GLOBAL 暖复位后
+  由新 context 与 GET 重新读到；这不代替完整断电验收。
 - 保留本地备份、原始 capture 和冻结输入；Git 只收第一方代码及明确审查的证据。
 
 ## 硬件、供电与调试
@@ -90,8 +94,8 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
   各中间阶段 A7/WF/BT 保持复位；四页、保护状态和 native context 都闭合后才运行。
   维护版先完整恢复旧图片实验版三页加原厂网络页，才允许进入旧三页回退链。
 - GLOBAL 后特定 IDR 暂时不可读，仅允许全新的只读连接重试；不重放 writer 或 native call。
-- 历史写入/恢复及当前维护版安装是在健康 MAIN 状态实测；d 的四页 restore
-  在 g 升级中通过，g 自身 restore 尚未执行。
+- 历史写入/恢复是在健康 MAIN 状态实测；d 的四页 restore 在 d→g 升级中通过，
+  g 自身 restore 在 g→a 迁移中通过，a 四页安装与暖读回已通过。a 自身 restore 尚未测试。
   没有故意破坏 MAIN 后验证冷恢复。
   不宣称已具备任意故障状态的救砖能力。
 - OpenOCD `-l` 路径用正斜杠避免 Tcl 转义；日志分类应精确锚定顶层状态字段，不能把
@@ -99,6 +103,9 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
 - 私有 OpenOCD 包须包含 exe、DLL 和精确 CMSIS-DAP 接口配置。`-s diagnostics` 所用
   `diagnostics/interface/cmsis-dap.cfg` 必须与冻结的 vendor 副本完全相同。离线 mock
   禁止 adapter/init，不能据 mock 通过承诺实际连接依赖完整。
+- a 的 Windows/Jim 长路径会使完整 mock 失败。完整材料逐项核对后使用短根目录
+  `C:\p86-idle-a`，93/93 mock 通过；冻结 executor/验证器必须相邻且保持原字节。
+  这不是不确定 native 调用后自动更换路径重试的许可。
 
 ## 空白 Flash 及字库
 

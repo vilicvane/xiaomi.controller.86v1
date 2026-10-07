@@ -22,7 +22,8 @@ previous.smooth.original.old.ELF = ELF
 CTX, PIXELS, IMAGE, RECEIVE, ERROR, STOP = (previous.CTX, previous.PIXELS,
     previous.IMAGE, previous.RECEIVE, previous.ERROR, previous.STOP)
 HEADER, SCRATCH, REQUEST = 0x38720000, 0x38722000, 0x38723000
-F = dict(previous.F, show_address=204, screen_off=144)
+F = dict(previous.F, show_address=204, screen_off=144,
+         return_after_ms=212, activity_ms=216, activity_valid=220)
 GUARD = bytes([0xa7]) * 128
 FRONTEND = os.environ.get('PANEL_TEST_FRONTEND_URL', '')
 ORIGIN = os.environ.get('PANEL_TEST_FRONTEND_ORIGIN', '*')
@@ -51,6 +52,7 @@ class Machine(previous.Machine):
         self.before_receive = None
         self.lock_fail_calls = set()
         self.lock_calls = 0
+        self.file_calls = []
         super().__init__(**options)
         self.allocations = [HEADER]
         for address in (HEADER - 128, HEADER + 2048, PIXELS - 128,
@@ -63,7 +65,42 @@ class Machine(previous.Machine):
     def _graph(self):
         super()._graph()
         self.uc.mem_write(CTX + 128, bytes(20))
+        self.uc.mem_write(CTX + 212, bytes(12))
         self.word(0x384ea638, 1)
+
+    def _install_hooks(self):
+        super()._install_hooks()
+        for address, method in ((0x3802c900, self.file_open),
+                                (0x3802954c, self.file_read),
+                                (0x3802b378, self.file_write),
+                                (0x3802b3ec, self.file_sync)):
+            self.hook(address, method)
+
+    def file_open(self):
+        r = self.uc.reg_read
+        assert not self.locks, 'File open while GUI locked'
+        assert r(UC_ARM_REG_SP) % 8 == 0
+        path = self.string(r(UC_ARM_REG_R0))
+        assert path in ('/data/86v1-return.0', '/data/86v1-return.1')
+        assert (r(UC_ARM_REG_R1), r(UC_ARM_REG_R2)) == (1, 0)
+        self.file_calls.append(('open-missing', path))
+        self.word(ERROR, 2)
+        self.ret(-1)
+
+    def file_getfile(self):
+        raise AssertionError('Missing-only filesystem obtained a descriptor')
+
+    def file_read(self):
+        raise AssertionError('Missing-only filesystem attempted a read')
+
+    def file_write(self):
+        raise AssertionError('Missing-only filesystem attempted a write')
+
+    def file_sync(self):
+        raise AssertionError('Missing-only filesystem attempted fsync')
+
+    def file_close(self):
+        raise AssertionError('Missing-only filesystem attempted file close')
 
     def string(self, address):
         data = bytearray()
@@ -109,6 +146,13 @@ class Machine(previous.Machine):
 
     def hook(self, address, method):
         r = self.uc.reg_read
+        if address in (0x38025678, 0x38025de0):
+            def descriptor():
+                if r(UC_ARM_REG_R0) >= 20:
+                    (self.file_getfile if address == 0x38025678 else self.file_close)()
+                else:
+                    method()
+            return super().hook(address, descriptor)
         if address == 0x3801a418:
             return super().hook(address, self.format)
         if address == 0x38025c40:
@@ -175,7 +219,7 @@ class Machine(previous.Machine):
         for address in (HEADER - 128, HEADER + 2048, PIXELS - 128, RECEIVE + 307200):
             assert bytes(self.uc.mem_read(address, 128)) == GUARD, hex(address)
 
-    def response(self, status, body=None):
+    def response(self, status, body=None, settings=False):
         header, separator, received = bytes(self.sent).partition(b'\r\n\r\n')
         assert separator, (status, bytes(self.sent))
         lines = header.decode('ascii').split('\r\n')
@@ -183,10 +227,10 @@ class Machine(previous.Machine):
         fields = dict(line.split(': ', 1) for line in lines[1:])
         assert fields['Connection'] == 'close'
         assert int(fields['Content-Length']) == len(received)
-        assert fields['Content-Type'] == 'text/plain; charset=utf-8'
+        assert fields['Content-Type'] == ('application/json' if settings else 'text/plain; charset=utf-8')
         assert fields['Cache-Control'] == 'no-store'
         assert fields['Access-Control-Allow-Origin'] == ORIGIN
-        assert fields['Access-Control-Allow-Methods'] == 'POST'
+        assert fields['Access-Control-Allow-Methods'] == 'GET, POST'
         assert fields['Access-Control-Allow-Headers'] == 'Content-Type'
         assert fields['Allow'] == 'GET, POST, OPTIONS'
         if body is not None:
@@ -228,6 +272,13 @@ def parser_checks():
         (b'GET / HTTP/1.0\r\n\r\n', 0),
         (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: APPLICATION/OCTET-STREAM')), 0),
         (request('OPTIONS', '/api/image'), 0),
+        (request('GET', '/api/settings'), 0),
+        (request('OPTIONS', '/api/settings'), 0),
+        (request('POST', '/api/settings', ('Content-Length: 1',)), 0),
+        (request('POST', '/api/settings', ('Content-Length: 64',)), 0),
+        (request('POST', '/api/settings', ('Content-Length: 65',)), 413),
+        (request('POST', '/api/settings', ('Content-Length: 0',)), 400),
+        (request('POST', '/api/settings'), 411),
         (request('PUT', '/api/image'), 405),
         (request('GET', '/missing'), 404),
         (request('POST', '/api/image'), 411),
@@ -254,11 +305,21 @@ def parser_checks():
     m = Machine()
     for data, status in cases:
         m.uc.mem_write(SCRATCH, data)
-        m.uc.mem_write(REQUEST, bytes([0x5a]) * 8)
+        m.uc.mem_write(REQUEST, bytes([0x5a]) * 12)
+        m.uc.mem_write(REQUEST + 12, GUARD)
         assert m.call('panel_http_header_end', SCRATCH, len(data)) == len(data)
         assert m.call('panel_http_parse', SCRATCH, len(data), REQUEST) == status
         if status:
-            assert bytes(m.uc.mem_read(REQUEST, 8)) == bytes([0x5a]) * 8
+            assert bytes(m.uc.mem_read(REQUEST, 12)) == bytes([0x5a]) * 12
+        else:
+            method, length, resource = struct.unpack('<III', m.uc.mem_read(REQUEST, 12))
+            first = data.split(b'\r\n', 1)[0].split()
+            assert method == {b'GET': 1, b'POST': 2, b'OPTIONS': 3}[first[0]]
+            assert resource == {b'/': 0, b'/api/image': 1, b'/api/settings': 2}[first[1]]
+            assert length == (307216 if resource == 1 and method == 2 else
+                              64 if b'Content-Length: 64\r\n' in data else
+                              1 if resource == 2 and method == 2 else 0)
+        assert bytes(m.uc.mem_read(REQUEST + 12, 128)) == GUARD
     checks.append('Actual ARM parser ignores absent/arbitrary/empty/duplicate Content-Type while preserving HTTP1.0/1.1 method/path/Host/length/TE/Expect/control rejection statuses')
     valid = request()
     for size in range(len(valid)):
@@ -461,8 +522,8 @@ def image_checks():
     m.response(503)
     assert not m.f('image_pending')
     m = Machine().ready().custom()
-    # IP update is the first lock; receive-slot acquisition is the next one.
-    m.lock_fail_calls.add(m.lock_calls + 2)
+    # Startup settings publication and IP update precede receive-slot acquisition.
+    m.lock_fail_calls.add(m.lock_calls + 3)
     m.transact([http + binary])
     m.response(503)
     assert not m.f('image_pending')
@@ -471,7 +532,7 @@ def image_checks():
     for setting in ('publication_lock', 'dead'):
         m = Machine().ready().custom()
         if setting == 'publication_lock':
-            m.lock_fail_calls.add(m.lock_calls + 3)
+            m.lock_fail_calls.add(m.lock_calls + 4)
         else:
             def stop_before_body(machine):
                 if len(machine.receive_calls) == 1:
@@ -635,7 +696,7 @@ def main():
     result = {'passed': True, 'hardware_operation': False, 'check_count': len(checks),
         'checks': checks, 'elf_sha256': hashlib.sha256(ELF.read_bytes()).hexdigest(),
         'test_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        'context_bytes': 212, 'header_heap_bytes': 2048, 'image_payload_bytes': 307200,
+        'context_bytes': 224, 'header_heap_bytes': 2048, 'image_payload_bytes': 307200,
         'configured_redirect_tested': bool(FRONTEND), 'configured_cors_tested': ORIGIN != '*',
         'limitations': 'Actual ARM instructions execute, but native APIs/socketRPC timing/locks/OS scheduling/LCD scanout/heap availability/cold boot are mocked or unchecked.'}
     output = Path(os.environ.get('PANEL_TEST_OUTPUT', ROOT / (

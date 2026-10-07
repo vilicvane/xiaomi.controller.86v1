@@ -38,7 +38,7 @@ async function readState(workspace: string, capture: string, label: string) {
     commands.push(`dump_image ${tclPath(join(capture, label + '-' + page + '.bin'))} 0x28${page} 4096`);
   commands.push('set panel_context [lindex [read_memory 0x384fc864 32 1] 0]',
     'if {$panel_context>=0x38000000 && $panel_context<0x39000000 && ($panel_context&3)==0} {',
-    `dump_image ${tclPath(join(capture, label + '-context.bin'))} $panel_context 212`, '}',
+    `dump_image ${tclPath(join(capture, label + '-context.bin'))} $panel_context 224`, '}',
     'echo "PANEL_CONTEXT $panel_context"',
     'echo "PANEL_SCREEN [read_memory 0x384ea638 32 1]"',
     'echo "PANEL_TIMER [read_memory 0x384fce54 32 2]"', 'shutdown');

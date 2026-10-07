@@ -5,11 +5,11 @@
 源码与历史 `analysis/` 实验分开维护，历史三击逻辑和冻结材料不删除、不重新生成。
 图片上传和下拉画面是当前自定义固件的功能。
 
-当前安装 `maintained-http-four-page-20261007-g`，主/辅助/网络为 2946/236/2976B。
-d 精确恢复、g 四页读回、native 闭包、GLOBAL 和暖启动通过；真实 303 指向正式网页并
-自动填写设备地址，用户报告上传正常，随后只读状态确认新 generation 已由 GUI 消费。
-本轮没有自动发送 HTTPS 网页 POST；
-[发布结果](releases/maintained-http-20261007-g.json)单列这些观察及其余待验收项。
+当前安装 `maintained-idle-return-four-page-20261007-a`，主/辅助/网络为 3344/396/4072B，
+已有容器边界不变。382 项 freeze、g 自身恢复、a 四页读回及暖启动通过；真实设置读写
+与一次 AON GLOBAL 暖复位加载通过，[发布结果](releases/maintained-idle-return-20261007-a.json)
+单列这些阶段及待用户验收项。
+此前 g 的安装和正式 HTTPS 页面用户上传结果保持在自己的历史记录中，不继承给 a。
 
 ## 交互
 
@@ -18,6 +18,8 @@ d 精确恢复、g 四页读回、native 闭包、GLOBAL 和暖启动通过；�
 - 自定义固件没有第三物理键三击切换；原系统的物理按键动作继续由原系统处理。
 - 观察到原系统息屏时，通过既有安全交接切回自定义画面，不调用背光接口。
   唤醒接触不参与双击，仍允许上滑返回原界面。
+- 原界面未触摸 60 秒后自动返回；网页可配置 0–3600 整数秒，0 关闭。物理键不计入触摸。
+  设置使用 MMC 双槽并按重启保留实现，息屏返回独立生效；详见 [自动返回](../docs/auto-return.md)。
 
 图片只在 RAM 中保存，重启恢复地址画面，程序本身持久化。双击切换不丢弃图片，
 地址页也可接收新图。息屏检测依赖 GUI timer 能观察到原厂状态；两次采样之间发生的
@@ -51,8 +53,8 @@ ARM 模型执行真实 ELF 指令，原生接口仍由 mock 提供；不证明�
 并发或断电恢复。它们不调用历史结果写入器；HTTP 模型用 `PANEL_TEST_OUTPUT` 将新结果
 写到独立路径，避免覆盖已冻结发布所绑定的结果。
 
-构建默认前端 URL 为 `https://wan.sh/xiaomi-86v1/`，origin 为 `*`；当前 g 的冻结配置
-与此相同。`GET /` 返回 303，将 endpoint 编码为普通 `device` query，前端自动读取。
+构建默认前端 URL 为 `https://wan.sh/xiaomi-86v1/`，origin 为 `*`。a 沿用此前 g 的配置；
+`GET /` 返回 303，将 endpoint 编码为普通 `device` query，前端自动读取。
 默认版本不依赖电脑开发服务器。开发时仍可单独启动本地页面，手动输入设备地址：
 
 ```powershell
@@ -73,12 +75,11 @@ URL 不能含凭据、fragment 或预置 `device` 参数；根页面跳转追加
 设备不内置 PNG/JPEG 解码，前端或上传器提供 RGB565。
 协议见 [HTTP 图片 API](../docs/http-image-api.md)。
 
-当前 g 允许省略或任意声明 Content-Type，仍校验固定长度、VIMG 头和 FNV。
-网页不添加该 header，cURL 不指定 `-H`。d 曾实测完整上传 202 和错误内容拒绝；
-g 的正式 HTTPS 页面跳转和自动地址已实测，HTTPS 上传正常由用户报告，随后只读
-generation/displayed_generation=1、pending/error=0。未自动采集其 POST 状态或 LCD
-画面。44 组实际 ARM、261 项 host HTTP、93 项 writer mock、
-12 项 release 工具及 9 项前端单元测试属于本轮离线证据。
+图片接口允许省略或任意声明 Content-Type，仍校验固定长度、VIMG 头和 FNV；图片网页
+请求与 cURL 示例不指定该 header。a 新增 GET/POST `/api/settings`，网页 POST 声明 JSON，
+设备检查单成员、整数范围和完整持久化确认；其错误与保存语义见 [设置 API](../docs/auto-return.md#设置-api)。
+本轮离线证据为 76 组实际 ARM、290 项 host HTTP、93 项 writer mock、12 项 release
+工具及 19 项网页测试。ARM/native mock 不能替代文件系统、GUI 或重启的实机验证。
 
 ## 安装与维护
 
@@ -104,6 +105,13 @@ install/restore 都会中断服务并暖重启；精确范围及诊断命令损�
 安装基线中的“三页”是三个已安装旧图片实验程序的 4KiB Flash 区域，第四个网络区域仍
 为原厂字节，四页都必须逐字节匹配；它不是屏幕界面页，也不是任意原厂设备的首刷起点。
 install 只接受这个精确基线，不能叠加在旧自定义固件上。
-本轮先用 d 自己的冻结执行器完整恢复精确基线，再安装 g，四页及 native/cache/context
-闭包、GLOBAL 与暖启动读回均通过；g 自己的硬件 restore 尚未执行。main/aux 与 d/c
-字节相同，也不继承它们的实屏、双击、息屏或米家用户观察。完整断电仍按用户要求跳过。
+本轮先用 g 自己的冻结执行器恢复精确基线，再由 a 自己的冻结执行器安装，两次均通过；
+a 自己的 restore 未测试，不借用旧版 UI 或米家用户观察。真实 GET 默认 60 秒，POST/GET
+0 和 5 秒一致，3601 返回 422 且保留运行值 0；保存 5 秒后独立暖复位，context 和 GET
+重新加载为 5 秒，随后保存回 60 秒。直接 Node 图片 POST/202 不代表 LCD 或网页上传验收。
+完整断电仍按用户要求跳过。a 的 context 为 224B，冻结 executor 的只读 capture 同步扩展；
+旧 g 的 212B executor 和所有旧快照保持原样。
+
+Windows/Jim 长路径首次 mock 为 77/93；完整材料逐项 hash 核对后置于 `C:\p86-idle-a`，
+93/93 通过。实机入口使用这个短根目录的完整执行副本，不是单独搬动脚本或改写 freeze。
+详见 [维护流程](../docs/development.md)。

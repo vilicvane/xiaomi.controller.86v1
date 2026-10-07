@@ -80,10 +80,11 @@ struct broker {
     u32 generation, displayed_generation;
     volatile u32 server_state, server_error;
     u32 show_address, ipv4;
+    u32 return_after_ms, activity_ms, activity_valid;
 };
 
 #if UINTPTR_MAX == UINT32_MAX
-_Static_assert(sizeof(struct broker) == 212, "Panel context ABI changed");
+_Static_assert(sizeof(struct broker) == 224, "Panel context ABI changed");
 _Static_assert(offsetof(struct broker, pixels) == 28, "Glyph pixels ABI changed");
 _Static_assert(offsetof(struct broker, cover) == 84, "Glyph cover ABI changed");
 _Static_assert(offsetof(struct broker, taps) == 128, "Tap state ABI changed");
@@ -92,6 +93,7 @@ _Static_assert(offsetof(struct broker, image) == 176, "Image slot ABI changed");
 _Static_assert(offsetof(struct broker, image_pending) == 184, "Image publication ABI changed");
 _Static_assert(offsetof(struct broker, show_address) == 204, "Address page ABI changed");
 _Static_assert(offsetof(struct broker, ipv4) == 208, "IPv4 ABI changed");
+_Static_assert(offsetof(struct broker, return_after_ms) == 212, "Return timer ABI changed");
 #endif
 
 #define CTX ((struct broker *)WORD(0x384fc864u))

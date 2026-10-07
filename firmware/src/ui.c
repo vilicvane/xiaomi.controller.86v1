@@ -4,6 +4,8 @@ const struct panel_timespec pause20
     __attribute__((section(".rodata"))) = {0,20000000,0};
 
 static void timer(void *handle);
+static void compose(struct broker *c);
+static void address_text(struct broker *c);
 static void begin(struct broker *c)
 {
     c->animation_from = c->shown <= 320 ? c->shown : c->cover;
@@ -56,6 +58,7 @@ static void touch(void *driver, u8 *data)
     if (LOCK(c->mutex,0)) { data[0x12] = 0; return; }
     unsigned i = (u32)driver == c->drivers[0] ? 0 : 1;
     int down = data[0x12] != 0;
+    if (down || !c->released[i]) c->activity_valid = 0;
     c->released[i] = !down && !data[0x13];
     /* Exclude the first wake contact from double tap, including contacts
      * swallowed during animation. Drawer swipes remain active. */
@@ -115,7 +118,7 @@ static int channels(struct broker *c, u32 *upper, u32 *subscriber)
 }
 
 /* Original two-publisher owner transaction; no network waits while locked. */
-__attribute__((section(".text.feedback.handoff"),noinline)) static int handoff(struct broker *c)
+__attribute__((section(".text.feedback.handoff"),noinline)) static int handoff(struct broker *c, int automatic)
 {
     u32 upper[2], subscriber[2];
     if (channels(c,upper,subscriber) < 0) return -1;
@@ -128,14 +131,27 @@ __attribute__((section(".text.feedback.handoff"),noinline)) static int handoff(s
                 BYTE(0x384f50a1u) != 1 && !c->gesture.active;
     for (unsigned i = 0; i < 2; ++i)
         if (WORD(subscriber[i]+8u) != WORD(subscriber[i]+0xcu)) empty = 0;
+    if (!empty && automatic) c->activity_valid = 0;
     if (empty) {
             if (!WORD(0x384ef93cu)) {
+                u32 cover = c->cover, address = c->show_address;
+                if (automatic) {
+                    c->wanted = 1; c->cover = 320; c->show_address = 0;
+                    compose(c);
+                    if (!c->generation) address_text(c);
+                }
                 u32 plane[7]; ZERO(plane,0,sizeof(plane));
                 plane[6] = c->wanted ? (u32)c->pixels : 0;
                 result = PAN(DEVICE,plane);
                 if (result >= 0) {
                     c->mode = c->wanted; c->overlay = 0; c->dirty = 0;
+                    c->activity_valid = 0;
                     tap_gesture_cancel(&c->taps);
+                    if (automatic) {
+                        c->shown = 320; c->displayed_generation = c->generation; ++c->toggles;
+                    }
+                } else if (automatic) {
+                    c->wanted = 0; c->cover = cover; c->show_address = address;
                 }
             }
     }
@@ -232,6 +248,13 @@ static void timer(void *handle)
             }
         } else if (screen_state == 1 && c->screen_off == 1) c->screen_off = 2;
         int released = c->released[0] && c->released[1] && BYTE(0x384f50a1u) != 1;
+        /* A return requests the existing GUI handoff; it never changes the
+         * display owner while a delivered or queued contact remains. */
+        if (!clock_valid || !released || c->gesture.active || c->mode || c->overlay || !c->return_after_ms)
+            c->activity_valid = 0;
+        else if (!c->activity_valid) {
+            c->activity_ms = c->clock_ms; c->activity_valid = 1;
+        }
         if (!released) c->idle = 0;
         else if (c->idle < 2) ++c->idle;
         /* No delivered DOWN is pending on either GUI consumer at this point.
@@ -247,6 +270,9 @@ static void timer(void *handle)
                 u16 *old = c->image; c->image = c->receive; c->receive = old;
                 ++c->generation; c->dirty = 1; c->image_pending = 0;
             }
+            if (clock_valid && screen_state == 1 && !c->mode && !c->wanted && !c->overlay &&
+                c->activity_valid && c->idle == 2 && c->clock_ms - c->activity_ms >= c->return_after_ms)
+                c->last_present = handoff(c, 1);
             if (c->overlay) {
                 if (!c->background) {
                     for (unsigned i = 0; i < 480u*320u; ++i)
@@ -275,7 +301,7 @@ static void timer(void *handle)
                             c->animation_ms = c->pending ? c->clock_ms : proposed_ms;
                             c->pending = 0;
                         }
-                    } else if (c->idle == 2) c->last_present = handoff(c);
+                    } else if (c->idle == 2) c->last_present = handoff(c, 0);
                 }
             } else if (c->mode && c->dirty) c->last_present = draw(c);
         }
@@ -305,6 +331,7 @@ int broker_main(int argc, char **argv)
     c->receive = c->image+480u*320u;
     c->mutex[0] = 1; c->mutex[3] = 0xffffffffu;
     c->alive = 1; c->wanted = 1; c->shown = 0xffffffffu;
+    c->return_after_ms = 60000u;
 
     WORD(0x384fc864u) = (u32)c;
     __sync_synchronize();

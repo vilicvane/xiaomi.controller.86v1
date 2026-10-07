@@ -1,11 +1,11 @@
 # 开发与维护流程
 
-当前项目为 **86V1 自定义固件**，发布标识为 `maintained-http-four-page-20261007-g`，
+当前项目为 **86V1 自定义固件**，本轮发布标识为 `maintained-idle-return-four-page-20261007-a`，
 只适用于本机精确的 1.50.10 映像。
-离线审查、freeze、d 精确恢复、g 四页安装读回、状态闭包和暖启动通过；真实 303 已指向
-正式 HTTPS 网页并自动填写设备地址，用户报告上传正常，随后只读状态确认新 generation
-已由 GUI 消费。其 HTTP 状态、默认图实屏、其他界面和米家验收未单独确认，见
-[当前发布结果](../firmware/releases/maintained-http-20261007-g.json)。硬件工作前先读
+离线审查与 382 项 freeze 已完成，76 组实际 ARM、93 项 writer mock、12 项 release、
+290 项 host HTTP 和 19 项网页测试通过。g 自身恢复、a 四页安装与暖读回已通过；真实设置
+读写与 AON GLOBAL 暖复位加载通过，界面和定时返回的用户观察单列，见
+[当前发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。硬件工作前先读
 [工程约束](engineering-notes.md)、[当前架构](architecture.md)及根目录 `AGENTS.md`。
 历史命令原文保留在 [开发记录归档](research/legacy-development-log.md)，不作为当前操作指南。
 
@@ -38,7 +38,7 @@ Git 保存第一方源码、脚本、文档及明确准入的 review/result JSON
 ```powershell
 node firmware/tools/release.ts baseline
 node --test firmware/tools/release.test.ts
-node firmware/tools/release.ts verify maintained-http-four-page-20261007-g
+node firmware/tools/release.ts verify maintained-idle-return-four-page-20261007-a
 ```
 
 这些是离线命令，不连接、halt、reset 或写设备。`release.ts` 没有硬件执行接口；它检查
@@ -51,7 +51,7 @@ node firmware/tools/release.ts verify maintained-http-four-page-20261007-g
 缺材料先报告，不连接硬件凑结果。当前 [HTTP 图片 API](http-image-api.md) 与
 [历史 TCP 协议](image-upload-protocol.md) 分开记录；图片上传只修改 RAM。
 
-当前 g 的接收器忽略 Content-Type，仍验证固定长度、VIMG 和 FNV。其冻结配置指向
+当前 a 的图片接收器忽略 Content-Type，仍验证固定长度、VIMG 和 FNV。其冻结配置指向
 `https://wan.sh/xiaomi-86v1/`，用普通 `device` query 传递设备 endpoint，origin 为 `*`。
 它不依赖电脑开发服务器；后续改目标 URL 要重新完成独立构建、审查、冻结和安装，
 源码变化不会自动改变已安装 release。此前 d 的临时 LAN 地址仅保存在它自己的私有材料。
@@ -97,17 +97,34 @@ node firmware/tools/release.ts verify maintained-http-four-page-20261007-g
 从仓库根目录使用该 release 的冻结执行器：
 
 ```powershell
-node build/releases/maintained-http-four-page-20261007-g/snapshot/firmware/tools/hardware.ts check maintained-http-four-page-20261007-g
-node build/releases/maintained-http-four-page-20261007-g/snapshot/firmware/tools/hardware.ts restore maintained-http-four-page-20261007-g
+node build/releases/maintained-idle-return-four-page-20261007-a/snapshot/firmware/tools/hardware.ts check maintained-idle-return-four-page-20261007-a
+node build/releases/maintained-idle-return-four-page-20261007-a/snapshot/firmware/tools/hardware.ts restore maintained-idle-return-four-page-20261007-a
 ```
 
 `check` 会连接硬件读取当前页面，`restore` 会写设备并暖重启，均由硬件负责人按已授权
 范围执行。恢复返回 **精确的旧图片实验版三页与原厂网络页**。canonical 工具变化后
 不可代替旧 release 的冻结执行器；`NEEDS_INSPECTION` 表示保留停点，先检查而非自动重试。
 `check` 退出 0 仅说明读取完成，还需核对 `original`/`patched` 和完整页证据；两者均为 false
-就不能继续。当前 g 的恢复路径已完成离线审查与 mock，尚未在硬件执行。
+就不能继续。a 的恢复路径已完成离线审查与 mock，尚未在硬件执行。
 
-本轮迁移先使用 d 自己的冻结执行器，完整恢复精确的旧图片实验版三页和原厂网络页，
+a 在深目录的首次 Jim mock 为 77/93，失败原因是 Windows/Jim 的路径长度；逐项核对
+相同材料后放到短根目录 `C:\p86-idle-a`，93/93 通过。硬件入口也使用这个已验证的
+完整执行副本，从该根目录运行上述冻结入口。短副本须包含 release、历史依赖、备份和
+工具的全部绑定字节，不能只移动 executor、修改 freeze 或把 `NEEDS_INSPECTION` 当作
+路径问题重试。原候选/冻结表与短副本逐项 hash 相同。
+
+a 新增 [自动返回设置](auto-return.md)：只根据触摸屏活动计时，默认 60 秒，0 关闭、
+最大 3600 秒；224B context 尾部保存运行计时状态。两个 `/data/86v1-return.*` MMC 文件
+保存设置，NOR 安装/恢复不读写这些文件，NOR 备份不包含它们。配置已确认后才更新
+运行值；失败不承诺旧持久值原样保留，不自动再次写入。
+
+本轮先由 g 自身冻结工具恢复精确基线，完整四页与 native 状态闭合、GLOBAL 和暖读回
+通过，再由短根目录 a 自身冻结工具安装。a 四页读回及暖启动通过，两次新鲜 check 均为
+`patched=true`。真实 GET 默认 60，POST/GET 0 和 5 一致，3601 返回 422 且不改运行值。
+保存 5 后执行一次独立 AON GLOBAL 暖复位，224B context 和 GET 都重新读到 5；随后保存回
+60。a 自身 restore、用户交互、米家和完整断电未由这些检查推定通过。
+
+此前 d→g 迁移先使用 d 自己的冻结执行器，完整恢复精确的旧图片实验版三页和原厂网络页，
 四页、native/cache/context 闭包、GLOBAL 及暖启动读回通过后，才使用 g 自己的冻结
 执行器安装。g 的完整四页和后续 fresh check 均匹配补丁集合。两次顺序暖重启清空 RAM
 图片；没有把 g writer 直接运行在 d 上。d 恢复结果记录在
@@ -123,7 +140,8 @@ node build/releases/maintained-http-four-page-20261007-g/snapshot/firmware/tools
 
 | 已安装版本 | 恢复入口 | 精确目标 |
 | --- | --- | --- |
-| 86V1 自定义固件 g 四页 | 上述 g 冻结 `hardware.ts restore`，本版硬件恢复未测 | 旧图片实验版三页与原厂网络页 |
+| 86V1 自定义固件 a 四页 | 上述 a 冻结 `hardware.ts restore`，本版硬件恢复未测 | 旧图片实验版三页与原厂网络页 |
+| 历史自定义固件 g 四页 | g 自己冻结的 `hardware.ts restore`，a 迁移中已通过 | 旧图片实验版三页与原厂网络页 |
 | 历史自定义固件 d 四页 | d 自己冻结的 `hardware.ts restore`，g 迁移中已通过 | 旧图片实验版三页与原厂网络页 |
 | 历史自定义固件 c 四页 | c 自己冻结的 `hardware.ts restore`，d 迁移中已通过 | 旧图片实验版三页与原厂网络页 |
 | 旧图片实验版 | `Set-PanelNativeImageDrawer.ps1` | tap-fast 三页 |

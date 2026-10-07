@@ -28,7 +28,7 @@ if (url.length > 1024 || origin.length > 256)
 writeFileSync(process.argv[2], `#define PANEL_FRONTEND_URL ${JSON.stringify(url)}\n#define PANEL_FRONTEND_ORIGIN ${JSON.stringify(origin)}\n`);
 JS
 node firmware/tools/build-record.ts begin
-for unit in ui http http-parser; do
+for unit in ui http http-parser settings; do
   clang-18 --target=arm-none-eabi -mcpu=cortex-a7 -mthumb -Oz -Wall -Wextra -Werror \
     -mllvm -enable-machine-outliner=always -ffreestanding -fomit-frame-pointer \
     -fno-builtin -fno-stack-protector -fno-unwind-tables -fno-asynchronous-unwind-tables \
@@ -39,7 +39,7 @@ clang-18 --target=arm-none-eabi -mcpu=cortex-a7 -mthumb \
   -c firmware/ports/1.50.10/entry.S -o "$out/entry.o"
 tools/a7-llvm/extracted/usr/lib/llvm-18/bin/ld.lld \
   -Map="$out/panel.map" -T firmware/ports/1.50.10/panel.ld \
-  "$out/entry.o" "$out/ui.o" "$out/http.o" "$out/http-parser.o" -o "$out/panel.elf"
+  "$out/entry.o" "$out/ui.o" "$out/http.o" "$out/http-parser.o" "$out/settings.o" -o "$out/panel.elf"
 llvm-objcopy-18 -O binary --only-section=.prefix --only-section=.start --only-section=.broker \
   "$out/panel.elf" "$out/panel.bin"
 llvm-objcopy-18 -O binary --only-section=.feedback "$out/panel.elf" "$out/panel-aux.bin"

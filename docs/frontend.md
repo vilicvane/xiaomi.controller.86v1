@@ -4,6 +4,8 @@
 使用 Vite 和 TypeScript 构建为静态文件；网页显示名称为“小米智能家庭面板”。
 目标画面固定为 480×320、横向 3:2；裁切、缩放和 RGB565 转换都在用户的浏览器执行。
 当前固件的图片接收程序处理已完成的像素，不解码 PNG/JPEG。
+本轮 a 的自动返回设置卡片已部署，固件安装、真实设置读写与暖复位加载通过；
+网页操作和定时返回的用户观察仍单列。
 
 页面从编辑工作区开始，默认显示此前设备端的 GitHub 卡片，保留 GitHub 标志、
 `vilicvane`、完整项目名称和金色星标提示。页面主题采用克制的深灰色 `#303b4b`，
@@ -47,11 +49,30 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 
 
 设备地址也可通过 URL 查询参数提供：`?device=` 后接编码过的 `http://PANEL_IPV4:18086`，例如
 `https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2FPANEL_IPV4%3A18086`。
-当前已安装 g 在 `303 Location` 中使用同一格式；真实跳转与 Chrome 地址填入已验证。
+此前 g 的 `303 Location` 使用同一格式，真实跳转与 Chrome 地址填入已验证。
+a 沿用相同配置，实际跳转结果由新发布独立记录。
 页面和面板须能在同一局域网直接通信；Cloudflare 仅托管页面静态文件。
 
 没有云端图片存储、服务端代理、账户或设备 token。图片只有用户点击发送后才离开浏览器，
 目标为用户填写的面板；本地处理和下载可以在没有连接面板时使用。
+
+## 自动返回设置
+
+卡片可读取或保存原界面未触摸后的等待时间，默认 60 秒，0 关闭，最大 3600 整数秒。
+只计触摸屏，物理键不重置；原系统息屏返回独立生效。设置保存到 MMC 并按重启保留实现，
+与 RAM 图片分开。接口和用户操作见 [自动返回说明](auto-return.md)。
+
+`settings.ts` 复用图片客户端的地址规范化，但不改图片协议。读取和保存分别请求
+GET/POST `/api/settings`，POST 声明 `application/json`；只在明确点击按钮时联网，页面
+初始不伪装已读取。10 秒超时、一次请求、手动重试；保存缺少确认时提示重新读取，不能
+声称一定未保存。地址变化取消并隔离旧响应，请求期间的新编辑不被读回值覆盖。
+
+19 项网页测试与 Chrome 模拟接口检查通过，涵盖范围/JSON、读写、0关闭、取消/超时、
+状态按钮、旧响应和新编辑、390/360px 布局且图片预览不变。该检查没有访问面板，不能
+替代 a 的实际 API 或重启保留验证，见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
+本轮真实 GET 默认 60 秒，POST/GET 0 和 5 一致；3601 返回 422 且保留运行值 0。
+保存 5 后独立 AON GLOBAL 暖复位，224B context 和 GET 重新加载为 5，随后保存回 60。
+这些真实接口与暖加载结果不代替用户的网页读写、触摸延期或完整断电验收。
 
 ## 像素与上传语义
 
@@ -76,7 +97,8 @@ curl -X POST "http://PANEL_IPV4:18086/api/image" --data-binary "@picture-480x320
 RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，结果可能不确定，不能报告成功。
 页面不会自动重复发送来掩盖失败。
 
-当前已安装 `maintained-http-four-page-20261007-g` 接受不指定 Content-Type 的该 HTTP API。
+此前已安装 `maintained-http-four-page-20261007-g` 接受不指定 Content-Type 的该 HTTP API；
+a 沿用图片协议和正式 URL，以下 g 的检查保留为历史证据。
 访问设备根地址会 303 到 `https://wan.sh/xiaomi-86v1/`，通过 `?device=` 自动填入设备地址；
 无需电脑开发服务器。真实 GET/303 与 Windows Chrome 跟随、输入框/API URL 同步通过。
 用户另行确认正式页面跳转和 HTTPS 网页上传正常；随后只读状态观察到
@@ -114,14 +136,17 @@ npm --prefix web run build
 `web/node_modules` 与构建产物不入库。构建后可用 `npm --prefix web run preview` 查看该子路径。
 API 文档无需连接设备即可阅读，上传需要使用当前非零设备地址。
 `0.0.0.0` 使开发服务器能从局域网访问；固定 5173 并用 `--strictPort` 避免占用时自动
-更换端口。真实电脑/面板地址不提交到 Git。这个服务器仅用于开发，g 的正式网页入口
+更换端口。真实电脑/面板地址不提交到 Git。这个服务器仅用于开发，a 的正式网页入口
 不依赖它；历史 d 的临时 LAN 跳转记录保留原范围。
 
 ## Cloudflare Workers 静态部署
 
 网页已于 2026-10-07 发布为 Worker `xiaomi-86v1`，独立入口为
 [Workers 页面](https://xiaomi-86v1.vilicvane.workers.dev/xiaomi-86v1/)，已返回 HTTP 200。
-当前发布版本为 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12`。
+当前含设置卡片的发布版本为 `ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`。正式页面 200、四项
+线上资源与当前构建字节一致，Chrome 显示设置卡片、初始零自动 LAN 请求，页面错误为 0。
+这次页面检查没有请求面板；此前版本 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12` 的证据保持
+原范围。
 独立入口的无尾斜线路径返回 307 到 `/xiaomi-86v1/`；SVG favicon、JS、CSS 和默认 PNG
 四项线上资源的字节与 SHA-256 均匹配构建产物。Windows Chrome 已验证 HTTPS 页面
 标题、默认图加载，以及测试用 `?device=` 查询参数到输入框/API URL 的同步，无页面错误或
@@ -226,4 +251,5 @@ Windows Chrome 跟随后自动填写 endpoint/API，页面错误为 0，没有�
 状态为 generation/displayed_generation=1、pending=0、server=1/error=0，GUI 持续运行。
 没有记录自动化 POST 的状态/body 或 LCD 扫描。g 的实屏内容、
 双击、上下滑、第三键三击取消、息屏和米家仍待单列验收；完整断电按用户要求跳过。
-当前状态见 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)。
+历史范围见 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)，
+本轮安装与设置结果另见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。

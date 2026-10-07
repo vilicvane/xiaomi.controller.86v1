@@ -16,7 +16,44 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed maintained 86V1 custom firmware is maintained-http-four-page-20261007-g,
+- Current installed release is maintained-idle-return-four-page-20261007-a, for this exact 1.50.10 image.
+  Candidate SHA 6022cbd3e41cfc913a260ff17855582c47656318227dfb6defc55230be503f55;
+  382-input freeze SHA 660534d525762b83b8029b3adebd82a20d84723d5706e53afc6f6790a5c64cb4.
+  Main/aux/net are 3344/396/4072 B ending 0x3804be18/0x3807a8f0/0x3804dfe8.
+  Containers, page ownership, 168B caller, mutation stages and four-page order are unchanged.
+  Context grows from 212 to 224 B: +212 return_after_ms, +216 activity_ms, +220 activity_valid.
+  Previous fields/offsets stay unchanged; do not read the new tail using old version semantics.
+  Return timer observes touch only, defaults to 60 seconds, 0 disables, maximum 3600 integer seconds.
+  Physical keys do not reset it. Stock sleep-return remains independent even when the timer is off.
+  Automatic return uses the existing publisher-locked handoff with no delivered/queued touch; no animation
+  or backlight changes. Images stay RAM-only.
+  GET/POST /api/settings use one-member JSON return_after_seconds. POST body1..64 B with exact length;
+  malformed400, overrange422, oversize413, foreign settings file409, filesystem/confirmation failure503.
+  Settings use two project-only MMC /data/86v1-return.0 and .1 slots, 16B VRT1/sequence/seconds/XOR.
+  Check both slots and FAT object before exact write/fsync/close/readback; then update runtime/HTTP200.
+  NOR backup and restore do not include or delete these files. Failed save does not promise old durable
+  settings unchanged; never automatically retry. Real default GET60, POST/GET0 and POST/GET5 passed;
+  POST3601 returned422 and preserved runtime0. One standalone AON GLOBAL warm reset, without OS shutdown
+  hooks, reloaded5000ms in fresh224B context and GET5; server1/error0. Settings were then saved back to60.
+  This is warm-reload evidence, not a full power-cycle result.
+  Frontend settings only request on explicit read/save clicks, timeout10s, abort/discard old address results
+  and preserve edits made during requests. Official frontend URL/device query/CORS* remain unchanged.
+  76 actual ARM groups, 93 writer mocks, 12 release tests, 290 host HTTP checks and 19 web tests passed.
+  Deep-path Jim mock initially passed77/93; exact verified execution copy C:\p86-idle-a passed93/93.
+  Use that complete byte-matching short-root bundle with its frozen snapshot executor and adjacent verifier;
+  do not mutate old inputs or replace uncertain-native recovery with a path retry.
+  g-own restore → exact old image experiment three pages + stock net → a-own install is the required path.
+  g's own frozen restore passed complete four-page/native closure, GLOBAL and warm readback; then a's
+  own short-root frozen install passed full four-page/native closure, app_complete/safe_to_resume, GLOBAL
+  and warm startup. Two fresh a checks returned patched=true. Direct Node default-image POST returned202;
+  fresh context had generation/displayed_generation1, pending0/server1/error0/return_after_ms60000.
+  Do not claim user LCD or browser upload from this direct POST and GUI consumption.
+  Official frontend ecf90b3d-d93f-4a09-aab7-7d5b513a9d49 is deployed:200, four exact assets, Chrome settings
+  card, zero automatic LAN requests and page errors. Web read/save, idle timing, touch deferral, timer0,
+  physical keys, gestures, sleep and MiHome observations remain pending; do not inherit g results.
+  Public semantic result is firmware/releases/maintained-idle-return-20261007-a.json.
+  a's hardware restore is untested; preserve NEEDS_INSPECTION and cold user-skipped constraints.
+- Previous maintained 86V1 custom firmware was maintained-http-four-page-20261007-g,
   specific to this exact 1.50.10 image. Image upload and the pull-down display are features, not its name.
   Candidate SHA dbd66152502676875df1e2eddd97a02b00a0a14c547d7f6fee11e49f23994a8f;
   380-input freeze SHA 4c523fdc97fee23173f05c2fa3883c48a1368f1865f01b4ef646c16b24583b38.
@@ -53,8 +90,9 @@
   screen UI pages, and this is not a first-flash installer for an arbitrary stock device. A check
   exit 0 alone is not proof of a matching baseline: inspect original/patched and full-page evidence.
   Install net→aux→code→entry; restore entry→code→aux→net, all A7/WF/BT held reset until closed.
-  g's own hardware restore remains untested. d's later successful restore is recorded in g upgrade
-  evidence; the original d result and every historical frozen input remain unchanged.
+  g's original result did not test its own restore; that restore later passed during the a migration and
+  is recorded only in the new a result. d's later successful restore is recorded in g upgrade evidence;
+  the original d/g results and every historical frozen input remain unchanged.
   Cold power-cycle is explicitly user-skipped; do not ask again or borrow previous cold-boot results.
   NEEDS_INSPECTION means preserve stopped state, with no automatic retry, marker clearing or native replay.
 - Previous maintained UI was maintained-http-four-page-20261007-d, specific to this exact 1.50.10 image.

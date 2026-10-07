@@ -17,7 +17,7 @@ function collect(directory: string) {
 for (const directory of ['firmware/src', 'firmware/include', 'firmware/ports']) collect(directory);
 const sources = Object.fromEntries(sourcePaths.sort().map(path => [path, hash(join(root, path))]));
 const recordPath = join(out, 'build-inputs.json');
-const units = ['ui', 'http', 'http-parser'];
+const units = ['ui', 'http', 'http-parser', 'settings'];
 function headerHashes(makefiles: string[]) {
   const dependencies = new Set<string>();
   for (const makefile of makefiles) {

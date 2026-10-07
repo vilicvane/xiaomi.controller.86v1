@@ -55,7 +55,7 @@ touch upper publisher，核对 ring、释放状态和帧队列。直接调用原
 锁后经 IOCTL 代理递归锁。
 
 callback 安装由 GUI 所属 timer 执行并发布 drivers、四个 callback slot 和 ready。
-image drawer 和维护版的 bootstrap pthread 等待 ready 后成为常驻网络 worker；旧 drawer
+旧图片实验版和 86V1 自定义固件的 bootstrap pthread 等待 ready 后成为常驻网络 worker；旧 drawer
 bootstrap 安装后退出是历史版本行为。原 GUI timer 会重新注册自身，proxy 返回后仅
 CAS 原 callback 到 proxy，并检查
 closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE 和潜在调度，
@@ -66,7 +66,7 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
 
 本地原厂 NOR 备份为 16 MiB，SHA-256：
 `777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b`。
-维护版的四页及历史 image drawer 的三页边界见 [架构](architecture.md)，精确回退见
+自定义固件的四页及旧图片实验版的三页边界见 [架构](architecture.md)，精确回退见
 [开发流程](development.md)。新增网络页 `0x92d000` 经过独立 ownership 审查，运行段限定
 `0x3804d000..0x3804dff0`；页头 4B、尾 12B 和 payload 外原字节保留。它位于被禁用的
 单个 `uorb_unit_test` 命令内部，不是从全 FF 模式推断出来的空闲区。
@@ -88,9 +88,10 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
   中间一次安全返回不等于整个安装完成。
 - 四页维护版安装固定为 net→aux→code→entry，恢复固定为 entry→code→aux→net。
   各中间阶段 A7/WF/BT 保持复位；四页、保护状态和 native context 都闭合后才运行。
-  维护版先完整恢复 image drawer 三页加 stock net，才允许进入旧三页回退链。
+  维护版先完整恢复旧图片实验版三页加原厂网络页，才允许进入旧三页回退链。
 - GLOBAL 后特定 IDR 暂时不可读，仅允许全新的只读连接重试；不重放 writer 或 native call。
-- 历史写入/恢复及当前维护版安装是在健康 MAIN 状态实测；本轮维护版硬件 restore 未执行。
+- 历史写入/恢复及当前维护版安装是在健康 MAIN 状态实测；d 的四页 restore
+  在 g 升级中通过，g 自身 restore 尚未执行。
   没有故意破坏 MAIN 后验证冷恢复。
   不宣称已具备任意故障状态的救砖能力。
 - OpenOCD `-l` 路径用正斜杠避免 Tcl 转义；日志分类应精确锚定顶层状态字段，不能把

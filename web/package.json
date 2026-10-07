@@ -5,18 +5,25 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build --base=/xiaomi-86v1/ --outDir=dist-cloudflare/xiaomi-86v1",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "vite preview --host 127.0.0.1 --base=/xiaomi-86v1/ --outDir=dist-cloudflare/xiaomi-86v1",
     "test": "node --test tests/*.test.ts"
   },
   "devDependencies": {
     "typescript": "7.0.2",
-    "vite": "8.3.3"
+    "vite": "8.3.3",
+    "wrangler": "4.148.0"
   },
   "engines": {
     "node": ">=24"
   },
   "dependencies": {
     "lucide": "1.52.0"
+  },
+  "overrides": {
+    "miniflare": {
+      "sharp": "0.35.5"
+    }
   }
 }

@@ -16,7 +16,48 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is maintained-http-four-page-20261007-d, specific to this exact 1.50.10 image.
+- Current installed maintained 86V1 custom firmware is maintained-http-four-page-20261007-g,
+  specific to this exact 1.50.10 image. Image upload and the pull-down display are features, not its name.
+  Candidate SHA dbd66152502676875df1e2eddd97a02b00a0a14c547d7f6fee11e49f23994a8f;
+  380-input freeze SHA 4c523fdc97fee23173f05c2fa3883c48a1368f1865f01b4ef646c16b24583b38.
+  Main/aux/net BIN sizes are 2946/236/2976 B, ending at 0x3804bc8a/0x3807a850/0x3804dba0.
+  Main/aux are exact previous-d bytes; context/containers/ownership and four-page ordering unchanged.
+  Content-Type is ignored; fixed Content-Length, VIMG and FNV remain required.
+  GET root returns 303 to https://wan.sh/xiaomi-86v1/ with the percent-encoded endpoint in an ordinary
+  device query parameter, not the historical fragment. CORS remains *. This release needs no computer
+  development server. Keep actual device/LAN addresses outside Git.
+  Fresh 21 UI + 23 configured HTTP actual ARM groups (44 total), 93 current writer mocks,
+  261 host HTTP checks, 12 release tests and 9 frontend unit tests passed.
+  d's own frozen restore first returned the exact old image experiment (native-image-drawer) three
+  Flash pages plus the stock network page, with complete
+  four-page/native/cache/context closure, GLOBAL and warm readback. Then g installed using its own
+  frozen executor; the same closure and fresh warm readback passed. Fresh g check returned patched=true.
+  Never install a new release directly over g; first restore g to its exact original baseline.
+  Windows Chrome followed the real official HTTPS 303, populated endpoint/API addresses and had no page
+  errors. Automated verification stopped at the browser local-network permission prompt and sent no POST.
+  User reported normal upload from the official page. Do not turn that report into an automated HTTP202,
+  FNV readback or LCD scanout claim. Fresh read-only runtime after that upload had generation and
+  displayed_generation=1, pending/error=0, alive/ready/mode/server=1, screen_off=0 and advancing GUI cycles.
+  Separate default-image, gesture/doubletap/sleep-wake/key3-removal
+  and MiHome observations remain pending; a short reply to a bundled question does not establish each item.
+  Public semantic result is firmware/releases/maintained-http-20261007-g.json.
+  Images remain RAM-only; the program is persistent. Context stays 212 B: doubletap +128, screen_off +144,
+  image/receive +176/+180, pending +184, generation/displayed_generation +188/+192, server +196/+200,
+  show_address +204 and IPv4 +208. Do not use historical key3/reserved or tap-fast slot meanings.
+  Observed off requests custom owner without touching backlight; complete off/on between GUI polls can
+  be missed. The first wake contact is excluded from doubletap until UP, while swipes remain allowed.
+  Use g's frozen snapshot/firmware/tools/hardware.ts and adjacent verifier. Install accepts only the exact
+  old image experiment plus stock net; restore accepts exact g patched or already-original four pages.
+  This baseline means three 4KiB Flash regions already containing the old image experiment and a fourth
+  network region still containing stock bytes, all matched byte for byte. These are Flash regions, not
+  screen UI pages, and this is not a first-flash installer for an arbitrary stock device. A check
+  exit 0 alone is not proof of a matching baseline: inspect original/patched and full-page evidence.
+  Install net→aux→code→entry; restore entry→code→aux→net, all A7/WF/BT held reset until closed.
+  g's own hardware restore remains untested. d's later successful restore is recorded in g upgrade
+  evidence; the original d result and every historical frozen input remain unchanged.
+  Cold power-cycle is explicitly user-skipped; do not ask again or borrow previous cold-boot results.
+  NEEDS_INSPECTION means preserve stopped state, with no automatic retry, marker clearing or native replay.
+- Previous maintained UI was maintained-http-four-page-20261007-d, specific to this exact 1.50.10 image.
   Candidate SHA aba4a3e5021af175a3d6cd9dc90eac4559154d34711b647bbc8a48043ce5d9fe;
   380-input freeze SHA 3af60edcb71636fbe227237f7c7f8b23d4135571b2e45651583665d4466a2632.
   Main/aux/net BIN sizes are 2946/236/2948 B, ending at 0x3804bc8a/0x3807a850/0x3804db84.
@@ -40,6 +81,8 @@
   Use d's frozen snapshot/firmware/tools/hardware.ts and adjacent verifier. Restore d to exact image drawer
   plus stock net before any historical writer. d's own hardware restore is not tested; c's successful restore
   is separately recorded in d upgrade evidence. NEEDS_INSPECTION still means preserve the stopped state.
+  Later observation: d's own restore passed during the g upgrade; the preceding status describes its
+  original checkpoint. This later result is recorded separately in g evidence without changing d's result.
 - Previous maintained UI was maintained-http-four-page-20261007-c, specific to this exact 1.50.10 image.
   Candidate SHA e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f;
   380-input freeze SHA 48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14.

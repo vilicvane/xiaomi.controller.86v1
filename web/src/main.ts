@@ -21,7 +21,7 @@ import {
   type Point,
 } from "./crop.ts";
 import {
-  fragmentEndpoint,
+  queryEndpoint,
   imageBody,
   normalizeDeviceEndpoint,
   rgbaToRgb565,
@@ -450,8 +450,8 @@ element<HTMLFormElement>("send-form").addEventListener(
 endpointInput.addEventListener("input", () => {
   if (!sending) status("等待发送");
 });
-const fromFragment = fragmentEndpoint(location.hash);
-if (fromFragment) endpointInput.value = fromFragment.slice(7);
+const fromQuery = queryEndpoint(location.search);
+if (fromQuery) endpointInput.value = fromQuery.slice(7);
 function updateApiUrl() {
   let endpoint = "http://PANEL_IPV4:18086";
   try {

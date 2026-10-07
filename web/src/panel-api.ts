@@ -27,11 +27,9 @@ export function normalizeDeviceEndpoint(input: string): string {
   return `http://${match[1]}:${port}`;
 }
 
-/** A firmware redirect carries the LAN address in a fragment, not a server-visible query. */
-export function fragmentEndpoint(hash: string): string | null {
-  const values = new URLSearchParams(
-    hash.startsWith("#") ? hash.slice(1) : hash,
-  ).getAll("device");
+/** Read the panel endpoint from the firmware redirect's device query parameter. */
+export function queryEndpoint(search: string): string | null {
+  const values = new URLSearchParams(search).getAll("device");
   if (values.length !== 1) return null;
   try {
     return normalizeDeviceEndpoint(values[0]);

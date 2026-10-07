@@ -91,9 +91,12 @@ static void reply(struct broker *c, int fd, char *buffer, unsigned status)
     u32 used = (u32)n;
     if (status == 303) {
         const u8 *ip = (const u8 *)&c->ipv4;
+        char separator = '?';
+        for (const char *p = PANEL_FRONTEND_URL; *p; ++p)
+            if (*p == '?') separator = '&';
         n = SNPRINTF(buffer + used, PANEL_HTTP_HEADER_BYTES - used,
-            "Location: %s#device=http%%3A%%2F%%2F%u.%u.%u.%u%%3A%u\r\n",
-            PANEL_FRONTEND_URL, ip[0], ip[1], ip[2], ip[3], PANEL_PORT);
+            "Location: %s%cdevice=http%%3A%%2F%%2F%u.%u.%u.%u%%3A%u\r\n",
+            PANEL_FRONTEND_URL, separator, ip[0], ip[1], ip[2], ip[3], PANEL_PORT);
         if (n < 0 || (u32)n >= PANEL_HTTP_HEADER_BYTES - used) return;
         used += (u32)n;
     }

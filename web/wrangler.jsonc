@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "xiaomi-86v1",
+  "compatibility_date": "2026-10-07",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "wan.sh/xiaomi-86v1", "zone_name": "wan.sh" },
+    { "pattern": "wan.sh/xiaomi-86v1/*", "zone_name": "wan.sh" }
+  ],
+  "assets": {
+    "directory": "./dist-cloudflare"
+  }
+}

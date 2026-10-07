@@ -19,9 +19,13 @@
 !/firmware/tests/http-arm-offline-result.json
 !/firmware/releases/maintained-http-20261007.json
 !/firmware/releases/maintained-http-20261007-d.json
+!/firmware/releases/maintained-http-20261007-g.json
 !/web/package.json
 !/web/package-lock.json
 !/web/tsconfig.json
+/web/dist-cloudflare/
+/web/.wrangler/
+!/web/wrangler.jsonc
 !/web/**/*.ts
 !/web/**/*.html
 !/web/**/*.css

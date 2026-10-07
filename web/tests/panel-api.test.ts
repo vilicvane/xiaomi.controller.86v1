@@ -10,7 +10,7 @@ import {
   UPLOAD_TIMEOUT_MS,
   PanelUploadError,
   fnv1a32,
-  fragmentEndpoint,
+  queryEndpoint,
   imageBody,
   normalizeDeviceEndpoint,
   rgbaToRgb565,
@@ -64,25 +64,25 @@ test("device addresses use explicit dotted-decimal IPv4 and a canonical port", (
     assert.throws(() => normalizeDeviceEndpoint(invalid), Error, invalid);
 });
 
-test("redirect fragments decode exactly once and reject ambiguous or malformed targets", () => {
+test("redirect queries decode exactly once and reject ambiguous or malformed targets", () => {
   assert.equal(
-    fragmentEndpoint("#device=http%3A%2F%2F192.168.1.20%3A18086"),
+    queryEndpoint("?device=http%3A%2F%2F192.168.1.20%3A18086"),
     "http://192.168.1.20:18086",
   );
   assert.equal(
-    fragmentEndpoint("#mode=image&device=10.0.0.9"),
+    queryEndpoint("?mode=image&device=10.0.0.9"),
     "http://10.0.0.9:18086",
   );
   for (const invalid of [
     "",
-    "#hello",
-    "#device=",
-    "#device=%ZZ",
-    "#device=http%253A%252F%252F192.168.1.20",
-    "#device=192.168.1.20&device=192.168.1.21",
-    "#device=https%3A%2F%2F192.168.1.20",
+    "?hello",
+    "?device=",
+    "?device=%ZZ",
+    "?device=http%253A%252F%252F192.168.1.20",
+    "?device=192.168.1.20&device=192.168.1.21",
+    "?device=https%3A%2F%2F192.168.1.20",
   ])
-    assert.equal(fragmentEndpoint(invalid), null, invalid);
+    assert.equal(queryEndpoint(invalid), null, invalid);
 });
 
 test("RGBA color oracle verifies RGB565 little-endian, black alpha composition and row ordering", () => {

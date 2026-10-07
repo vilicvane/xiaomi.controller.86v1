@@ -1,101 +1,109 @@
-# Xiaomi Smart Panel Image Drawer
+# 小米智能家庭面板 86V1
 
-为小米智能家庭面板 `xiaomi.controller.86v1` 开发可远程更新内容的自定义下拉屏幕。
-设备端接收局域网上传的图片，与原界面在运行中交接显示和触摸；原米家应用继续运行。
+为 `xiaomi.controller.86v1` 开发的自定义固件。保留原系统的米家功能，增加设备端运行的
+自定义功能。目前支持下拉显示自定义图片，通过网页裁切、缩放并发送画面。
 
-目前交付是针对**本机官方 1.50.10 映像**的持久化原生程序补丁，复用 NuttX、板级驱动、
-网络和 MCU 服务。它还不是能适用于任意同型号设备的完整替代固件。仓库不分发原厂映像、
-设备身份或包含它们的刷机包。
+## 刷机
 
-## 维护版与验证状态
+目前基于原厂 **1.50.10** 开发，刷写工具只支持已经核对过的设备状态，需要本机备份和
+对应安装材料。仓库暂不提供让未修改的原厂面板直接首刷的通用安装包。
 
-维护源码在 [firmware](firmware/README.md)。四页 release
-`maintained-http-four-page-20261007-d` 已完成独立离线审查及冻结，主/辅助/网络 BIN 分别为
-2946/236/2948B。四页安装读回、状态闭包、暖启动及真实浏览器跳转、图片上传和校验拒绝
-通过；用户已确认手机访问面板地址能打开前端、默认 GitHub 卡片正常显示。
-d 的双击、上下滑、三击取消、息屏唤醒及米家验收仍待记录。各项状态见
-[当前发布结果](firmware/releases/maintained-http-20261007-d.json)，不继承此前版本的用户验收。
+### 准备什么
 
-维护版实现的行为：
+- **MuseLab nanoDAP 调试器**和 USB 数据线。见 [官方项目](https://github.com/wuxx/nanoDAP)、
+  [购买入口](https://item.taobao.com/item.htm?id=586425846353)及
+  [用户手册](https://github.com/wuxx/nanoDAP/blob/master/user_manual.md)。
+- **烧录探针夹**：选择适合主板测试点间距的 pogo pin / 弹簧探针夹具，方便接触调试焊盘。
+  这里需要测试点夹具，SOIC8 Flash 芯片夹不能替代；也可以焊接短导线。
+- 短连接线、万用表，以及稳定的隔离 **5V** 低压供电。
+- Windows 电脑和 Node.js 24。自行编译固件还需要 WSL Ubuntu；使用已准备的安装材料
+  刷写时，在 Windows PowerShell 中操作。
 
-- 原界面顶边下拉打开自定义画面，上滑返回原界面，移除自有第三键三击入口。
-- 双击自定义画面在图片与 `IP:18086` 地址页之间切换，不丢弃已上传图片。
-- HTTP `POST /api/image` 接收 480×320 RGB565；图片接收、合成及触摸在设备上执行。
-- 浏览器 `GET /` 用 `303` 跳转到临时局域网前端 `http://PC_LAN_IPV4:5173/`，自动带入面板地址。
-- 上传不要求 Content-Type，仍校验完整 VIMG、固定长度和 FNV。
-- 观察到原系统息屏时安全交接到自定义画面，保持原背光状态；d 的用户唤醒验收待记录。
-- 程序持久化，图片仅在 RAM，重启恢复地址画面。
+### 怎样连接
 
-```powershell
-node firmware/tools/upload.ts PANEL_IPV4 --pattern
-node firmware/tools/upload.ts PANEL_IPV4 picture.rgb565
+断电后连接主板调试点，使用 SWD：
+
+| nanoDAP | 面板主板 |
+| --- | --- |
+| GND | GND |
+| SWDIO / IO | JTMS |
+| SWCLK / CK | JTCK |
+
+JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供电入口**，并与调试器共地。
+本机输入 5V 可以正常启动；5V 不能接到调试点或芯片引脚。裸板调试时断开原市电供电板，
+不要在裸露 220V 下连接电脑。
+
+### 刷写流程
+
+1. 核对面板型号、原厂版本、供电入口和接线。
+2. 读取并保存这台设备的完整 NOR 备份。
+3. 使用与本机状态匹配的安装材料，先执行只读检查，确认匹配后再安装。
+4. 面板启动后，按下面的功能说明查看地址并发送图片。
+
+具体命令、环境准备以及升级和恢复步骤见 **[完整刷写指南](docs/flashing.md)**。
+程序保存在 Flash 中，重启后仍会运行；上传的图片目前只保存在 RAM 中，重启后需要重新发送。
+当前发布与验证记录见 [发布结果](firmware/releases/maintained-http-20261007-g.json)。
+
+## 功能：自定义图片
+
+图片编辑页面：[wan.sh/xiaomi-86v1](https://wan.sh/xiaomi-86v1/)。
+
+1. 让面板连上 Wi-Fi，手机或电脑接入能访问它的局域网。
+2. 从原界面最顶边向下拖，打开自定义画面；向上拖返回原界面，无需重启。
+3. 双击自定义画面，查看 IP 地址和端口；再双击回到图片。
+4. 在浏览器访问面板显示的地址，例如 `http://PANEL_IPV4:18086/`，会跳到图片编辑页面，
+   并通过 `?device=` 自动填写面板地址。也可以直接打开网页后手动填写。
+5. 选择或拖入图片，拖动调整位置，用滚轮或双指缩放。中央框内是面板最终显示的
+   **480×320** 画面，预览按面板像素放大显示。
+6. 点击“发送画面”。如果浏览器询问本地网络访问权限，请允许；收到成功提示后查看面板画面。
+
+页面支持 PNG、JPEG、WebP 和 SVG，也可用方向键移动、`+` / `-` 缩放、`0` 重置。
+可以下载 PNG 留存，或下载完整 `.vimg` 文件用于 API 上传。
+
+当前固件取消了第三物理键三击切换。原界面息屏后会切回自定义画面，下次唤醒时显示它，
+继续使用原系统的背光和息屏设置。双击和上下滑不会清除已上传图片。
+
+## 图片 API
+
+面板提供 `POST http://PANEL_IPV4:18086/api/image`。请求内容是完整 `.vimg` Payload，
+不能直接发送 PNG 或 JPEG。网页会完成裁切和格式转换；其他客户端可参考
+[HTTP 图片 API](docs/http-image-api.md)。
+
+下载 `.vimg` 后，也可以在能访问面板的电脑上发送：
+
+```sh
+curl -X POST "http://PANEL_IPV4:18086/api/image" --data-binary "@picture-480x320.vimg"
 ```
 
-将 `PANEL_IPV4` 换成面板显示的非零地址；上传器接受 raw RGB565，PNG/JPEG 转换由
-前端或电脑完成。维护版只接受 HTTP，协议见 [HTTP 图片 API](docs/http-image-api.md)。
-`202` 表示完整图像已接受供 GUI 消费，不等于屏幕扫描完成或写入 Flash。
-HTTPS 前端到局域网 HTTP 的浏览器权限/CORS 链路仍须单独验证。
+替换 IP 和文件名时，保留文件名前的 `@`，它表示读取文件内容。收到 HTTP 202 表示面板
+已接收并排队显示，图片不会写入 Flash。
 
-## 图片编辑前端
+## 开发
 
-[小米智能家庭面板](web/README.md)默认展示此前 GitHub 卡片，网页采用深灰主题，
-默认图片保留金色星标。直接进入编辑工作区并常显 API 指南。支持选择或拖入 PNG/JPEG/WebP/SVG，拖动裁切、滚轮/双指/键盘
-调整构图，框外显示变暗的整图区域，并下载 480×320 PNG 或完整 `.vimg` Payload、
-直接发送到面板。API 提供直接发送 Payload 的 cURL 示例。图片在浏览器本地处理，
-使用面板显示的地址；当前不需要重新刷写设备。
+设备端源码在 [firmware](firmware/README.md)，网页源码在 [web](web/README.md)。
+网页采用 Vite + TypeScript，图片在浏览器内处理，直接发送到局域网面板。
 
-```powershell
-npm --prefix web install
-npm --prefix web run dev -- --host 0.0.0.0 --port 5173 --strictPort
+使用 Node.js 24，在仓库根目录运行：
+
+```sh
+npm --prefix web ci
+npm --prefix web run dev
 ```
 
-使用 Node.js 24。当前 d 跳转依赖电脑的局域网地址和 5173 开发服务器；电脑须保持在
-该局域网并运行服务器。Cloudflare Pages 的静态部署设置及局域网上传说明见
-[前端说明](docs/frontend.md)，当前尚未部署线上站点。
-
-Windows Chrome 已验证裁切像素、缩放、PNG/RGB565 导出和本地网页到面板的真实
-HTTP 上传；请求像素与导出内容一致，返回 202。结果见
-[浏览器验证](web/browser-verification-20261007.json)，云端 HTTPS 到 LAN 尚未测试。
-初次上传、此前 raw RGB565 导出与布局检查保留原范围；框外预览、完整 Payload 校验及
-发送按钮状态的最新检查通过，使用模拟 HTTP 和拦截导出，与真实设备上传和落盘区分。
-
-当前 d 已由 Windows Chrome 跟随真实 303 跳转并自动填写地址，无 Content-Type 的
-网页上传和未指定 `-H` 的 cURL 上传均返回 202；两次图像被 GUI 消费。用户已确认默认
-卡片可见及手机 LAN 跳转打开网页；手机上传与云 HTTPS 未测试。
-
-历史 image drawer 的 TCP `VIMG/VACK`、三击交接及实机结果完整保留在
-[原型协议](docs/image-upload-protocol.md)和
-[历史硬件结果](analysis/persistence/native-image-drawer-hardware-result.json)。完整断电测试
-按用户要求跳过，不借用旧版结果。当前验证边界见 [架构](docs/architecture.md)。
-
-## 开发与研究入口
+网页测试和构建分别使用 `npm --prefix web run test`、`npm --prefix web run build`。
+Cloudflare 发布使用 `npm --prefix web run deploy`，正式路径为 `/xiaomi-86v1/`。
+设备端编译、发布与维护流程见 [固件开发说明](firmware/README.md)。
 
 | 文档 | 内容 |
 | --- | --- |
-| [维护源码与工具](firmware/README.md) | 编译、模型、冻结发布及设备执行器 |
-| [当前发布结果](firmware/releases/maintained-http-20261007-d.json) | 四页读回、真实跳转/上传及单列用户验收状态 |
-| [当前架构](docs/architecture.md) | GUI/网络职责、四页和 RAM 布局、验证状态 |
-| [HTTP 图片 API](docs/http-image-api.md) | 浏览器入口、图片格式、确认及连接限制 |
-| [图片编辑前端](docs/frontend.md) | 本地裁切缩放、图片导出、局域网上传及静态部署 |
-| [历史图片上传协议](docs/image-upload-protocol.md) | 三页原型 TCP/VACK，保留旧客户端入口 |
-| [工程约束](docs/engineering-notes.md) | 供电、调试、版本专用 ABI、Flash 和失败处理 |
-| [开发与维护流程](docs/development.md) | 本地材料、冻结校验、新版本开发和精确回退 |
-| [研究与历史版本索引](docs/research-index.md) | 配网恢复、显示接管、版本演进和原始归档 |
-| [维护需求与验收](docs/maintenance-plan.md) | 四项需求的实现和待验证边界 |
+| [完整刷写指南](docs/flashing.md) | 调试器与探针夹、供电接线、备份、安装和恢复 |
+| [架构](docs/architecture.md) | 自定义固件与原系统的关系、显示和触摸交接 |
+| [开发与维护](docs/development.md) | 编译、冻结发布、安装基线和精确回退 |
+| [工程约束](docs/engineering-notes.md) | 硬件操作、版本专用接口及失败处理 |
+| [前端说明](docs/frontend.md) | 裁切预览、导出、浏览器权限和部署 |
+| [HTTP 图片 API](docs/http-image-api.md) | 请求格式、响应及连接限制 |
+| [研究记录](docs/research-index.md) | 配网恢复、硬件探索和历史版本 |
+| [当前发布结果](firmware/releases/maintained-http-20261007-g.json) | 本次安装和验证范围 |
 
-历史研究代码在 `analysis/`，历史 PowerShell 入口在 `scripts/`，OpenOCD 配置在 `diagnostics/`。
-维护版由 `firmware/tools/` 管理，每次发布生成独立私有 release 快照。
-已经冻结的历史集合保留原路径和字节，不能为了整理目录而移动或重新生成。
-
-## 仓库与安装材料
-
-仓库保存第一方源码、文档和经过审查的结构化证据。完整 NOR/RAM 备份、扇区镜像、
-凭据、网络日志、工具链、第三方参考源码及生成的 BIN/ELF/Tcl 数组只在本地保存。
-全新 clone 不能直接安装或回退设备；必须准备与该设备、版本及安装基线匹配的材料。
-
-维护版回退必须使用其冻结的 `hardware.ts restore`，先恢复 exact image drawer 三页和
-stock 网络页，再进入历史回退链；不能直接对四页维护版运行旧三页 writer。操作步骤见
-[开发与维护流程](docs/development.md)。
-
-本轮先用 c 的冻结执行器恢复精确基线，再安装 d；c 的恢复已通过，d 的硬件恢复尚未
-执行。[旧 c 结果](firmware/releases/maintained-http-20261007.json)及其双击/息屏用户观察原样保留。
+历史实验保留在 `analysis/`、`scripts/` 和研究文档中，包括此前的第三键三击逻辑。
+备份、设备身份、原始日志及第三方工具链不在 Git 中分发。

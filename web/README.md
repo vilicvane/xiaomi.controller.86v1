@@ -1,7 +1,11 @@
-# 小米智能家庭面板
+# 86V1 自定义固件：图片编辑前端
 
-纯静态 Vite + TypeScript 页面，为维护版 HTTP 图片 API 准备 480×320 画面。
+86V1 自定义固件的图片下拉屏幕编辑页面，网页显示名称为“小米智能家庭面板”。
+使用 Vite + TypeScript 构建静态文件，为该功能的 HTTP 图片 API 准备 480×320 画面。
 图片在浏览器内裁切、缩放、转换并发送到同一局域网的面板；不需要后端或图片中转服务。
+设备使用入口为 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)；刷写、调试器购买与
+SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确依赖本机私有基线，
+本目录的网页构建和发布命令不会刷写面板。
 支持 PNG、JPEG、WebP、SVG，单文件最大 32MiB；动图采用解码后的静态首帧。
 拖动调整位置，用滚轮、双指或键盘 `+`/`-` 调整 1～5 倍覆盖比例，键盘 `0` 重置构图。
 页面不显示缩放或重置栏，可下载 PNG 和完整的 `.vimg` Payload。
@@ -31,30 +35,67 @@ npm --prefix web run test
 npm --prefix web run build
 ```
 
-使用 Node.js 24。开发服务器地址以 Vite 控制台为准。生产产物位于 `web/dist`，不提交依赖和生成产物。
-设备地址可手动输入，或由页面 URL 的 `#device=` fragment 传入。
+使用 Node.js 24。开发服务器地址以 Vite 控制台为准。生产产物位于
+`web/dist-cloudflare/xiaomi-86v1/`，资源前缀为 `/xiaomi-86v1/`，不提交依赖和生成产物。
+构建后可运行 `npm --prefix web run preview` 查看该子路径。
+设备地址可手动输入，或由页面 URL 的 `?device=` 查询参数传入，例如
+`https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2FPANEL_IPV4%3A18086`。
 双击面板自定义画面即可查看设备当前地址和 18086 端口。
 
-裁切缩放、导出、上传语义及 Cloudflare Pages 配置见
+裁切缩放、导出、上传语义及 Cloudflare 静态部署配置见
 [前端开发与使用说明](../docs/frontend.md)，完整协议见
 [HTTP 图片 API](../docs/http-image-api.md)。
 
 HTTP 202 表示设备已接收并排队供 GUI 消费；图片保存在 RAM，重启不会保留。
-当前已安装 d 配置了临时 `http://PC_LAN_IPV4:5173/` 前端；访问面板 `IP:18086` 会用
-303 跳转并自动填入设备地址。电脑须保持构建时的局域网地址并运行开发服务器。
-上面的命令监听 LAN 并固定端口；未来更换目标 hostname 需要新的冻结固件 release。
-Cloudflare 部署及 HTTPS 页面到面板 HTTP 的实际浏览器链路分别验证；浏览器请求本地网络
-权限时，授权后才能上传。未连接设备时仍可编辑和下载。
+当前已安装 g 配置了 `https://wan.sh/xiaomi-86v1/`；访问面板 `IP:18086` 会用 303 跳转，
+通过 `?device=` 自动填入设备地址，使用设备不需要电脑开发服务器。未来更换目标
+hostname 需要新的冻结固件 release；网页发布不会自动修改设备中的目标 URL。
+浏览器请求本地网络权限时，授权后才能上传。
+未连接设备时仍可编辑和下载。
+
+g 的页面配置为 `PANEL_FRONTEND_URL=https://wan.sh/xiaomi-86v1/`、CORS `*`，
+由设备端 release 在编译时确定，使用 `?device=` 自动填写面板地址。修改网页本身不能
+替代独立冻结和硬件安装。g 的四页读回/native/GLOBAL/暖启动通过；真实 GET/303 和
+Chrome 跟随/填入地址通过，用户另行确认正式页面跳转及 HTTPS 网页上传正常；随后
+只读状态显示 generation/displayed_generation=1、pending=0、server=1/error=0。
+自动化 Chrome 没有发送 POST，GUI 消费也不等于 LCD 扫描验证。
+
+## 发布
+
+Worker `xiaomi-86v1` 已发布到
+[独立 Workers 页面](https://xiaomi-86v1.vilicvane.workers.dev/xiaomi-86v1/)，HTTP 200 已确认。
+无尾斜线路径的 307、四项静态资源与构建 SHA-256 一致、Chrome HTTPS 页面和默认图
+加载、测试用 `?device=` 自动填入地址/API URL 均已验证；无页面错误或请求失败。
+此次检查没有面板上传、下载或固件操作。
+目标地址 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)已能正常访问，HTTP 200、无尾
+斜线路径 307、静态资源和 Chrome 页面加载及测试用 `?device=` 参数均已验证。
+当前网页发布版本为 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12`。
+部署仅绑定 `wan.sh/xiaomi-86v1` 和 `wan.sh/xiaomi-86v1/*` 两条狭窄 route，
+采用 `dist-cloudflare` 内的静态资源，不包含 Worker 业务代码或后端服务。
+
+```powershell
+npm --prefix web ci
+npm --prefix web run test
+npm --prefix web run deploy
+```
+
+`deploy` 执行构建后调用锁定的 `wrangler@4.148.0` 发布；配置见
+[wrangler.jsonc](wrangler.jsonc)。静态页面打开和 LAN 上传分别验证；上述自动化页面
+检查没有发送 POST，正式 HTTPS 网页上传由用户另行确认通过。
 
 本地 HTTP 页面到面板的 Windows Chrome 上传、裁切/缩放和导出已验证，见
-[浏览器验证](browser-verification-20261007.json)；云端 HTTPS 到 LAN 尚未测试。
+[浏览器验证](browser-verification-20261007.json)；该历史记录没有测试云端 HTTPS 到 LAN。
 该记录的初次检查使用旧布局；新版深灰主题、默认卡片、像素放大、常显 API、
 移动端布局和普通浏览器下载文件名已单列检查通过。
 这些检查保留此前布局和 raw RGB565 下载的原范围；新版框外预览、完整 Payload、
 发送按钮状态及 Lucide 图标也已单列检查通过。最新检查使用模拟 HTTP 和拦截导出
 Blob/下载属性，没有新做真实设备上传或 `.vimg` 的普通浏览器落盘验证。
 
-当前 d 已另行验证真实 303、Chrome 跟随/自动填地址、无 Content-Type 网页 POST/202 和
+历史 d 已另行验证真实 LAN 303、Chrome 跟随/自动填地址、无 Content-Type 网页 POST/202 和
 未指定 `-H` 的 cURL 完整 VIMG POST/202；用户确认默认卡片显示、手机 LAN 跳转打开网页。
 结果见 [d 发布结果](../firmware/releases/maintained-http-20261007-d.json)，不扩展为手机上传、
-其他 d 交互或云 HTTPS 验收。
+其他 d 交互或云 HTTPS 到 LAN 上传验收。
+
+当前 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)单独记录正式 query
+跳转及用户 HTTPS 网页上传确认。其他 g 交互、实屏内容和米家状态仍待验收，未进行
+完整断电测试；g 自身硬件 restore 尚未测试，不借用 d→g 升级中的 d restore 结论。

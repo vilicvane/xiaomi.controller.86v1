@@ -1,13 +1,19 @@
-# 小米智能家庭面板
+# 86V1 自定义固件：图片编辑前端
 
-页面源码在 [web](../web/README.md)，使用 Vite 和 TypeScript 构建为静态文件。
+本页面用于 86V1 自定义固件的图片下拉屏幕功能。页面源码在 [web](../web/README.md)，
+使用 Vite 和 TypeScript 构建为静态文件；网页显示名称为“小米智能家庭面板”。
 目标画面固定为 480×320、横向 3:2；裁切、缩放和 RGB565 转换都在用户的浏览器执行。
-面板接收的是处理完成的像素，不负责 PNG/JPEG 解码。
+当前固件的图片接收程序处理已完成的像素，不解码 PNG/JPEG。
 
 页面从编辑工作区开始，默认显示此前设备端的 GitHub 卡片，保留 GitHub 标志、
 `vilicvane`、完整项目名称和金色星标提示。页面主题采用克制的深灰色 `#303b4b`，
 默认 GitHub 图片保留原来的金色；直接进入工作区，不先展示大段介绍标题。
 默认画面可直接发送，也可由本地图片替换。
+
+面向设备使用者的入口是 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)。
+首次准备调试器、接线、备份、配置和维护升级见
+[刷写与配置指南](flashing.md)。当前安装器依赖本机的精确基线和私有
+冻结材料，不能把网页发布或源码 clone 当作通用原厂首刷入口。
 
 默认 [github-card.png](../web/public/github-card.png)由第一方离线绘图生成，不是设备 dump。
 其 SHA-256 为 `ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e`。
@@ -39,9 +45,10 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 
 发送按钮有待发送、发送中、已接收和失败四种状态。额外解释只在失败或发送期间继续
 编辑/修改地址时显示，没有独立的“等待发送”行。页面保留同一局域网和浏览器授权说明。
 
-设备地址也可通过 URL fragment 提供：`#device=` 后接编码过的 `http://PANEL_IPV4:18086`。
-它与固件 `303 Location` 的 fragment 格式一致，不使用 query 参数向静态站点服务端传递
-设备地址。页面和面板须能在同一局域网直接通信；Cloudflare 仅托管页面静态文件。
+设备地址也可通过 URL 查询参数提供：`?device=` 后接编码过的 `http://PANEL_IPV4:18086`，例如
+`https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2FPANEL_IPV4%3A18086`。
+当前已安装 g 在 `303 Location` 中使用同一格式；真实跳转与 Chrome 地址填入已验证。
+页面和面板须能在同一局域网直接通信；Cloudflare 仅托管页面静态文件。
 
 没有云端图片存储、服务端代理、账户或设备 token。图片只有用户点击发送后才离开浏览器，
 目标为用户填写的面板；本地处理和下载可以在没有连接面板时使用。
@@ -69,13 +76,26 @@ curl -X POST "http://PANEL_IPV4:18086/api/image" --data-binary "@picture-480x320
 RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，结果可能不确定，不能报告成功。
 页面不会自动重复发送来掩盖失败。
 
-已安装 `maintained-http-four-page-20261007-d` 接受不指定 Content-Type 的该 HTTP API。
-访问设备根地址会真实 303 到临时电脑 LAN 开发页 `http://PC_LAN_IPV4:5173/`，设备地址
-通过 fragment 自动填入。Windows Chrome 跟随及网页上传已验证，用户也确认手机访问
-面板地址能打开前端、默认 GitHub 图显示正常；手机上传尚未测试。
-电脑须保持构建时配置的局域网地址并运行开发服务器。未来实际域名确定后，可以用
-`PANEL_FRONTEND_URL` 和 `PANEL_FRONTEND_ORIGIN` 构建新的、独立冻结的维护 release，
-使设备根地址跳转到该页面；不能修改已冻结 release 的输入。
+当前已安装 `maintained-http-four-page-20261007-g` 接受不指定 Content-Type 的该 HTTP API。
+访问设备根地址会 303 到 `https://wan.sh/xiaomi-86v1/`，通过 `?device=` 自动填入设备地址；
+无需电脑开发服务器。真实 GET/303 与 Windows Chrome 跟随、输入框/API URL 同步通过。
+用户另行确认正式页面跳转和 HTTPS 网页上传正常；随后只读状态观察到
+generation/displayed_generation=1、pending=0、server=1/error=0，说明图像已由 GUI 消费。
+自动化 Chrome 没有发送 POST，也没有 LCD 扫描验证。
+g 的四页安装/native/GLOBAL/暖读回通过；实屏、其他交互和米家状态仍待单列验收。
+配置在编译时确定，默认 URL 如上、CORS 为 `*`。更改跳转目标要创建新的独立 release；
+不能修改已冻结 c/d/g release 的输入。
+
+为正式页面构建时，URL 与浏览器 origin 分别填写：
+
+```sh
+PANEL_FRONTEND_URL=https://wan.sh/xiaomi-86v1/ \
+PANEL_FRONTEND_ORIGIN='*' sh firmware/build.sh
+```
+
+URL 含子路径并保留末尾斜线。g 使用 CORS `*`，继续支持正式页面、本地开发和
+workers.dev 来源；如需限定为 `https://wan.sh`，origin 不带路径，并构建新的独立 release。
+该命令只生成构建材料，不能代替独立审查、冻结和实机安装。
 
 ## 本地开发
 
@@ -90,29 +110,57 @@ npm --prefix web run build
 
 发布构建使用 lockfile：`npm --prefix web ci` 后执行测试和构建。
 `build` 先做 TypeScript 检查，再生成 Vite 静态产物；`test` 使用 Node 的 TypeScript 测试。
-`web/dist` 为静态输出；`web/node_modules` 与构建产物不入库。
+静态输出为 `web/dist-cloudflare/xiaomi-86v1/`，资源 URL 前缀为 `/xiaomi-86v1/`；
+`web/node_modules` 与构建产物不入库。构建后可用 `npm --prefix web run preview` 查看该子路径。
 API 文档无需连接设备即可阅读，上传需要使用当前非零设备地址。
 `0.0.0.0` 使开发服务器能从局域网访问；固定 5173 并用 `--strictPort` 避免占用时自动
-更换端口。真实电脑/面板地址不提交到 Git，当前临时入口尚不是 Cloudflare 部署。
+更换端口。真实电脑/面板地址不提交到 Git。这个服务器仅用于开发，g 的正式网页入口
+不依赖它；历史 d 的临时 LAN 跳转记录保留原范围。
 
-## Cloudflare Pages
+## Cloudflare Workers 静态部署
 
-后续连接仓库时使用以下设置，当前未创建线上站点或指定实际域名：
+网页已于 2026-10-07 发布为 Worker `xiaomi-86v1`，独立入口为
+[Workers 页面](https://xiaomi-86v1.vilicvane.workers.dev/xiaomi-86v1/)，已返回 HTTP 200。
+当前发布版本为 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12`。
+独立入口的无尾斜线路径返回 307 到 `/xiaomi-86v1/`；SVG favicon、JS、CSS 和默认 PNG
+四项线上资源的字节与 SHA-256 均匹配构建产物。Windows Chrome 已验证 HTTPS 页面
+标题、默认图加载，以及测试用 `?device=` 查询参数到输入框/API URL 的同步，无页面错误或
+请求失败。这一静态检查没有发送面板请求、下载文件或修改固件。
+目标入口 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)已能正常访问，HTTP 200、无尾
+斜线路径 307、静态资源及 Chrome 页面加载和测试用 `?device=` 参数均已验证；
+上述检查不包含 HTTPS 到 LAN 的上传。
 
 | 设置 | 值 |
 | --- | --- |
-| Root directory | `web` |
-| Build command | `npm ci && npm run build` |
-| Build output directory | `dist` |
+| 项目目录 | `web` |
+| 构建输出 | `dist-cloudflare/xiaomi-86v1` |
+| Worker assets directory | `dist-cloudflare` |
+| Worker 名称 | `xiaomi-86v1` |
+| 精确路径 route | `wan.sh/xiaomi-86v1` |
+| 子路径 route | `wan.sh/xiaomi-86v1/*` |
+| 发布命令 | `npm run deploy` |
 
-目录和静态输出设置遵循 [Cloudflare Pages 构建配置](https://developers.cloudflare.com/pages/configuration/build-configuration/)。
-不需要 Pages Functions、Worker 图片代理或服务端凭据。
+从仓库根目录发布：
+
+```powershell
+npm --prefix web ci
+npm --prefix web run test
+npm --prefix web run deploy
+```
+
+`deploy` 执行 `npm run build && wrangler deploy`，Wrangler `4.148.0` 是锁定的开发依赖，
+使用操作者的 Cloudflare 登录。配置见 [wrangler.jsonc](../web/wrangler.jsonc)。
+目录结构与子路径一致，使用默认静态资源路由；没有 Worker 业务代码、后端服务或图片中转。
+两条 route 只覆盖该页面及其资源，不替换主站。配置遵循
+[Cloudflare 子目录静态资源](https://developers.cloudflare.com/workers/static-assets/routing/advanced/serving-a-subdirectory/)
+和 [Workers Routes](https://developers.cloudflare.com/workers/configuration/routing/routes/)。
 
 浏览器上传要求页面和面板处于可互访的局域网，并允许页面访问本地网络。
 Chrome 142 引入该权限；对 private IP literal 的请求在授权后可获得 mixed-content 豁免，见
 [Chrome 本地网络访问说明](https://developer.chrome.com/blog/local-network-access?hl=en)。
-当前已实现的 CORS 不能代替此权限。线上 HTTPS 域名还没有部署或验证；实际浏览器版本
-和网络条件需要单独验收。上传失败时检查面板地址、同一局域网及浏览器授权，或下载
+当前已实现的 CORS 不能代替此权限。用户已在 g 上确认正式 HTTPS 网页上传正常，
+这项报告不证明所有浏览器支持。自动化 Chrome 只跟随跳转，未执行 POST。上传失败时检查
+面板地址、同一局域网及浏览器授权，或下载
 完整 Payload 后使用上述 cURL 命令。编辑和下载不依赖设备连接。
 
 ## 验证范围
@@ -125,10 +173,11 @@ Chrome 142 引入该权限；对 private IP literal 的请求在授权后可获�
 
 另用浏览器里的延迟 202 模拟验证上传期间继续编辑或修改地址：成功反馈仍指向
 实际发送的画面快照及原目标。它不增加真实设备上传的验证范围。
-结果见 [前端浏览器验证](../web/browser-verification-20261007.json)。线上 HTTPS 到 LAN 和
-Cloudflare 部署尚未验证；HTTP 202 也不能代替实屏观察或证明 LCD 扫描完成。
+结果见 [前端浏览器验证](../web/browser-verification-20261007.json)。这些本地实验没有验证
+线上 HTTPS 到 LAN；当前 Cloudflare 静态页面部署状态另见上节。HTTP 202 也不能代替
+实屏观察或证明 LCD 扫描完成。
 
-新版默认 GitHub 画面与 PNG 逐像素一致；深灰主题、准确应用名称、17px 小标题、
+此前像素精确预览版默认 GitHub 画面与 PNG 逐像素一致；深灰主题、准确应用名称、17px 小标题、
 直接进入工作区及常显 METHOD/URL/PAYLOAD 均已在 Chrome 检查。110% 放大时绘制插值
 关闭，默认卡片仍只含原有四种颜色；滚轮、双指、键盘缩放与 `0` 重置通过，390px 和
 360px 布局没有横向溢出。fragment 首次加载能同步填写设备地址和 API URL，无页面错误。
@@ -152,12 +201,13 @@ HTTP 请求与该完整 Payload 逐字节相同。
 无页面错误。记录见 `payload_margin_revision`。本轮使用模拟 HTTP 和拦截 Blob/下载
 属性，没有真实设备上传或 `.vimg` 的普通浏览器落盘验证，不借用此前 raw 下载结论。
 
-当前 d 的真实 303 Location 与编译配置/设备 fragment 一致；Chrome 跟随后自动填入地址，
+历史 d 的真实 LAN 303 Location 与编译配置/设备 fragment 一致；Chrome 跟随后自动填入地址，
 无 Content-Type 的完整网页 POST 和未指定 `-H` 的 Windows cURL 完整 VIMG POST 均返回
 202，网页按钮显示成功且无页面错误。错误 FNV/422、任意 type 的错误 VIMG/400 后仍能
 GET/303，两个有效上传被 GUI 消费；generation/displayed_generation=2、pending=0、server=1。
 这次真实设备链路见 [d 发布结果](../firmware/releases/maintained-http-20261007-d.json)，与上述
-模拟 HTTP、拦截导出和历史 raw 下载结果分开记录，云 HTTPS 与 `.vimg` 普通浏览器落盘仍未测。
+模拟 HTTP、拦截导出和历史 raw 下载结果分开记录。该轮没有测试云 HTTPS 到 LAN 上传
+或 `.vimg` 普通浏览器落盘。
 
 用户已独立确认 d 的默认卡片显示和手机 LAN 跳转打开页面，仅这两项通过。此前 c 的
 双击/息屏用户确认保留在 [旧 c 结果](../firmware/releases/maintained-http-20261007.json)，d 的
@@ -168,3 +218,12 @@ GitHub 图在 1:1 下仍与源像素一致。Windows Chrome 的 16 组缩放/移
 裁切与内存 PNG 逐像素一致，模拟 POST 的 307216B body 通过独立 RGB565/FNV 核对。
 框外遮罩和 360/390px 布局通过，CSS `pixelated` 继续模拟成品像素。这些是本地画布、
 内存 PNG 和模拟请求检查，没有新增设备上传或浏览器下载结论。
+
+正式网页版本 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12` 的线上页面、资源及测试用 query
+检查通过。随后 g 的实际设备 GET/303 确认 Location 为正式 URL 加编码后的 `?device=`；
+Windows Chrome 跟随后自动填写 endpoint/API，页面错误为 0，没有执行浏览器 POST。
+用户报告“可以，上传正常”，确认正式网页跳转和 HTTPS 网页上传通过；随后新鲜只读
+状态为 generation/displayed_generation=1、pending=0、server=1/error=0，GUI 持续运行。
+没有记录自动化 POST 的状态/body 或 LCD 扫描。g 的实屏内容、
+双击、上下滑、第三键三击取消、息屏和米家仍待单列验收；完整断电按用户要求跳过。
+当前状态见 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)。

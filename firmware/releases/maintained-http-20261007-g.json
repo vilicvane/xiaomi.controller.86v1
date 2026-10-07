@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "release": "maintained-http-four-page-20261007-g",
+  "model": "xiaomi.controller.86v1",
+  "factory_firmware": "1.50.10",
+  "date": "2026-10-07",
+  "candidate_sha256": "dbd66152502676875df1e2eddd97a02b00a0a14c547d7f6fee11e49f23994a8f",
+  "freeze_sha256": "4c523fdc97fee23173f05c2fa3883c48a1368f1865f01b4ef646c16b24583b38",
+  "candidate_inputs": 374,
+  "frozen_inputs": 380,
+  "program": {
+    "mainBytes": 2946,
+    "auxBytes": 236,
+    "netBytes": 2976,
+    "elfSha256": "c65de7ad6655a0baac94364298f2cae31aacc46e234de3a93667d159a5c70c77"
+  },
+  "pages": {
+    "code": {
+      "offset": "0x92b000",
+      "before_sha256": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "after_sha256": "278d0bf33bd4ad59ea663f5dbc9b3a6996799decdc713b098c8ac479ea933036"
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "before_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "after_sha256": "5ff194aab4c29f7b38972c4f3f3299339ef2c6c260310d1c9b30a8ed8bb93da9"
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "before_sha256": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+      "after_sha256": "2d5be599eb878ea4bd9424ab71d0e30742a566a870dec13f2eb12731ee458eb3"
+    },
+    "net": {
+      "offset": "0x92d000",
+      "before_sha256": "76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d",
+      "after_sha256": "f767cac6a50bc93925db0c073aac2c2a3d16ca6e638cad8637f9083203ef1d61"
+    }
+  },
+  "baseline": {
+    "name": "native-image-drawer",
+    "freeze_sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "additional_page": "stock 0x92d000"
+  },
+  "upgrade": {
+    "from": "maintained-http-four-page-20261007-d",
+    "previous_release_restore": {
+      "passed": true,
+      "full_four_page_readback": true,
+      "warm_readback": true,
+      "native_app_complete": true,
+      "safe_to_resume": true,
+      "exact_target": "native image drawer three pages plus stock network page"
+    },
+    "install_followed_exact_restore": true,
+    "scope": "Each release used its own frozen executor; two warm reboots, RAM images cleared"
+  },
+  "offline": {
+    "actual_arm_ui_groups": 21,
+    "actual_arm_configured_http_groups": 23,
+    "writer_mocks": 93,
+    "node_release_tests": 12,
+    "host_http_checks": 261,
+    "web_tests": 9,
+    "hardware_proof": false
+  },
+  "frontend": {
+    "url": "https://wan.sh/xiaomi-86v1/",
+    "endpoint_parameter": "device query",
+    "cors_origin": "*",
+    "cloudflare_version": "d92ceb00-ba7c-4832-ae9c-e00879c5ca12",
+    "config_header_sha256": "0a45e5135c89114781692ea6c0e3faf8ccffa3e8c2dec502aa91a7f433e74569",
+    "public_static_verification": {
+      "http_status": 200,
+      "canonical_without_slash": 307,
+      "assets_exact": true,
+      "query_autofill": "passed_synthetic"
+    },
+    "temporary_computer_server_required": false
+  },
+  "hardware": {
+    "installed": true,
+    "preflight_exact": true,
+    "full_four_page_readback": true,
+    "post_reboot_exact": true,
+    "native_app_complete": true,
+    "safe_to_resume": true,
+    "warm_global_requested": true,
+    "warm_global_transport_error": 0,
+    "warm_global_dispatch_complete": true,
+    "live_controller_table_verified": true,
+    "primary_controller": "0x40148000",
+    "runtime_before_user_upload": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 13613,
+      "screen_off": 0,
+      "image_pending": 0,
+      "generation": 0,
+      "displayed_generation": 0,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "ipv4_present": true
+    },
+    "runtime_after_user_upload": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 60139,
+      "screen_off": 0,
+      "image_pending": 0,
+      "generation": 1,
+      "displayed_generation": 1,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "ipv4_present": true
+    }
+  },
+  "http": {
+    "get_root": 303,
+    "location_matches_build_and_endpoint_query": true,
+    "browser_followed_real_redirect": true,
+    "query_populates_endpoint": true,
+    "page_errors": 0,
+    "automated_browser_upload": "not_performed",
+    "browser_local_network_permission": "prompt_in_automation_profile",
+    "browser_https_to_private_http": "passed_user_report",
+    "valid_body_bytes": 307216,
+    "gui_generation_consumed": 1,
+    "acceptance_scope": "Real303/endpoint/browser verified; user reported website upload, then fresh read-only runtime observed consumed generation. No captured POST status/body or LCD scanout claim."
+  },
+  "user_observations": {
+    "official_redirect_and_upload": "passed",
+    "image_display": "not_separately_confirmed",
+    "double_tap_image_address": "pending",
+    "swipe_roundtrip": "pending",
+    "key3_triple_disabled": "pending",
+    "stock_sleep_wake_custom": "pending",
+    "mi_home_online_control": "not_separately_confirmed",
+    "ui_binary_identical_to_previous_d": true,
+    "report": {
+      "date": "2026-10-07",
+      "source": "user",
+      "statement": "可以，上传正常",
+      "question": "请访问面板显示的 IP:18086：是否跳到 wan.sh、自动填入地址，并能发送默认 GitHub 图片？若浏览器询问本地网络访问，请允许。也请确认面板显示及米家在线控制是否正常；无需断电。",
+      "scope": [
+        "official_redirect_and_upload"
+      ],
+      "other_observations": "Bundled reply does not separately confirm every UI or Mi Home condition"
+    }
+  },
+  "cold_power_cycle": "skipped_by_explicit_user_request",
+  "restore": {
+    "command": "node build/releases/maintained-http-four-page-20261007-g/snapshot/firmware/tools/hardware.ts restore maintained-http-four-page-20261007-g",
+    "exact_target": "native-image-drawer three pages plus stock 0x92d000",
+    "hardware_restore_this_release": "not_tested",
+    "old_writer_directly_against_maintained": "prohibited"
+  },
+  "limitations": [
+    "Images remain RAM-only; upload compression is not implemented.",
+    "Only this exact reviewed panel image/private material set is supported; no public stock-to-maintained installer.",
+    "Native RPC latency, unknown indirect callers, future factory OTA and cold power recovery remain outside proof.",
+    "Historic records/freezes remain unchanged; current HTTPS upload is a user observation plus runtime, not an automated network capture."
+  ],
+  "evidence_sha256": {
+    "restore_result": "ff718877ce628244c8b68bf059f3d7dd44ace83ef5242bed5d37df57af15deab",
+    "restore_outer": "599f3ef39fe5854c87d71bb93ec0cfb7a2511ab1147ac3394636eb8e91e5cc0c",
+    "install_result": "6be6e7b5e4a06a1434a1cb6f9a40419893a15a0aa5bf87823ff3b06d68a3a84f",
+    "install_outer": "87641aad9f4d1913834221c5701ba5cdac67a2f59d977b8122435db59f02bc91",
+    "http_browser_result": "e8621eaf468ac724d6958530a904335d7df9217791462d769c8341df98750f9e",
+    "public_web_result": "a2aff93312cc592f1a2a4b734182836714278b327bf3bdae682d6c8f5a83ff78",
+    "post_upload_context": "46ca4e7b3f617e3d5109e89388d9c2f35929ab1abf4a39bee36e6257ea232f57"
+  }
+}

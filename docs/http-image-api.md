@@ -1,12 +1,11 @@
-# 维护版 HTTP 图片 API
+# 86V1 自定义固件：HTTP 图片 API
 
-适用于 `firmware/` 的维护版。历史 raw TCP/VACK 协议单独保留在
+适用于 `firmware/` 的 86V1 自定义固件。历史 raw TCP/VACK 协议单独保留在
 [原型协议](image-upload-protocol.md)，维护版不接受旧 raw TCP 上传。
 
-当前已安装的 `maintained-http-four-page-20261007-d` 取消了 Content-Type 限制，并配置
-`GET /` 跳转到电脑的临时局域网开发页面。页面服务固定在 5173，需要电脑和开发服务保持
-可访问；真实地址仅保存在私有构建配置中。安装及真实浏览器验证见
-[当前发布结果](../firmware/releases/maintained-http-20261007-d.json)。
+维护版不要求 Content-Type。默认前端为
+`https://wan.sh/xiaomi-86v1/`，`GET /` 通过 303 跳转并携带设备地址查询参数。
+安装及实际验证范围见 [当前发布结果](../firmware/releases/maintained-http-20261007-g.json)。
 
 监听局域网 TCP18086。双击自定义画面可显示地址；地址按名义 1 秒查询 IPv4，查询失败
 显示 0 地址，更新时仅改变地址展示状态。原生 RPC 没有证明严格墙钟上限。
@@ -18,8 +17,11 @@
 | `POST /api/image` | 完整接收、校验并排队供 GUI 消费后 `202` |
 
 响应使用 HTTP/1.1、Content-Length 和 Connection:close，一条连接只处理一个请求。
-`303` 的 fragment 为 `#device=http%3A%2F%2FIP%3A18086`；前端须从 fragment 解码
-设备地址，Cloudflare 服务端无法直接访问用户的局域网设备。
+`303` 的 Location 示例为
+`https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2F203.0.113.20%3A18086`。
+前端从 `device` 查询参数读取设备地址；已有查询参数时用 `&device=` 追加。
+该参数名由设备提供，构建配置不能预置 `device`。Cloudflare 托管静态页面，
+浏览器直接向局域网设备上传图片。
 
 ## 图片 body
 
@@ -62,6 +64,7 @@ GUI/publisher 锁；这些应用检查不约束底层 native RPC 的最长延迟
 不保证错误 response 送达；客户端未收到成功时应报告结果不确定。
 
 API 提供 Access-Control-Allow-Origin、POST 及 Content-Type 的预检响应。浏览器前端须和
-设备在同一局域网，HTTPS 页面到私网 HTTP 的浏览器权限及 mixed-content 条件需要单独
-验证；CORS 成功不代表整个浏览器链路已验证。当前 API 没有 sender 认证，FNV 只检查
+设备在可互访的局域网；g 的正式 HTTPS 页面上传已由用户确认，并观察到 GUI 消费新图。
+自动化只验证了跳转与地址填入，浏览器本地网络权限仍需用户允许；不代表所有浏览器均兼容。
+CORS 成功不代表整个浏览器链路已验证。当前 API 没有 sender 认证，FNV 只检查
 传输内容错误；部署前端时应明确局域网访问语义。

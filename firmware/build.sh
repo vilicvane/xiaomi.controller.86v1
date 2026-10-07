@@ -6,12 +6,14 @@ out=build/panel
 mkdir -p "$out"
 node --input-type=module - "$out/config.h" <<'JS'
 import { writeFileSync } from 'node:fs';
-let url = process.env.PANEL_FRONTEND_URL ?? '';
+let url = process.env.PANEL_FRONTEND_URL ?? 'https://wan.sh/xiaomi-86v1/';
 const origin = process.env.PANEL_FRONTEND_ORIGIN ?? '*';
 if (url) {
   const parsed = new URL(url);
   if (!['http:', 'https:'].includes(parsed.protocol) || parsed.hash || parsed.username || parsed.password)
     throw new Error('Frontend URL must use HTTP(S), without credentials or a fragment');
+  if (parsed.searchParams.has('device'))
+    throw new Error('The device query parameter is supplied by the panel');
   url = parsed.href;
 }
 if (/[\x00-\x20\x7f]/.test(origin) || /[\x00-\x1f\x7f]/.test(url))

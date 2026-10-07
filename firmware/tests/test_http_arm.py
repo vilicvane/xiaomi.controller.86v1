@@ -89,11 +89,16 @@ class Machine(previous.Machine):
                 position += 1
                 continue
             kind = pattern[position + 1]
-            assert kind in '%us', pattern
+            assert kind in '%usc', pattern
             if kind == '%':
                 output += '%'
             else:
-                output += str(args[arg]) if kind == 'u' else self.string(args[arg])
+                if kind == 'u':
+                    output += str(args[arg])
+                elif kind == 'c':
+                    output += chr(args[arg] & 0xff)
+                else:
+                    output += self.string(args[arg])
                 arg += 1
             position += 2
         self.format_calls.append((pattern, size, tuple(args[:arg])))
@@ -278,12 +283,13 @@ def response_checks():
     assert m.allocation_sizes == [2048]
     assert m.f('ipv4') == 0x070200c0 and m.f('server_error') == 0
     if FRONTEND:
-        assert fields['Location'] == FRONTEND + '#device=http%3A%2F%2F192.0.2.7%3A18086'
+        separator = '&' if '?' in FRONTEND else '?'
+        assert fields['Location'] == FRONTEND + separator + 'device=http%3A%2F%2F192.0.2.7%3A18086'
         assert not body
     else:
         assert b'Frontend URL is not configured.' in body and b'POST /api/image' in body
         assert 'Location' not in fields
-    checks.append('GET uses build-configured redirect with percent-encoded endpoint fragment or explicit unconfigured200; exact response length/close/no-store/CORS and2048B heap verified')
+    checks.append('GET uses build-configured redirect with percent-encoded endpoint query or explicit unconfigured200; exact response length/close/no-store/CORS and2048B heap verified')
     m = Machine().ready()
     m.transact([request('OPTIONS', '/api/image', ('Origin: https://frontend.invalid', 'Access-Control-Request-Method: POST'))])
     m.response(204)

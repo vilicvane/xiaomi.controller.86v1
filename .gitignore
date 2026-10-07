@@ -18,6 +18,7 @@
 !/firmware/tests/ui-offline-result.json
 !/firmware/tests/http-arm-offline-result.json
 !/firmware/releases/maintained-http-20261007.json
+!/firmware/releases/maintained-http-20261007-d.json
 !/web/package.json
 !/web/package-lock.json
 !/web/tsconfig.json

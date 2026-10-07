@@ -1,4 +1,4 @@
-# 小米智能家庭面板自定义锁屏
+# 小米智能家庭面板
 
 页面源码在 [web](../web/README.md)，使用 Vite 和 TypeScript 构建为静态文件。
 目标画面固定为 480×320、横向 3:2；裁切、缩放和 RGB565 转换都在用户的浏览器执行。
@@ -16,8 +16,9 @@ API 指南保持展开可见，按 METHOD、URL、PAYLOAD 呈现请求方法、�
 body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 文件。完整二进制定义
 仍由 [HTTP 图片 API](http-image-api.md)维护。
 
-操作图标使用按需导入的 `lucide@1.52.0`，favicon 也由库内图标生成；GitHub 品牌 SVG
-保留。网页 GitHub 链接不再带星号，默认 GitHub 图片内的金色星标提示保持不变。
+操作图标使用按需导入的 `lucide@1.52.0`，GitHub 品牌 SVG 保留。favicon 按实物描绘
+黑色玻璃、横向屏幕及底部白色三连键，浏览器直接使用第一方 SVG，并检查 16/32 像素下的渲染。
+网页 GitHub 链接不带星号，默认 GitHub 图片内的金色星标提示保持不变。
 
 ## 使用路径
 
@@ -27,8 +28,9 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 
 4. 将处理后的画面发送到面板，或下载 480×320 PNG 和完整 `.vimg` Payload 到本地。
 
 编辑区支持键盘方向键移动、`+`/`-` 缩放和 `0` 重置。导出的画面与当前裁切构图一致。
-页面的 canvas 采用 `pixelated` 展示；当源像素被放大时关闭绘制插值，避免把像素边缘
-抹平。较大的照片缩小时保留高质量过滤。页面没有缩放或重置栏，直接使用手势和键盘。
+源图按当前构图经过高质量重采样生成 480×320 成品，放大、缩小及非整数移动都使用
+插值。预览 canvas 继续采用 `pixelated` 展示这些成品像素，模拟面板的像素数量。
+页面没有缩放或重置栏，直接使用手势和键盘。
 
 预览画布为 544×384，中央裁切区域为 480×320，四边各留 32 像素。整图延伸到框外，
 框外覆盖 55% 黑色遮罩，便于调整构图。中央区域从导出/发送使用的 480×320 画布以
@@ -57,19 +59,21 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 
 将面板地址和文件名替换后可直接调用：
 
 ```sh
-curl -X POST "http://PANEL_IPV4:18086/api/image" -H "Content-Type: application/octet-stream" --data-binary "@picture-480x320.vimg"
+curl -X POST "http://PANEL_IPV4:18086/api/image" --data-binary "@picture-480x320.vimg"
 ```
 
 保留 `@` 前缀，它表示读取本地文件内容；只替换后面的文件名或路径。
-Content-Type header 用于当前已安装的严格版本；维护源码已取消类型限制，下一独立
-发布安装后可省略它。
+不需要 Content-Type；cURL 会自动计算并发送 Content-Length。
 
 `202` 仅确认完整图像已接受并排队供 GUI 消费，不证明 LCD 扫描已经完成；图片仅存于
 RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，结果可能不确定，不能报告成功。
 页面不会自动重复发送来掩盖失败。
 
-已安装 `maintained-http-four-page-20261007-c` 可直接接受该 HTTP API，无需新刷写。
-它的前端 URL 仍为空，访问设备根地址目前返回说明页。未来实际域名确定后，可以用
+已安装 `maintained-http-four-page-20261007-d` 接受不指定 Content-Type 的该 HTTP API。
+访问设备根地址会真实 303 到临时电脑 LAN 开发页 `http://PC_LAN_IPV4:5173/`，设备地址
+通过 fragment 自动填入。Windows Chrome 跟随及网页上传已验证，用户也确认手机访问
+面板地址能打开前端、默认 GitHub 图显示正常；手机上传尚未测试。
+电脑须保持构建时配置的局域网地址并运行开发服务器。未来实际域名确定后，可以用
 `PANEL_FRONTEND_URL` 和 `PANEL_FRONTEND_ORIGIN` 构建新的、独立冻结的维护 release，
 使设备根地址跳转到该页面；不能修改已冻结 release 的输入。
 
@@ -79,7 +83,7 @@ RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，�
 
 ```powershell
 npm --prefix web install
-npm --prefix web run dev
+npm --prefix web run dev -- --host 0.0.0.0 --port 5173 --strictPort
 npm --prefix web run test
 npm --prefix web run build
 ```
@@ -88,6 +92,8 @@ npm --prefix web run build
 `build` 先做 TypeScript 检查，再生成 Vite 静态产物；`test` 使用 Node 的 TypeScript 测试。
 `web/dist` 为静态输出；`web/node_modules` 与构建产物不入库。
 API 文档无需连接设备即可阅读，上传需要使用当前非零设备地址。
+`0.0.0.0` 使开发服务器能从局域网访问；固定 5173 并用 `--strictPort` 避免占用时自动
+更换端口。真实电脑/面板地址不提交到 Git，当前临时入口尚不是 Cloudflare 部署。
 
 ## Cloudflare Pages
 
@@ -146,5 +152,19 @@ HTTP 请求与该完整 Payload 逐字节相同。
 无页面错误。记录见 `payload_margin_revision`。本轮使用模拟 HTTP 和拦截 Blob/下载
 属性，没有真实设备上传或 `.vimg` 的普通浏览器落盘验证，不借用此前 raw 下载结论。
 
-设备双击地址和原系统息屏唤醒已由用户在 2026-10-07 确认正常；其他交互仍按当前
-发布结果独立记录，没有进行或要求完整断电测试。
+当前 d 的真实 303 Location 与编译配置/设备 fragment 一致；Chrome 跟随后自动填入地址，
+无 Content-Type 的完整网页 POST 和未指定 `-H` 的 Windows cURL 完整 VIMG POST 均返回
+202，网页按钮显示成功且无页面错误。错误 FNV/422、任意 type 的错误 VIMG/400 后仍能
+GET/303，两个有效上传被 GUI 消费；generation/displayed_generation=2、pending=0、server=1。
+这次真实设备链路见 [d 发布结果](../firmware/releases/maintained-http-20261007-d.json)，与上述
+模拟 HTTP、拦截导出和历史 raw 下载结果分开记录，云 HTTPS 与 `.vimg` 普通浏览器落盘仍未测。
+
+用户已独立确认 d 的默认卡片显示和手机 LAN 跳转打开页面，仅这两项通过。此前 c 的
+双击/息屏用户确认保留在 [旧 c 结果](../firmware/releases/maintained-http-20261007.json)，d 的
+双击、手势、三击取消、息屏和米家仍待验收；没有进行或要求完整断电测试。
+
+随后调整源图采样：480×320 硬边图放大到 110% 后，边缘出现正常的过渡色；默认
+GitHub 图在 1:1 下仍与源像素一致。Windows Chrome 的 16 组缩放/移动检查确认中央
+裁切与内存 PNG 逐像素一致，模拟 POST 的 307216B body 通过独立 RGB565/FNV 核对。
+框外遮罩和 360/390px 布局通过，CSS `pixelated` 继续模拟成品像素。这些是本地画布、
+内存 PNG 和模拟请求检查，没有新增设备上传或浏览器下载结论。

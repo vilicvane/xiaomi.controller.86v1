@@ -1,10 +1,11 @@
 # 研究及历史版本索引
 
 本页把保存的研究证据按问题和版本连接起来。当前已安装维护版为
-**maintained-http-four-page-20261007-c**，四页和基础 HTTP 已检查，用户验收另行记录；
+**maintained-http-four-page-20261007-d**，四页、真实 303、网页/cURL 上传已检查；默认图和
+手机 LAN 跳转用户通过，其他用户验收另行记录；
 每个历史 result 的 `installed` 表示当轮曾安装，不表示现在仍运行那个版本。
 当前验证见 [架构](architecture.md)，操作入口见 [开发流程](development.md)。
-维护版安装与协议结果见 [当前发布结果](../firmware/releases/maintained-http-20261007.json)。
+维护版安装与协议结果见 [当前发布结果](../firmware/releases/maintained-http-20261007-d.json)。
 
 ## 早期问题与已得到的结论
 
@@ -42,7 +43,8 @@
 | [GitHub tap v1](../analysis/display-takeover/native-github-tap.md) | 主 3392B + aux 291B | 松手累加及自动恢复；用户报告间歇慢/漏点，原因未证实 | 用户跳过 |
 | [GitHub tap-fast](../analysis/display-takeover/native-github-tap-fast.md) | 主 3336B + aux 431B | PAN 后计时与局部软件绘图；用户决定 Demo 不再改，不能说实际卡顿已解决 | 用户跳过 |
 | [image drawer](../analysis/image-push/native-image-drawer.md) | 主 3416B + aux 424B | 旧三页 TCP 原型，接图/IP显示；两图、手势及米家控制通过，图片 RAM-only | 用户跳过 |
-| [maintained HTTP](../firmware/README.md) | 主 2946B + aux 236B + net 3004B | 独立四页发布，HTTP/双击/息屏观察；四页、暖启动和基础 HTTP 通过，用户界面及米家待验收 | 用户跳过 |
+| [maintained HTTP c](../firmware/releases/maintained-http-20261007.json) | 主 2946B + aux 236B + net 3004B | 独立四页 HTTP；双击/息屏用户通过，本轮迁移的 c 精确恢复另记在 d 结果 | 用户跳过 |
+| [maintained HTTP d](../firmware/releases/maintained-http-20261007-d.json) | 主 2946B + aux 236B + net 2948B | 配置 LAN 前端 303、忽略 Content-Type；真实网页/cURL 上传、默认图/手机跳转通过，其余交互和米家待验收 | 用户跳过 |
 
 tap-fast 减少软件画布写量 93.45%，原 PAN 仍整帧处理，触摸 ring 仍为 8 个样本。
 离线故意丢 UP 可复现合并点击/移动等行为，但实际间歇问题没有证据归因为 ring 溢出；
@@ -76,19 +78,24 @@ ease 旧动画首帧跳跃的只读采样中，第一次计算的 shown 从 233/
 第一方维护源码、模型和发布工具位于 [firmware](../firmware/README.md)，网络格式见
 [HTTP 图片 API](http-image-api.md)，独立快照与五类证据绑定见
 [离线发布流程](../firmware/tools/README.md)。current release 为
-`maintained-http-four-page-20261007-c`：candidate SHA
-`e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f`，380 项 freeze SHA
-`48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14`。
+`maintained-http-four-page-20261007-d`：candidate SHA
+`aba4a3e5021af175a3d6cd9dc90eac4559154d34711b647bbc8a48043ce5d9fe`，380 项 freeze SHA
+`3af60edcb71636fbe227237f7c7f8b23d4135571b2e45651583665d4466a2632`。
 
-12 项 release 测试、93 项独立四页 writer mock、24 组实际 ARM UI 模型和默认/配置 URL
-各 21 组实际 ARM HTTP 模型通过。四页完整读回、native/cache/context 闭包和暖启动，
-GET/200、OPTIONS/204、错误 body POST/400、完整测试图 POST/202、错误校验和 POST/422
-已实机检查，拒绝保留既有图片状态。用户界面、
-双击、三击取消、息屏唤醒及米家验收单列，不能从这些协议结果推断已经通过。
+12 项 release 测试、93 项独立四页 writer mock、261 项 host parser、24 组实际 ARM UI
+和 23 组已配置 URL 的实际 ARM HTTP 模型通过。先用 c 自己的冻结执行器恢复 exact
+image drawer 三页加 stock 网络页，再安装 d；两阶段四页/native 闭包和暖启动读回通过。
+d 的 GET/303 Location、Chrome 自动填写地址、无 Content-Type 的网页 POST/202、
+cURL 无 `-H` POST/202、无 type 坏 FNV/422、任意 type 坏 VIMG/400 已实测。
+两次完整图片被 GUI 消费，generation/displayed_generation=2、pending=0、server=1；
+用户另行确认默认卡片可见和手机 LAN 跳转打开网页。双击、手势、三击取消、息屏及米家
+仍待用户验收；c 的双击/息屏确认不作为 d 的结论，d 硬件恢复也未执行。
 
 完整原厂备份、四页字节、工具链、compiler headers、BIN/ELF、生成数组与整个 release
-只在 ignored 私有目录保存，公共材料仅保存必要的语义结果和 hash。默认 URL 留空，
-没有前端部署或 HTTPS 浏览器到 LAN 的验证结果。具体恢复命令见 [开发流程](development.md)。
+只在 ignored 私有目录保存，公共材料仅保存必要的语义结果和 hash。当前 URL 指向临时
+`http://PC_LAN_IPV4:5173/`，电脑/开发服务器是依赖；真实地址不入库。没有 Cloudflare
+部署、手机上传或 HTTPS 到 LAN 的验证结果。具体恢复命令见 [开发流程](development.md)。
+旧 c 的 [结果](../firmware/releases/maintained-http-20261007.json)和全部冻结输入原样保留。
 
 ## NOR 执行器研究
 

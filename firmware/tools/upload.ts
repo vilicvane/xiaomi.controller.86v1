@@ -34,7 +34,7 @@ async function main() {
     throw new Error('Usage: node firmware/tools/upload.ts PANEL_IPV4 picture.rgb565|--pattern');
   const pixels = input === '--pattern' ? testPattern() : readFileSync(input);
   const response = await fetch(`http://${address}:18086/api/image`, {
-    method: 'POST', headers: { 'Content-Type': 'application/octet-stream' },
+    method: 'POST',
     body: imageBody(pixels), signal: AbortSignal.timeout(60000),
   });
   if (response.status !== 202) throw new Error(`Panel rejected upload: HTTP ${response.status}`);

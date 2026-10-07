@@ -4,6 +4,10 @@
 这是和原厂系统一起运行的持久化补丁程序；复用原来的 Wi-Fi、米家、GUI 调度及显示驱动。
 源码与历史 `analysis/` 实验分开维护，历史三击逻辑和冻结材料不删除、不重新生成。
 
+当前安装 `maintained-http-four-page-20261007-d`，主/辅助/网络为 2946/236/2948B，
+四页读回、native 闭包、暖启动、真实 303 和网页/cURL 上传通过。
+[发布结果](releases/maintained-http-20261007-d.json)分列默认图/手机跳转用户确认与其余待验收项。
+
 ## 交互
 
 - 原界面顶边下拉打开自定义画面，自定义画面上滑返回原界面。
@@ -42,7 +46,15 @@ ARM 模型执行真实 ELF 指令，原生接口仍由 mock 提供；不证明�
 并发或断电恢复。它们不调用历史结果写入器；HTTP 模型用 `PANEL_TEST_OUTPUT` 将新结果
 写到独立路径，避免覆盖已冻结发布所绑定的结果。
 
-默认 `GET /` 返回本机说明页。未来前端有实际网址后，在 WSL 构建时配置：
+没有配置前端 URL 的构建在 `GET /` 返回本机说明页。当前 d 已配置临时电脑 LAN
+页面 `http://PC_LAN_IPV4:5173/`，真实 303 和 Chrome 跟随已验证；地址只在私有构建
+材料中保存。启动该页面：
+
+```powershell
+npm --prefix web run dev -- --host 0.0.0.0 --port 5173 --strictPort
+```
+
+电脑须保持该局域网地址并运行开发服务器。未来前端有实际网址后，在 WSL 构建时配置：
 
 ```sh
 PANEL_FRONTEND_URL=https://YOUR_FRONTEND_DOMAIN/panel \
@@ -53,9 +65,8 @@ URL 不能含凭据或 fragment；根页面跳转时把设备 endpoint 放在 fr
 未配置的 origin 默认为 `*`。设备不内置 PNG/JPEG 解码，前端或上传器提供 RGB565。
 协议见 [HTTP 图片 API](../docs/http-image-api.md)。
 
-维护源码已允许省略或任意声明 Content-Type，仍校验固定长度、VIMG 头和 FNV。
-当前已安装的 `maintained-http-four-page-20261007-c` 保持原来的严格要求；网页与上传器
-继续声明 `application/octet-stream`，放宽需要新的独立发布安装后生效。
+当前已安装 d 允许省略或任意声明 Content-Type，仍校验固定长度、VIMG 头和 FNV。
+网页不添加该 header，cURL 不指定 `-H` 的完整 VIMG 上传已实测 202；云 HTTPS 尚未验证。
 
 ## 安装与维护
 
@@ -77,3 +88,6 @@ node firmware/tools/hardware.ts restore RELEASE
 install/restore 都会中断服务并暖重启；精确范围及诊断命令损失见
 [1.50.10 端口](ports/1.50.10/README.md)。恢复目标为 exact image drawer 加 stock network 页，
 再使用历史 image drawer 回退器。不能直接对维护版使用旧三页 writer。
+
+本轮先用 c 的冻结执行器完整恢复精确基线，再安装 d；c 恢复已实测闭合，d 的硬件
+恢复尚未执行。d 的 UI BIN 与 c 相同，但不继承 c 的双击、息屏或米家用户观察。

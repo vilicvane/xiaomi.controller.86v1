@@ -356,12 +356,6 @@ canvas.active + .crop-frame .crop-guides {
 .tiny-panel svg {
   width: 19px;
 }
-.section-description {
-  color: #929cac;
-  font-size: 11px;
-  margin: 0 0 28px;
-  line-height: 1.8;
-}
 .field-label {
   display: block;
   font-size: 12px;
@@ -589,7 +583,6 @@ footer svg {
   }
 }
 
-.section-description,
 .field-help,
 .local-note,
 .export-card p {
@@ -683,10 +676,6 @@ footer svg {
   }
   .connection {
     padding: 21px;
-  }
-  .section-description {
-    margin-bottom: 21px;
-    font-size: 11px;
   }
   .device-field input {
     font-size: 13px;

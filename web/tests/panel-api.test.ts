@@ -128,7 +128,7 @@ test("FNV known vectors and full body independently match the existing firmware 
   assert.throws(() => imageBody(pixels.subarray(2)), /307200/);
 });
 
-test("upload issues one fixed binary POST and only 202 reports RAM acceptance", async (context) => {
+test("upload POST omits Content-Type, preserves the binary body and only 202 reports RAM acceptance", async (context) => {
   const body = imageBody(new Uint8Array(PIXEL_BYTES));
   context.mock.method(AbortSignal, "timeout", (milliseconds: number) => {
     assert.equal(milliseconds, 60_000);
@@ -140,9 +140,10 @@ test("upload issues one fixed binary POST and only 202 reports RAM acceptance", 
     calls++;
     assert.equal(url, "http://192.0.2.20:18086/api/image");
     assert.equal(init?.method, "POST");
-    assert.deepEqual(init?.headers, {
-      "Content-Type": "application/octet-stream",
-    });
+    assert.equal(init?.headers, undefined);
+    const request = new Request(url, init);
+    assert.equal(request.headers.has("Content-Type"), false);
+    assert.deepEqual(new Uint8Array(await request.arrayBuffer()), body);
     assert.equal(init?.credentials, "omit");
     assert.equal(init?.cache, "no-store");
     assert.ok(init?.signal instanceof AbortSignal);

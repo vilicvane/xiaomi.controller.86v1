@@ -16,7 +16,31 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is maintained-http-four-page-20261007-c, specific to this exact 1.50.10 image.
+- Current installed UI is maintained-http-four-page-20261007-d, specific to this exact 1.50.10 image.
+  Candidate SHA aba4a3e5021af175a3d6cd9dc90eac4559154d34711b647bbc8a48043ce5d9fe;
+  380-input freeze SHA 3af60edcb71636fbe227237f7c7f8b23d4135571b2e45651583665d4466a2632.
+  Main/aux/net BIN sizes are 2946/236/2948 B, ending at 0x3804bc8a/0x3807a850/0x3804db84.
+  Main/aux are exact previous-c bytes; context/containers/ownership and four-page ordering unchanged.
+  Content-Type is ignored; fixed Content-Length, VIMG and FNV remain required.
+  GET root returns 303 to the temporary computer LAN development page on 5173 with device fragment.
+  Actual URL is private in the frozen config; keep local addresses outside Git. Development server must
+  remain available on that address/port. CORS stays wildcard for LAN and loopback development origins.
+  Fresh 24 UI + 23 configured HTTP actual ARM groups, 93 writer mocks, 261 host HTTP checks and 12 release tests passed.
+  The old c frozen restore first returned exact image drawer three pages plus stock net, with four-page/native
+  closure and warm readback. Then d installed using its own frozen executor; complete four-page/native
+  closure, GLOBAL and fresh warm readback passed. Do not install a new release directly over d.
+  Windows Chrome followed actual 303, populated endpoint and uploaded default GitHub VIMG without Content-Type:
+  HTTP 202, 307216B, FNV/button success; actual curl without -H returned 202. Bad FNV 422 and bad magic 400 passed.
+  Fresh runtime generation/displayed_generation=2, pending0, server1 and active GUI; no LCD scanout claim.
+  Public semantic result is firmware/releases/maintained-http-20261007-d.json.
+  Current d user confirmed default GitHub image display and external phone-to-development-server redirect.
+  Gesture/doubletap/sleep-wake/MiHome observations remain pending; old c observations are historical,
+  even with identical UI BINs.
+  Cloud HTTPS browser-to-LAN remains unverified. Cold power-cycle is explicitly user-skipped, do not ask again.
+  Use d's frozen snapshot/firmware/tools/hardware.ts and adjacent verifier. Restore d to exact image drawer
+  plus stock net before any historical writer. d's own hardware restore is not tested; c's successful restore
+  is separately recorded in d upgrade evidence. NEEDS_INSPECTION still means preserve the stopped state.
+- Previous maintained UI was maintained-http-four-page-20261007-c, specific to this exact 1.50.10 image.
   Candidate SHA e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f;
   380-input freeze SHA 48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14.
   Main/aux/net BIN sizes are 2946/236/3004 B, ending at 0x3804bc8a/0x3807a850/0x3804dbbc.
@@ -44,7 +68,8 @@
   Use this release's frozen snapshot/firmware/tools/hardware.ts and adjacent verifier.
   Install net→aux→code→entry; restore entry→code→aux→net, all A7/WF/BT held reset until closed.
   Restore exact image drawer three pages plus stock network page BEFORE using historical writers.
-  This release's hardware restore is not yet tested. NEEDS_INSPECTION means preserve stopped state;
+  This release's hardware restore later passed during the d upgrade; its original result remains unchanged.
+  NEEDS_INSPECTION means preserve stopped state;
   never automatically retry, clear its marker, or replay a native call. Offline freeze/mock is not hardware permission.
   Cold power-cycle remains explicitly user-skipped; do not ask again or borrow historical results.
   Canonical firmware/ source may evolve, but snapshots and all historical inputs remain immutable.

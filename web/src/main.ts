@@ -46,12 +46,6 @@ const icon = (name: keyof typeof icons) =>
     "aria-hidden": "true",
     class: "lucide",
   }).outerHTML;
-const favicon = document.createElement("link");
-favicon.rel = "icon";
-favicon.href =
-  "data:image/svg+xml," +
-  encodeURIComponent(createElement(ImageIcon, { stroke: "#303b4b" }).outerHTML);
-document.head.append(favicon);
 const github =
   '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.77-.24.77-.54v-2.1c-3.12.68-3.78-1.32-3.78-1.32-.51-1.3-1.24-1.65-1.24-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.62 1.22 3.26.93.1-.73.39-1.22.71-1.5-2.49-.28-5.1-1.24-5.1-5.54 0-1.23.44-2.23 1.16-3.01-.12-.28-.5-1.42.11-2.96 0 0 .95-.3 3.08 1.15a10.7 10.7 0 0 1 5.6 0c2.14-1.45 3.08-1.15 3.08-1.15.61 1.54.23 2.68.11 2.96.73.78 1.16 1.78 1.16 3.01 0 4.32-2.61 5.26-5.11 5.54.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8Z"/></svg>';
 const PREVIEW_MARGIN = 32;
@@ -62,7 +56,7 @@ const STAGE = {
 
 document.querySelector("#app")!.innerHTML = `
   <header class="site-header">
-    <a class="brand" href="./"><span class="brand-mark">${icon("panel")}</span><h1>小米智能家庭面板自定义锁屏</h1><span class="beta">86v1</span></a>
+    <a class="brand" href="./"><span class="brand-mark">${icon("panel")}</span><h1>小米智能家庭面板</h1><span class="beta">86v1</span></a>
     <nav aria-label="主导航"><a href="#api" class="nav-link">${icon("code")}API 指南</a><a class="github-link" href="https://github.com/vilicvane/xiaomi.controller.86v1" target="_blank" rel="noopener noreferrer">${github}<span>GitHub</span></a></nav>
   </header>
   <main>
@@ -74,7 +68,7 @@ document.querySelector("#app")!.innerHTML = `
         <p id="image-error" class="inline-error" role="alert" hidden></p>
       </section>
       <aside class="sidebar">
-        <section class="connection card" aria-labelledby="send-title"><div class="card-heading"><div><span class="step">02</span><h2 id="send-title">发送到面板</h2></div><span class="tiny-panel">${icon("panel")}</span></div><p class="section-description">预览中的画面将用作面板的自定义锁屏。</p>
+        <section class="connection card" aria-labelledby="send-title"><div class="card-heading"><div><span class="step">02</span><h2 id="send-title">发送到面板</h2></div><span class="tiny-panel">${icon("panel")}</span></div>
           <form id="send-form"><label class="field-label" for="device">面板地址</label><div class="device-field">${icon("wifi")}<input id="device" type="text" placeholder="输入 IP 地址或 IP:端口" inputmode="url" autocomplete="off" spellcheck="false" aria-describedby="device-help" required/></div><p class="field-help" id="device-help">双击面板画面查看地址，默认端口 18086。</p><button id="send" class="button primary" type="submit" data-state="idle" aria-live="polite"><span id="send-icon">${icon("upload")}</span><span id="send-label">发送画面</span>${icon("arrow")}</button><p id="send-feedback" class="send-feedback" role="status" aria-live="polite" hidden></p></form>
           <p class="local-note">电脑或手机需与面板在同一局域网。<br>如浏览器询问本地网络访问，请选择允许。</p>
         </section>
@@ -82,7 +76,7 @@ document.querySelector("#app")!.innerHTML = `
       </aside>
     </div>
     <section class="api card" id="api" aria-labelledby="api-title"><div class="api-heading"><span class="api-icon">${icon("code")}</span><h2 id="api-title">图片上传 API</h2><span class="api-badge">HTTP</span></div>
-      <div class="api-body"><dl class="request-fields"><div><dt>Method</dt><dd><code class="method">POST</code></dd></div><div><dt>URL</dt><dd><code id="api-url">http://PANEL_IPV4:18086/api/image</code></dd></div><div><dt>Content-Type</dt><dd><code>application/octet-stream</code></dd></div><div><dt>Content-Length</dt><dd><code>307216</code> 字节</dd></div><div><dt>Payload</dt><dd>16 字节 VIMG 头 + 307200 字节 RGB565LE 像素</dd></div></dl><div><p>需要先将图片裁切缩放为 <strong>480 × 320</strong>，再编码成 RGB565LE，并添加 VIMG 头和 FNV-1a 校验。网页发送时会完成转换；下载的 VIMG Payload 已包含完整头部，可直接作为请求 body。</p><h3>cURL 示例</h3><pre class="api-example"><code id="api-curl"></code></pre><p>保留文件名前的 <code>@</code>，它表示让 cURL 读取本地文件内容。只将 <code>@</code> 后面的文件名或路径替换为下载的 <code>.vimg</code> 文件。cURL 会自动发送 Content-Length。</p><p><code>202</code> 表示面板已接收并排队显示。图片保存在 RAM，重启后清除。</p><a class="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md" target="_blank" rel="noopener noreferrer">完整协议 ${icon("arrow")}</a></div></div></section>
+      <div class="api-body"><dl class="request-fields"><div><dt>Method</dt><dd><code class="method">POST</code></dd></div><div><dt>URL</dt><dd><code id="api-url">http://PANEL_IPV4:18086/api/image</code></dd></div><div><dt>Content-Length</dt><dd><code>307216</code> 字节</dd></div><div><dt>Payload</dt><dd>16 字节 VIMG 头 + 307200 字节 RGB565LE 像素</dd></div></dl><div><p>需要先将图片裁切缩放为 <strong>480 × 320</strong>，再编码成 RGB565LE，并添加 VIMG 头和 FNV-1a 校验。网页发送时会完成转换；下载的 VIMG Payload 已包含完整头部，可直接作为请求 body。</p><h3>cURL 示例</h3><pre class="api-example"><code id="api-curl"></code></pre><p>保留文件名前的 <code>@</code>，它表示让 cURL 读取本地文件内容。只将 <code>@</code> 后面的文件名或路径替换为下载的 <code>.vimg</code> 文件。cURL 会自动发送 Content-Length。</p><p><code>202</code> 表示面板已接收并排队显示。图片保存在 RAM，重启后清除。</p><a class="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md" target="_blank" rel="noopener noreferrer">完整协议 ${icon("arrow")}</a></div></div></section>
   </main><footer><span><strong>xiaomi.controller.86v1</strong></span><a href="https://github.com/vilicvane/xiaomi.controller.86v1" target="_blank" rel="noopener noreferrer">vilicvane ${icon("arrow")}</a></footer>`;
 
 function element<T extends HTMLElement>(id: string): T {
@@ -100,7 +94,7 @@ const dropZone = element("drop-zone");
 let source: ImageBitmap | HTMLImageElement;
 let size = { width: 480, height: 320 };
 let crop: Crop = { zoom: 1, x: 0, y: 0 };
-let basename = "xiaomi-panel-github-lockscreen";
+let basename = "xiaomi-panel-github";
 let loadGeneration = 0;
 let sending = false;
 let revision = 0;
@@ -112,8 +106,8 @@ function render() {
   const rect = sourceRect(crop, size);
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, FRAME.width, FRAME.height);
-  // Keep enlarged source pixels sharp; downsample larger photos with filtering.
-  ctx.imageSmoothingEnabled = rect.width >= FRAME.width;
+  // Resample the source smoothly into panel pixels, including fractional zoom/pan.
+  ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(
     source,
@@ -138,7 +132,8 @@ function render() {
     size.width * scale,
     size.height * scale,
   );
-  // The clear crop is the same bitmap we export and send; only the outside is dimmed.
+  // Copy the final panel pixels unchanged; CSS enlarges this bitmap as a pixel grid.
+  view.imageSmoothingEnabled = false;
   view.drawImage(imageCanvas, PREVIEW_MARGIN, PREVIEW_MARGIN);
   view.fillStyle = "rgba(0, 0, 0, 0.55)";
   view.fillRect(0, 0, STAGE.width, PREVIEW_MARGIN);
@@ -467,7 +462,7 @@ function updateApiUrl() {
   const url = `${endpoint}/api/image`;
   element("api-url").textContent = url;
   element("api-curl").textContent =
-    `curl -X POST "${url}" -H "Content-Type: application/octet-stream" --data-binary "@xiaomi-panel-github-lockscreen-480x320.vimg"`;
+    `curl -X POST "${url}" --data-binary "@xiaomi-panel-github-480x320.vimg"`;
 }
 endpointInput.addEventListener("input", updateApiUrl);
 updateApiUrl();

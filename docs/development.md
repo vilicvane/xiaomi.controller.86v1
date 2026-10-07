@@ -1,8 +1,9 @@
 # 开发与维护流程
 
-当前维护发布为 `maintained-http-four-page-20261007-c`，只适用于本机精确的 1.50.10 映像。
-离线审查、freeze、四页安装读回、状态闭包、暖启动和基础 HTTP 已通过；用户界面和
-米家验收见 [当前发布结果](../firmware/releases/maintained-http-20261007.json)。硬件工作前先读
+当前维护发布为 `maintained-http-four-page-20261007-d`，只适用于本机精确的 1.50.10 映像。
+离线审查、freeze、四页安装读回、状态闭包、暖启动、真实 303 和无 Content-Type 上传已通过；
+默认图/手机跳转用户通过，其他 d 界面和米家验收仍待记录，见
+[当前发布结果](../firmware/releases/maintained-http-20261007-d.json)。硬件工作前先读
 [工程约束](engineering-notes.md)、[当前架构](architecture.md)及根目录 `AGENTS.md`。
 历史命令原文保留在 [开发记录归档](research/legacy-development-log.md)，不作为当前操作指南。
 
@@ -35,7 +36,7 @@ Git 保存第一方源码、脚本、文档及明确准入的 review/result JSON
 ```powershell
 node firmware/tools/release.ts baseline
 node --test firmware/tools/release.test.ts
-node firmware/tools/release.ts verify maintained-http-four-page-20261007-c
+node firmware/tools/release.ts verify maintained-http-four-page-20261007-d
 ```
 
 这些是离线命令，不连接、halt、reset 或写设备。`release.ts` 没有硬件执行接口；它检查
@@ -45,10 +46,12 @@ node firmware/tools/release.ts verify maintained-http-four-page-20261007-c
 
 已冻结的 C/S/链接脚本、BIN/ELF、prepare 输出及结果保持原字节。后续可以修改 canonical
 `firmware/` 源码并构建另一个唯一 release，不能覆盖旧快照或运行会改写历史 result 的生成器。
-例如维护源码已放宽 Content-Type，但源码修改或离线构建不会改变已安装的严格版本；
-该行为须在下一独立发布安装后生效。
 缺材料先报告，不连接硬件凑结果。当前 [HTTP 图片 API](http-image-api.md) 与
 [历史 TCP 协议](image-upload-protocol.md) 分开记录；图片上传只修改 RAM。
+
+当前 d 已安装忽略 Content-Type 的接收器，仍验证固定长度、VIMG 和 FNV。它编译配置了
+临时 LAN 电脑的 5173 前端 URL，实际地址仅保存在 ignored 材料；后续改目标 URL 要重新
+完成独立构建、审查、冻结和安装，源码变化不会自动改变已安装 release。
 
 ## 开发新的维护版本
 
@@ -86,14 +89,19 @@ node firmware/tools/release.ts verify maintained-http-four-page-20261007-c
 从仓库根目录使用该 release 的冻结执行器：
 
 ```powershell
-node build/releases/maintained-http-four-page-20261007-c/snapshot/firmware/tools/hardware.ts check maintained-http-four-page-20261007-c
-node build/releases/maintained-http-four-page-20261007-c/snapshot/firmware/tools/hardware.ts restore maintained-http-four-page-20261007-c
+node build/releases/maintained-http-four-page-20261007-d/snapshot/firmware/tools/hardware.ts check maintained-http-four-page-20261007-d
+node build/releases/maintained-http-four-page-20261007-d/snapshot/firmware/tools/hardware.ts restore maintained-http-four-page-20261007-d
 ```
 
 `check` 会连接硬件读取当前页面，`restore` 会写设备并暖重启，均由硬件负责人按已授权
 范围执行。恢复返回 **exact image drawer 三页与 stock 网络页**。canonical 工具变化后
 不可代替旧 release 的冻结执行器；`NEEDS_INSPECTION` 表示保留停点，先检查而非自动重试。
-当前 release 的恢复路径已完成离线审查与 mock，尚未在硬件执行。
+当前 d 的恢复路径已完成离线审查与 mock，尚未在硬件执行。
+
+本轮迁移先使用 c 的冻结执行器，完整恢复 exact image drawer 三页和 stock 网络页，
+四页、native 闭包及暖启动读回通过后，才使用 d 的冻结执行器安装。两次顺序暖重启清空
+RAM 图片；没有把 d writer 直接运行在 c 的四页集合上。c 的这次恢复结果记录在
+[d 迁移结果](../firmware/releases/maintained-http-20261007-d.json)中，不覆盖旧 c result。
 
 安装顺序 net→aux→code→entry，恢复顺序 entry→code→aux→net。A7、WF、BT 在写入和
 四页完整验证期间保持 reset；只有完整页面和 native/cache/context 状态闭合才继续。
@@ -104,7 +112,8 @@ node build/releases/maintained-http-four-page-20261007-c/snapshot/firmware/tools
 
 | 已安装版本 | 恢复入口 | 精确目标 |
 | --- | --- | --- |
-| maintained HTTP 四页 | 上述冻结 `hardware.ts restore`，不用旧脚本 | image drawer 三页与 stock 网络页 |
+| maintained HTTP d 四页 | 上述 d 冻结 `hardware.ts restore`，本版硬件恢复未测 | image drawer 三页与 stock 网络页 |
+| historical maintained HTTP c 四页 | c 自己冻结的 `hardware.ts restore`，本次迁移已通过 | image drawer 三页与 stock 网络页 |
 | image drawer | `Set-PanelNativeImageDrawer.ps1` | tap-fast 三页 |
 | tap-fast | `Set-PanelNativeGitHubTapFast.ps1` | tap v1 三页 |
 | tap v1 | `Set-PanelNativeGitHubTap.ps1` | card 两页及 stock aux |

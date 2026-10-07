@@ -105,7 +105,6 @@ const rejectionMessages: Record<number, string> = {
   408: "设备等待请求超时。",
   411: "设备未收到图片长度。",
   413: "图片数据超过设备要求的大小。",
-  415: "设备不接受此图片数据类型。",
   417: "设备不支持此请求方式。",
   422: "图片校验失败，原图片未替换。",
   431: "请求头过大。",
@@ -133,7 +132,6 @@ export async function sendImage(
   try {
     response = await fetcher(`${address}/api/image`, {
       method: "POST",
-      headers: { "Content-Type": "application/octet-stream" },
       body: body.slice().buffer,
       credentials: "omit",
       cache: "no-store",

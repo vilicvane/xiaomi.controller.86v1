@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "release": "maintained-http-four-page-20261007-d",
+  "model": "xiaomi.controller.86v1",
+  "factory_firmware": "1.50.10",
+  "date": "2026-10-07",
+  "candidate_sha256": "aba4a3e5021af175a3d6cd9dc90eac4559154d34711b647bbc8a48043ce5d9fe",
+  "freeze_sha256": "3af60edcb71636fbe227237f7c7f8b23d4135571b2e45651583665d4466a2632",
+  "candidate_inputs": 374,
+  "frozen_inputs": 380,
+  "program": {
+    "mainBytes": 2946,
+    "auxBytes": 236,
+    "netBytes": 2948,
+    "elfSha256": "fd568748807378fcee49822bd0b25a31e116d249fa47c5b2baea90697a1040d4"
+  },
+  "pages": {
+    "code": {
+      "offset": "0x92b000",
+      "before_sha256": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "after_sha256": "278d0bf33bd4ad59ea663f5dbc9b3a6996799decdc713b098c8ac479ea933036"
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "before_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "after_sha256": "5ff194aab4c29f7b38972c4f3f3299339ef2c6c260310d1c9b30a8ed8bb93da9"
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "before_sha256": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+      "after_sha256": "2d5be599eb878ea4bd9424ab71d0e30742a566a870dec13f2eb12731ee458eb3"
+    },
+    "net": {
+      "offset": "0x92d000",
+      "before_sha256": "76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d",
+      "after_sha256": "eebf7b8a4cea94678e21062c5c5283cf8d9b7803b8d2ff70aa56dc82745984d6"
+    }
+  },
+  "baseline": {
+    "name": "native-image-drawer",
+    "freeze_sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "additional_page": "stock 0x92d000"
+  },
+  "upgrade": {
+    "from": "maintained-http-four-page-20261007-c",
+    "previous_release_restore": {
+      "passed": true,
+      "full_four_page_readback": true,
+      "warm_readback": true,
+      "native_app_complete": true,
+      "safe_to_resume": true,
+      "exact_target": "native image drawer three pages plus stock network page"
+    },
+    "install_followed_exact_restore": true,
+    "scope": "Each version used its own frozen executor; two sequential warm reboots, RAM image cleared"
+  },
+  "offline": {
+    "actual_arm_ui_groups": 24,
+    "actual_arm_configured_http_groups": 23,
+    "writer_mocks": 93,
+    "node_release_tests": 12,
+    "host_http_checks": 261,
+    "hardware_proof": false
+  },
+  "frontend": {
+    "configured": true,
+    "target": "temporary LAN Vite development page",
+    "port": 5173,
+    "cors_origin": "*",
+    "actual_address": "Kept only in ignored config/release/captures",
+    "config_header_sha256": "35ca1b29b854d5b1ba5b0b532857311b04846d17fa15d1323e36aedee0ae5784",
+    "temporary_dependency": "Computer must remain on this LAN with the development server running; future hostname requires a new frozen release"
+  },
+  "hardware": {
+    "installed": true,
+    "preflight_exact": true,
+    "full_four_page_readback": true,
+    "post_reboot_exact": true,
+    "native_app_complete": true,
+    "safe_to_resume": true,
+    "warm_global_requested": true,
+    "warm_global_transport_error": 0,
+    "warm_global_dispatch_complete": true,
+    "live_controller_table_verified": true,
+    "primary_controller": "0x40148000",
+    "runtime_before_upload": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 13016,
+      "screen_off": 1,
+      "image_pending": 0,
+      "generation": 0,
+      "displayed_generation": 0,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "ipv4_present": true
+    },
+    "runtime_after_upload": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 35983,
+      "screen_off": 1,
+      "image_pending": 0,
+      "generation": 2,
+      "displayed_generation": 2,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "ipv4_present": true
+    }
+  },
+  "http": {
+    "get_root": 303,
+    "location_matches_build_and_endpoint_fragment": true,
+    "browser_followed_real_redirect": true,
+    "browser_upload_without_content_type": 202,
+    "valid_body_bytes": 307216,
+    "browser_request_vimg_and_fnv": "passed",
+    "browser_button_success": true,
+    "actual_curl_without_type_option": 202,
+    "no_type_bad_fnv": 422,
+    "arbitrary_type_bad_vimg": 400,
+    "root_after_rejections": 303,
+    "page_errors": 0,
+    "gui_generation_consumed": 2,
+    "acceptance_scope": "Two valid default GitHub uploads consumed; rejected FNV/magic did not increment generation. HTTP admission and runtime consumption do not establish LCD scanout.",
+    "browser_https_to_private_http": "not_tested",
+    "external_phone_to_dev_page": "passed_user_report"
+  },
+  "user_observations": {
+    "image_display": "passed",
+    "double_tap_image_address": "pending",
+    "swipe_roundtrip": "pending",
+    "key3_triple_disabled": "pending",
+    "stock_sleep_wake_custom": "pending",
+    "mi_home_online_control": "pending",
+    "ui_binary_identical_to_previous_c": true,
+    "scope": "Previous release user observations are retained in its unchanged record, not claimed as d acceptance",
+    "report": {
+      "date": "2026-10-07",
+      "source": "user",
+      "statement": "可以",
+      "question": "请用手机访问面板显示的 IP:18086，确认能否自动打开上传网页；也看一下面板是否正常显示默认 GitHub 卡片。无需断电。",
+      "scope": ["external_phone_to_dev_page", "image_display"],
+      "other_observations": "Not confirmed by this report"
+    }
+  },
+  "cold_power_cycle": "skipped_by_explicit_user_request",
+  "restore": {
+    "command": "node build/releases/maintained-http-four-page-20261007-d/snapshot/firmware/tools/hardware.ts restore maintained-http-four-page-20261007-d",
+    "exact_target": "native-image-drawer three pages plus stock 0x92d000",
+    "hardware_restore_this_release": "not_tested",
+    "old_writer_directly_against_maintained": "prohibited"
+  },
+  "limitations": [
+    "Images remain RAM-only.",
+    "Native RPC wall time, unknown indirect callers and future OTA remain outside offline proof.",
+    "All old releases/results/freezes preserved; temporary frontend address is private and not a Cloudflare deployment."
+  ],
+  "evidence_sha256": {
+    "restore_result": "cc0bf692b7ece2670e4b0dc09aaf76354de3a4f4685a751244196b898890528c",
+    "restore_outer": "7f09ff0e2d04e607851ce266e04fa90df672733a570b00069f3eb82318273670",
+    "install_result": "ebb0681d7a7c3543155ccbfd0b8b071f7c23056d5c06f84115de051a352bed68",
+    "install_outer": "32eb98031ee05e3d2df55fa88f1729df7647bfa08516b2ee58411a75270667ec",
+    "http_browser_result": "2373da284502992f597c2319b8a3381e6e8acfb5e1455622795dd94d458fc2ee"
+  }
+}

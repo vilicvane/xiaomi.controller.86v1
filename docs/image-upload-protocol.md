@@ -1,8 +1,9 @@
 # 图片上传协议与客户端
 
-范围：已安装 `native-image-drawer`、本机 1.50.10 映像。协议实现在
+范围：历史三页 `native-image-drawer` 原型、本机 1.50.10 映像。其旧协议实现在
 [设备程序](../analysis/image-push/native-image-drawer.c)和
-[上传器](../analysis/image-push/push_panel_image.py)。下一版 HTTP 入口尚未实现。
+[上传器](../analysis/image-push/push_panel_image.py)。维护版已改为
+[HTTP 图片 API](http-image-api.md)，不兼容这里的 raw TCP/VACK；本页保留旧版行为与结果。
 
 ## 上传
 

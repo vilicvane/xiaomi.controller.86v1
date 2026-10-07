@@ -1,0 +1,110 @@
+{
+  "scope": "Maintained UI offline checks for the exact 1.50.10 image; no hardware operation.",
+  "author_review": true,
+  "model_elf": "build/panel/panel.elf",
+  "model": {
+    "passed": true,
+    "hardware_operation": false,
+    "check_count": 24,
+    "checks": [
+      "Both physical orders consume short tap pairs exactly once; triple tap cannot toggle twice and count staysunused",
+      "Long hold, expired pair, distant second contact, drag, virtual input and clock failure never form a doubletap",
+      "Modulo32 monotonic wrap formsvalid pair; owner roundtrip cancels prior waiting tap",
+      "Third physical GPIO triple click no longer changes either owner",
+      "Address view keepsimage generation/activeRGB565 intact; upload acceptsnewslot whilehidden; laterimagePAN advancesdisplayedgeneration and failedPAN retainsdirty",
+      "Address pagecompose clips all321 cover positions exactly and preserves source/snapshot/guard bounds",
+      "Off requests custom without writing screen flag; first wake contact cannot count as a tap but may still dismiss the drawer by upward swipe",
+      "Off reversesclosinganimation fromlast accepted pose and clearspendingtap",
+      "Off cancels awaitingdoubletap evenwhen customalreadyownsdisplay",
+      "Observed off excludes first physical wake contact from double tap through UP, independent of on-poll ordering and UP continue flag; two fresh taps then toggle",
+      "Wakecontact swallowedbyopeninganimation stillclearstapbarrier afterphysicalUP",
+      "Off-on pulse whollybetween GUI polls is explicitlyunobservable; modeldoesnotclaim eventhook or guaranteed wakefirstframe",
+      "Off cannot bypass physical/virtual held contacts, rawpressed or displayqueue; releasingbusycondition permitsnormalhandoff",
+      "Both physicalorders retainbootheldcontact guard withoutinventinginitialtap or topedgecapture",
+      "Unknownpublisher/callback/mmap failsGUIsetup withoutpublishingpartialdisplay or touchhooks",
+      "Virtualalreadyheld blocksnewphysicaltopedgecapture andpreservesstockcontact completeness",
+      "Handoffstilllocksbothpublishers andrefusespendingphysicalorvirtualsubscriber ring beforeownercommit",
+      "Rawpressed, framequeue andactivegesture independentlyprotectfinalhandoff",
+      "PANandUPDATEAREA proxies preserve suppression, stockdelegation andrelocationsource sentinelrejection",
+      "Originalentryruns once; context/frameheap or workercreationfailuresunwindonlyunpublishedownedallocations",
+      "Timerhook CAS neverresurrectsdead/closing/invalidtimer oroverwritesforeigncallback",
+      "Actual RGB565 compose exactly matches independent channel expansion/cropped-image plus stock-background oracle at all321 cover positions",
+      "Default page is solid opaque101010 and does not read uninitialized source pixels",
+      "Private IP glyph ARM kernel clips each output row, preservesr4-r11/SP and8-byte stack alignment; independent all12 glyph pixels matched"
+    ],
+    "elf_sha256": "21da5e0307e457473e0ed4d61db189f16440cc847c3ba4d9f55f9824ad6598aa",
+    "context_bytes": 212,
+    "limitations": "Native locks/RPC/display/backlight/OS scheduling are mocked; no LCD timing, cold boot or live idle guarantee."
+  },
+  "sources": {
+    "firmware/src/ui.c": "43269e3b41270d10f41247aa416cbe5ccd8eae22de549c10959da9497db83184",
+    "firmware/include/panel.h": "09da728e73f1f3992e98e7f2fc791ae8ae597fbcc838bf8e7f4798f7cb13fc39",
+    "firmware/include/tap-gesture.h": "0a486340c2728fda18cc1f3dbf4e4f488f9de19226ed19c2165d136e5da9eeb2",
+    "firmware/include/drawer-gesture.h": "369fb5fba85e26d4c450eb70d0cd75e52c56c6f8fd43b0e0f0b2c18e7a442414",
+    "firmware/tests/test_ui_arm.py": "46a7f8523a1b252b5b84a47719dc4c3671958c8f61d31c894d07c52acd138b7c",
+    "firmware/tests/tap-gesture.c": "cf5d47d4fef1a4f284ce5add59054a58faaac9c335bca6a0dc57a9d72897f661",
+    "firmware/ports/1.50.10/entry.S": "7ff49a4ee51343cf348cfb9085ff5a7b8a801c2f0dac37d846ee61039e43f37e",
+    "firmware/ports/1.50.10/panel.ld": "c2d887a3cdbd713af9f8afa64a708ac9cfcab8143c917bea26a617a4252ff0ab",
+    "firmware/src/http.c": "66598acbf325088d8da875ec705f6ec51a03563f7be074f84e05d64aa5d7867a",
+    "firmware/src/http-parser.c": "1caf6a85984c9c566adc7ab65fbaec60f9afdaeb2d5d5b7e3cbb9f51d29a76e5",
+    "firmware/include/http.h": "17e68109fe5a270250c47a400fd71e0aa216dd74f0088c96f60ad772cb584562",
+    "firmware/build.sh": "0db87a0423c60e4aa6f13ae45dc850a4476465052214880a9c515b2ca331da23",
+    "firmware/tools/build-record.ts": "d41a5123ef80121674f8e70360c11eb2cd8a450735559d27cbd055dacbdd8555",
+    "firmware/ports/1.50.10/README.md": "b7660f52eeab3282a419eba973d81b1a9d03bde9dfe79195aa8a3b4df9ee2c92",
+    "build/panel/config.h": "d202d67e854c86f391dccb82d73b06f370ea902acc2eb745c3929a7f55e62c0c"
+  },
+  "host": {
+    "passed": true,
+    "compiler": "clang-18",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "test": "firmware/tests/tap-gesture.c",
+    "assertions": "Tap hold/gap boundaries, Euclidean distance, consumed pairs, cancellation, monotonic wrap and drawer motion-qualified releases.",
+    "hardware_operation": false
+  },
+  "elf_sections": [
+    {
+      "name": ".prefix",
+      "address": "0x3804b108",
+      "bytes": 428,
+      "end": "0x3804b2b4"
+    },
+    {
+      "name": ".start",
+      "address": "0x3804b2f4",
+      "bytes": 4,
+      "end": "0x3804b2f8"
+    },
+    {
+      "name": ".broker",
+      "address": "0x3804b2f8",
+      "bytes": 2450,
+      "end": "0x3804bc8a"
+    },
+    {
+      "name": ".network",
+      "address": "0x3804d000",
+      "bytes": 3004,
+      "end": "0x3804dbbc"
+    },
+    {
+      "name": ".feedback",
+      "address": "0x3807a764",
+      "bytes": 236,
+      "end": "0x3807a850"
+    }
+  ],
+  "sleep_observability": {
+    "address": "0x384ea638",
+    "original_native_value": "0=screen off after successful brightness zero; 1=screen on after successful brightness restore.",
+    "local_context_state": "screen_off+144: 0=awake, 1=observed off, 2=waiting for the first physical wake contact release, excluded only from double tap.",
+    "wake_contact": "Tap state+142 remembers physical DOWN, including contacts swallowed by animation; corresponding UP clears the tap barrier. The first contact cannot qualify for double tap; drawer swipes remain active and may dismiss the custom page.",
+    "read_order": "The GUI proxy invokes the stock TIMER first, then samples the screen word. A previously observed off state is latched across on/physical-touch ordering.",
+    "limits": "An off-on interval wholly between GUI polls is not observable. GUI callback operation during screen off and real first visible wake frame remain unverified. This is not an original JS lock-screen hook.",
+    "original_backlight_preserved": true
+  },
+  "historical_inputs": "Historical analysis sources, outputs and frozen sets were not modified or regenerated.",
+  "release_boundary": "These checks validate ARM/UI logic only. The added network container requires its separate offline ownership review and installer verification before hardware use."
+}

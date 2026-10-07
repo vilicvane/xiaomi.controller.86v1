@@ -1,8 +1,10 @@
 # 研究及历史版本索引
 
-本页把保存的研究证据按问题和版本连接起来。当前已安装版为 **native-image-drawer**；
+本页把保存的研究证据按问题和版本连接起来。当前已安装维护版为
+**maintained-http-four-page-20261007-c**，四页和基础 HTTP 已检查，用户验收另行记录；
 每个历史 result 的 `installed` 表示当轮曾安装，不表示现在仍运行那个版本。
 当前验证见 [架构](architecture.md)，操作入口见 [开发流程](development.md)。
+维护版安装与协议结果见 [当前发布结果](../firmware/releases/maintained-http-20261007.json)。
 
 ## 早期问题与已得到的结论
 
@@ -39,7 +41,8 @@
 | [GitHub card](../analysis/display-takeover/native-github-card.md) | 3432B | GitHub logo、用户名、项目名及 Star 提示；排版/手势通过 | 用户跳过 |
 | [GitHub tap v1](../analysis/display-takeover/native-github-tap.md) | 主 3392B + aux 291B | 松手累加及自动恢复；用户报告间歇慢/漏点，原因未证实 | 用户跳过 |
 | [GitHub tap-fast](../analysis/display-takeover/native-github-tap-fast.md) | 主 3336B + aux 431B | PAN 后计时与局部软件绘图；用户决定 Demo 不再改，不能说实际卡顿已解决 | 用户跳过 |
-| [image drawer](../analysis/image-push/native-image-drawer.md) | 主 3416B + aux 424B | 当前版，TCP 接图/IP显示；两图、手势及米家控制通过，图片 RAM-only | 用户跳过 |
+| [image drawer](../analysis/image-push/native-image-drawer.md) | 主 3416B + aux 424B | 旧三页 TCP 原型，接图/IP显示；两图、手势及米家控制通过，图片 RAM-only | 用户跳过 |
+| [maintained HTTP](../firmware/README.md) | 主 2946B + aux 236B + net 3004B | 独立四页发布，HTTP/双击/息屏观察；四页、暖启动和基础 HTTP 通过，用户界面及米家待验收 | 用户跳过 |
 
 tap-fast 减少软件画布写量 93.45%，原 PAN 仍整帧处理，触摸 ring 仍为 8 个样本。
 离线故意丢 UP 可复现合并点击/移动等行为，但实际间歇问题没有证据归因为 ring 溢出；
@@ -47,7 +50,8 @@ tap-fast 减少软件画布写量 93.45%，原 PAN 仍整帧处理，触摸 ring
 
 ease 旧动画首帧跳跃的只读采样中，第一次计算的 shown 从 233/220 跳至 114/91，起点
 已过 25/30ms；不能写成已证明整段 120ms 在首帧前耗尽。smooth 修正了时间锚和逻辑
-推进，不改写已经冻结的 ease 证据。所有历史三击逻辑均保留；移除只属于下一维护版。
+推进，不改写已经冻结的 ease 证据。所有历史三击逻辑均保留；只有 `firmware/` 维护版
+移除自有三击入口，原系统按键动作继续由原系统处理。
 
 ### 实机结果与冻结入口
 
@@ -67,6 +71,25 @@ ease 旧动画首帧跳跃的只读采样中，第一次计算的 shown 从 233/
 
 历史三击样本、源码和结论不能因下一版取消入口而删掉；它们也是精确回退的一部分。
 
+### 当前维护版证据
+
+第一方维护源码、模型和发布工具位于 [firmware](../firmware/README.md)，网络格式见
+[HTTP 图片 API](http-image-api.md)，独立快照与五类证据绑定见
+[离线发布流程](../firmware/tools/README.md)。current release 为
+`maintained-http-four-page-20261007-c`：candidate SHA
+`e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f`，380 项 freeze SHA
+`48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14`。
+
+12 项 release 测试、93 项独立四页 writer mock、24 组实际 ARM UI 模型和默认/配置 URL
+各 21 组实际 ARM HTTP 模型通过。四页完整读回、native/cache/context 闭包和暖启动，
+GET/200、OPTIONS/204、错误 body POST/400、完整测试图 POST/202、错误校验和 POST/422
+已实机检查，拒绝保留既有图片状态。用户界面、
+双击、三击取消、息屏唤醒及米家验收单列，不能从这些协议结果推断已经通过。
+
+完整原厂备份、四页字节、工具链、compiler headers、BIN/ELF、生成数组与整个 release
+只在 ignored 私有目录保存，公共材料仅保存必要的语义结果和 hash。默认 URL 留空，
+没有前端部署或 HTTPS 浏览器到 LAN 的验证结果。具体恢复命令见 [开发流程](development.md)。
+
 ## NOR 执行器研究
 
 | 文档 | 内容 |
@@ -78,7 +101,7 @@ ease 旧动画首帧跳跃的只读采样中，第一次计算的 shown 从 233/
 | [固定原生应用 writer](../analysis/persistence/boot-nor-native-app-runner.md) | 固定扇区写入及 safe-to-resume gate |
 | [padding 测试计划](../analysis/persistence/boot-nor-padding-test-plan.md) | 当轮监督下的写入边界研究 |
 
-这些研究不授权照抄其中旧命令到当前 triple。`0x40140000` 访问曾锁总线，当前逻辑
+这些研究不授权照抄其中旧命令到当前四页，或其他版本的三页集合。`0x40140000` 访问曾锁总线，当前逻辑
 controller 0 为 `0x40148000` 且要先验证 live pointer table。任何不确定 native 调用后
 保留停止状态，不能回放旧 CPU/SRAM 或自动推进。逐级恢复表见 [开发流程](development.md)。
 

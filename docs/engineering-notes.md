@@ -25,7 +25,7 @@
 - DPIDR=`0x1be12aeb`，AP0 IDR=`0x1aeb0015`，MCU CPUID=`0x630f1321`。
   `swd-memory.cfg` 使用 MEM-AP，避免未经审查的 CPU 自动探测和 Flash 驱动操作。
 - 使用隔离于市电的低压供电进行裸板调试；已授权的完整断电包括断开 nanoDAP USB，
-  避免调试器残余供电。当前 image drawer 的完整断电测试已由用户跳过，不重复要求。
+  避免调试器残余供电。当前维护阶段沿用用户跳过完整断电的决定，不重复要求或借用旧结果。
 - [针脚映射](../analysis/pinout/panel-pinmap-1.50.10.json)区分 GPIO 功能候选、驱动家族名
   与实体连线；未确认的物理器件仍标为待验证。
 
@@ -55,7 +55,7 @@ touch upper publisher，核对 ring、释放状态和帧队列。直接调用原
 锁后经 IOCTL 代理递归锁。
 
 callback 安装由 GUI 所属 timer 执行并发布 drivers、四个 callback slot 和 ready。
-当前 image drawer 的 bootstrap pthread 等待 ready 后成为常驻网络 worker；旧 drawer
+image drawer 和维护版的 bootstrap pthread 等待 ready 后成为常驻网络 worker；旧 drawer
 bootstrap 安装后退出是历史版本行为。原 GUI timer 会重新注册自身，proxy 返回后仅
 CAS 原 callback 到 proxy，并检查
 closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE 和潜在调度，
@@ -66,7 +66,10 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
 
 本地原厂 NOR 备份为 16 MiB，SHA-256：
 `777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b`。
-当前三个页面和程序布局见 [架构](architecture.md)，精确版本回退见 [开发流程](development.md)。
+维护版的四页及历史 image drawer 的三页边界见 [架构](architecture.md)，精确回退见
+[开发流程](development.md)。新增网络页 `0x92d000` 经过独立 ownership 审查，运行段限定
+`0x3804d000..0x3804dff0`；页头 4B、尾 12B 和 payload 外原字节保留。它位于被禁用的
+单个 `uorb_unit_test` 命令内部，不是从全 FF 模式推断出来的空闲区。
 
 - **logical NOR controller 0 为 `0x40148000`**，访问前核对本映像 live pointer table。
   不访问未使用的 `0x40140000`，它曾造成调试总线锁死并需要完全断电。
@@ -83,11 +86,18 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
   或 reset；部分写入需另行监督恢复，不能绕过未知基线检查。
 - 仅当整次 `app_complete=1` **且** `safe_to_resume=1` 才允许最终 GLOBAL。
   中间一次安全返回不等于整个安装完成。
+- 四页维护版安装固定为 net→aux→code→entry，恢复固定为 entry→code→aux→net。
+  各中间阶段 A7/WF/BT 保持复位；四页、保护状态和 native context 都闭合后才运行。
+  维护版先完整恢复 image drawer 三页加 stock net，才允许进入旧三页回退链。
 - GLOBAL 后特定 IDR 暂时不可读，仅允许全新的只读连接重试；不重放 writer 或 native call。
-- 当前写入/恢复路线是在健康 MAIN 状态实测，没有故意破坏 MAIN 后验证冷恢复。
+- 历史写入/恢复及当前维护版安装是在健康 MAIN 状态实测；本轮维护版硬件 restore 未执行。
+  没有故意破坏 MAIN 后验证冷恢复。
   不宣称已具备任意故障状态的救砖能力。
 - OpenOCD `-l` 路径用正斜杠避免 Tcl 转义；日志分类应精确锚定顶层状态字段，不能把
   `pre_global_debug_cleanup_error 0` 当作失败后重复写设备。
+- 私有 OpenOCD 包须包含 exe、DLL 和精确 CMSIS-DAP 接口配置。`-s diagnostics` 所用
+  `diagnostics/interface/cmsis-dap.cfg` 必须与冻结的 vendor 副本完全相同。离线 mock
+  禁止 adapter/init，不能据 mock 通过承诺实际连接依赖完整。
 
 ## 空白 Flash 及字库
 

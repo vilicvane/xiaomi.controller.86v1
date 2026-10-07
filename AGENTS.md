@@ -16,7 +16,37 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed UI is native image drawer (3416-byte main + 424-byte aux BIN, 1.50.10).
+- Current installed UI is maintained-http-four-page-20261007-c, specific to this exact 1.50.10 image.
+  Candidate SHA e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f;
+  380-input freeze SHA 48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14.
+  Main/aux/net BIN sizes are 2946/236/3004 B, ending at 0x3804bc8a/0x3807a850/0x3804dbbc.
+  Main and aux containers stay unchanged. Extra reviewed network container is
+  0x3804d000..0x3804dff0 inside uorb_unit_test; preserve first 4 B/last 12 B of NOR page 0x92d000.
+  Its builtin entry word at entry page +0xc3c is disabled from 0x3804cf3d to 0x3804b109.
+  Four full pages, native/cache/context closure, final GLOBAL and fresh warm runtime passed.
+  24 actual ARM UI groups, 21 default HTTP groups, 21 configured HTTP groups,
+  93 current writer mocks and 12 release tests passed; these are not hardware UI acceptance.
+  Public semantic result is firmware/releases/maintained-http-20261007.json.
+  GET/200 instructions, OPTIONS/204 CORS, wrong body POST/400, full image POST/202
+  and invalid FNV POST/422 passed. Rejection preserved generation/displayed_generation=1,
+  pending=0/server=1; server_error=422 means last rejected HTTP status, not worker failure.
+  User image/doubletap/swipe/key3-removal/sleep-wake/MiHome observations are pending.
+  HTTP 18086 has no legacy raw TCP/VACK compatibility. Frontend URL is blank; configured 303
+  was tested only in a separate ARM model. Frontend and HTTPS-browser-to-LAN are unverified.
+  Context remains 212 B: doubletap state +128, screen_off +144, show_address +204;
+  image/receive +176/+180, pending +184, generation +188/+192, server +196/+200, IPv4 +208.
+  Do not interpret these with historical key3/reserved or tap-fast feedback semantics.
+  Images remain RAM-only; program is persistent. Off observation requests custom owner
+  without touching backlight; complete off/on between GUI polls can be missed. First wake
+  contact is excluded from doubletap until UP, but swipes remain allowed.
+  Use this release's frozen snapshot/firmware/tools/hardware.ts and adjacent verifier.
+  Install net→aux→code→entry; restore entry→code→aux→net, all A7/WF/BT held reset until closed.
+  Restore exact image drawer three pages plus stock network page BEFORE using historical writers.
+  This release's hardware restore is not yet tested. NEEDS_INSPECTION means preserve stopped state;
+  never automatically retry, clear its marker, or replay a native call. Offline freeze/mock is not hardware permission.
+  Cold power-cycle remains explicitly user-skipped; do not ask again or borrow historical results.
+  Canonical firmware/ source may evolve, but snapshots and all historical inputs remain immutable.
+- Historical native image drawer was installed before the maintained release (3416-byte main + 424-byte aux BIN, 1.50.10).
   Its 93-input freeze is fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61.
   33 ARM groups, 12 independent focused ARM groups and 70 writer mocks passed.
   Main ends at 0x3804be60, aux at 0x3807a90c; existing containers and adjacent helpers preserved.
@@ -31,11 +61,11 @@
   showed generation/displayed_generation2, pending0, server1/error0 and active GUI.
   Do not promise every rejection ACK: initial invalid header and client half-close
   lacked complete ACK; idle took10.038 wall seconds. Native RPCs are not strictly bounded.
-  Restore ONLY with Set-PanelNativeImageDrawer.ps1 to exact fast-tap first; never
+  For this historical image triple, restore ONLY with Set-PanelNativeImageDrawer.ps1 to exact fast-tap first; never
   apply a historical writer directly against the image triple. Cold power-cycle
   remains explicitly user-skipped; do not ask again or borrow old cloud results.
   Native fonts are only static feasibility; never reinitialize shared GUI FreeType/cache.
-- Previous installed UI was native GitHub tap-fast (3336-byte main + 431-byte aux BIN, 1.50.10).
+- Historical UI before native image drawer was native GitHub tap-fast (3336-byte main + 431-byte aux BIN, 1.50.10).
   Full-page Flash/readback and warm custom-owner/phase150 state passed;
   user tap/gesture acceptance is pending and recorded separately in
   native-github-tap-fast-hardware-result.json. Mi Home controls are unchecked

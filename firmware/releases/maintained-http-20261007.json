@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "release": "maintained-http-four-page-20261007-c",
+  "model": "xiaomi.controller.86v1",
+  "factory_firmware": "1.50.10",
+  "date": "2026-10-07",
+  "candidate_sha256": "e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f",
+  "freeze_sha256": "48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14",
+  "candidate_inputs": 374,
+  "frozen_inputs": 380,
+  "program": {
+    "mainBytes": 2946,
+    "auxBytes": 236,
+    "netBytes": 3004,
+    "elfSha256": "21da5e0307e457473e0ed4d61db189f16440cc847c3ba4d9f55f9824ad6598aa"
+  },
+  "baseline": {
+    "name": "native-image-drawer",
+    "freeze_sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "additional_page": "stock 0x92d000"
+  },
+  "pages": {
+    "code": {
+      "offset": "0x92b000",
+      "before_sha256": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "after_sha256": "278d0bf33bd4ad59ea663f5dbc9b3a6996799decdc713b098c8ac479ea933036"
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "before_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "after_sha256": "5ff194aab4c29f7b38972c4f3f3299339ef2c6c260310d1c9b30a8ed8bb93da9"
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "before_sha256": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+      "after_sha256": "2d5be599eb878ea4bd9424ab71d0e30742a566a870dec13f2eb12731ee458eb3"
+    },
+    "net": {
+      "offset": "0x92d000",
+      "before_sha256": "76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d",
+      "after_sha256": "717ef6b0241d2a1b1861a8d4c58b1a16686603ea2be0f38877ab58ee11468a32"
+    }
+  },
+  "offline": {
+    "actual_arm_default_groups": 45,
+    "configured_http_arm_groups": 21,
+    "writer_mocks": 93,
+    "node_release_tests": 12,
+    "host_http_checks": 258,
+    "hardware_proof": false
+  },
+  "hardware": {
+    "installed": true,
+    "full_four_page_readback": true,
+    "native_app_complete": true,
+    "safe_to_resume": true,
+    "warm_global_transport_error": 0,
+    "warm_global_dispatch_complete": true,
+    "preflight_exact": true,
+    "post_reboot_exact": true,
+    "first_readonly_dp_connection_failed_then_fresh_read_succeeded": true,
+    "early_post_reset_sram": "Old context remained while GUI timer was zero; later fresh sampling found a new context, new timer, and generation0. Early sample is not runtime acceptance.",
+    "runtime_before_upload": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 18051,
+      "image_pending": 0,
+      "generation": 0,
+      "displayed_generation": 0,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "screen_off": 0,
+      "ipv4_present": true
+    },
+    "runtime_after_upload": {
+      "alive": 1,
+      "mode": 1,
+      "wanted": 1,
+      "ready": 1,
+      "gui_cycles": 37584,
+      "image_pending": 0,
+      "generation": 1,
+      "displayed_generation": 1,
+      "server_state": 1,
+      "server_error": 0,
+      "show_address": 0,
+      "screen_off": 0,
+      "ipv4_present": true
+    },
+    "warm_global_requested": true
+  },
+  "http": {
+    "get_root": 200,
+    "root_behavior": "Local unconfigured-frontend instructions",
+    "options_image": 204,
+    "invalid_body_length": 400,
+    "valid_full_image": 202,
+    "gui_generation_consumed": 1,
+    "invalid_fnv": 422,
+    "configured_303": "Actual ARM model only, distinct configured ELF; not current hardware build",
+    "browser_https_to_private_http": "not_tested",
+    "invalid_fnv_preserved_generation": true,
+    "runtime_after_rejection": {
+      "generation": 1,
+      "displayed_generation": 1,
+      "image_pending": 0,
+      "server_state": 1,
+      "server_error": 422,
+      "meaning": "Most recent request error in this snapshot; successful requests clear it"
+    },
+    "get_after_rejection": 200,
+    "cors_preflight_response": true,
+    "cors_validation": "Direct HTTP OPTIONS status and response headers; no browser preflight client tested"
+  },
+  "user_observations": {
+    "image_display": "pending",
+    "double_tap_image_address": "pending",
+    "swipe_roundtrip": "pending",
+    "key3_triple_disabled": "pending",
+    "stock_sleep_wake_custom": "pending",
+    "mi_home_online_control": "pending"
+  },
+  "cold_power_cycle": "skipped_by_explicit_user_request",
+  "restore": {
+    "command": "node firmware/tools/hardware.ts restore maintained-http-four-page-20261007-c",
+    "exact_target": "native-image-drawer three pages plus stock 0x92d000",
+    "hardware_restore_this_release": "not_tested",
+    "old_writer_directly_against_maintained": "prohibited"
+  },
+  "limitations": [
+    "Images remain RAM-only.",
+    "Factory uorb_unit_test is disabled while maintained code occupies its reviewed span.",
+    "Native RPC wall time, arbitrary unknown indirect callers and future OTA are not proven by offline models.",
+    "GUI polling can miss an off/on cycle entirely between polls.",
+    "Frontend URL is not yet supplied; Cloudflare deployment is separate.",
+    "Historical three-click implementations and all prior frozen inputs remain unchanged."
+  ]
+}

@@ -1,9 +1,12 @@
 # 当前图片下拉屏幕架构
 
-基线：本机官方 1.50.10 映像上的 **native-image-drawer**，研究整理检查点 2026-10-07。
-本页描述已安装原型；下一阶段需求另见 [维护计划](maintenance-plan.md)，不混入当前行为。
-权威布局来自 [patch manifest](../analysis/persistence/native-image-drawer-patch-inputs-1.50.10.json)，
-实际结果来自 [硬件记录](../analysis/persistence/native-image-drawer-hardware-result.json)。
+本页描述本机精确 1.50.10 映像上的维护版 **maintained-http-four-page-20261007-c**。
+源码、四页布局与离线审查已冻结，四页读回、状态闭包、暖启动和 HTTP 基础请求通过；
+用户界面、息屏唤醒及米家验收待记录，不能继承旧版验收。
+源码入口见 [firmware](../firmware/README.md)，精确材料位于 ignored 的 release 快照。
+[当前发布结果](../firmware/releases/maintained-http-20261007.json)单列离线、硬件及用户观察。
+最后确认的旧三页 TCP 原型另有 [manifest](../analysis/persistence/native-image-drawer-patch-inputs-1.50.10.json)
+和 [硬件结果](../analysis/persistence/native-image-drawer-hardware-result.json)。
 
 ## 程序与原系统的关系
 
@@ -14,7 +17,7 @@
 
 ```mermaid
 flowchart LR
-    Client[电脑上传器] -->|TCP VIMG| Worker[A7 网络 worker]
+    Client[上传器或后续网页] -->|HTTP VIMG body| Worker[A7 网络 worker]
     Worker -->|校验后发布| Slots[两个 RGB565 RAM 槽]
     Slots -->|GUI 安全边界交换| GUI[原 GUI 线程中的 drawer 代理]
     Original[原米家 UI 和 JS] --> GUI
@@ -24,16 +27,20 @@ flowchart LR
 ```
 
 bootstrap pthread 使原 GUI 所属 timer 完成代理安装，等待 ready 后继续运行网络 server。
-稳态触摸、手势、按键和绘图在原 GUI 线程执行；这个独立网络 worker 不在 GUI callback
+稳态触摸、手势和绘图在原 GUI 线程执行；这个独立网络 worker 不在 GUI callback
 内等 socket。旧 drawer 的 bootstrap 安装后退出属于历史版本，不能套用于当前程序。
-系统 `panel_apps` 仍负责背光和息屏；当前补丁没有新增锁屏生命周期入口。
+系统 `panel_apps` 仍负责背光和息屏。维护版观察系统状态来准备自定义 owner，
+没有新建锁屏 App 或重初始化原系统的 GUI/字体服务。
 
 ## 当前交互与所有权
 
-开机默认展开地址画面。上传后自定义内容变为整幅图片，地址不叠到图片上；现安装版
-没有双击地址页。上滑收起，原界面顶边起手下拉展开，短拉后松手回弹；第三物理键
-三击也可往返。第三键确认是 P3_1、bit25、低电平按下，采样时未绑定米家动作。
-补丁不拦截原 MCU 按键通知，后续移除三击只需处理自有切换入口。
+开机默认展开地址画面。上传后展示图片；连续两次短按可切换最新图片和 IP:18086，
+切换不丢弃 RAM 图片。地址页接收新上传时仍保留地址页。上滑收起，原界面顶边起手
+下拉展开，短拉后松手回弹。双击只接受物理短按的完整接触序列，拖动、动画中接触、
+虚拟输入和唤醒接触不参与计数；一次双击消费一对轻触。
+
+维护版取消了自己的第三键三击检测，原 MCU 按键动作继续由原系统处理。历史第三键
+P3_1、bit25、低电平采样及三击版本完整保留，不能因维护版移除入口而改写旧实验。
 
 原界面在后台继续绘图，自定义 owner 时阻止其 PAN 和 UPDATEAREA 提交。两路原输入
 继续消费样本，但隐藏原界面得到 release；顶边手势从第一 DOWN 开始截取整个接触，
@@ -48,10 +55,26 @@ touch publisher、核对 ring 和真实释放状态、提交新源，最后更�
 限制每次逻辑推进，避免调度延迟直接吃掉全部剩余动画。PAN 接受与 LCD 扫描完成
 仍是不同事件，真实原生调用耗时没有严格上界。
 
+## 息屏与唤醒
+
+原 `panel_apps` 在关闭背光后把 `0x384ea638` 写为 0，在恢复亮度后写为 1。
+代理 timer 先执行原 TIMER，再观察该状态；观察到 off 时要求 custom owner，通过
+同一安全交接完成切换，不调用背光接口。恢复 on 后，第一个物理接触一直到 UP 都
+不参与双击识别，但仍允许抽屉手势。
+
+这是对可观察状态的处理：完整 off/on 若发生在两次 timer 采样之间就无法识别，
+原厂调度及唤醒首帧还需实机验收。没有找到通用的锁屏插件生命周期入口。
+
 ## 网络与图片 RAM
 
-端口 **TCP 18086** 采用 [VIMG/VACK](image-upload-protocol.md)，当前没有 HTTP、浏览器
-重定向、认证或设备端 PNG/JPEG 解码。A7 socket 经 usrsock/RPMsg 使用原 MCU 网络服务。
+端口 **HTTP 18086** 采用 [HTTP 图片 API](http-image-api.md)，不提供旧 raw TCP/VACK
+兼容入口。`POST /api/image` 接收固定 307216B 的 VIMG header 与 480×320 RGB565 body。
+完整校验并发布到 GUI 待消费槽后返回 202；它不是 LCD 扫描或 Flash 保存完成确认。
+`GET /` 默认返回 200 说明页，配置前端 URL 的构建返回 303，并把设备 endpoint 放在
+fragment。当前 URL 留空，303 只做过模型验证，没有部署前端。
+
+OPTIONS/CORS 已实现；HTTPS 云网页到局域网的浏览器权限和网络条件尚未端到端验证。
+没有客户端认证或设备端 PNG/JPEG 解码。A7 socket 经 usrsock/RPMsg 使用原 MCU 网络服务。
 一次处理一条连接；待发布图片被 GUI 消费前，worker 不继续接受下一次上传。
 
 一次 1843200B owned 分配包含 RGB32 画布 614400B、原画面快照 614400B，以及两个各
@@ -63,57 +86,78 @@ GUI 在帧队列为空、无活动 gesture/overlay 时短持 broker mutex 交换
 启动分配/worker 创建失败且尚未启动原应用时释放自有资源并回退原入口。原应用返回后
 已发布的 allocation 仍保持存活，避免回调或 worker 引用释放内存。
 
+HTTP header 使用另外分配的 2048B 缓冲。应用设置 5 秒无进展、30 秒总请求期限，但
+底层 native/RPMsg RPC 本身没有严格时间上界；连接错误也不保证客户端收到完整错误响应。
+
 地址由 `wlan0`、40B `ifreq` 和 `SIOCGIFADDR=0x701` 查询。接口名@0、family@20、
-IPv4@24；首次非零地址缓存到本轮运行结束，后续 DHCP 变化不刷新。尚无地址时显示
-`0.0.0.0:18086`，它不能作为上传目标。实际设备网络地址不提交到 Git。
+IPv4@24；在 broker mutex 外以约 1 秒间隔查询，仅改变地址时标记重画，查询失败清为 0。
+尚无地址时显示 `0.0.0.0:18086`，它不能作为上传目标。实际设备网络地址不提交到 Git。
 
 ## 代码、页面与上下文布局
 
 | 项目 | 当前值 |
 | --- | --- |
-| 主 BIN | 3416B，`0x3804b108..0x3804be60` |
+| 主 BIN | 2946B，`0x3804b108..0x3804bc8a` |
 | 主代码容器 | 3432B，exclusive 末端 `0x3804be70` |
-| 辅助 BIN | 424B，`0x3807a764..0x3807a90c` |
+| 辅助 BIN | 236B，`0x3807a764..0x3807a850` |
 | 辅助容器 | 444B，exclusive 末端 `0x3807a920` |
 | Thumb 入口 | `0x3804b2f5` |
-| NOR code/entry/aux 页 | `0x92b000` / `0xccd000` / `0x95a000`，各 4096B |
-| 安装基线及直接回退目标 | 精确冻结的 GitHub tap-fast 三页 |
-| 当前冻结输入数 | 93 |
-| 冻结表 SHA-256 | `fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61` |
+| 网络 BIN | 3004B，`0x3804d000..0x3804dbbc` |
+| 网络代码容器 | 4080B，exclusive 末端 `0x3804dff0` |
+| NOR code/entry/aux/net 页 | `0x92b000` / `0xccd000` / `0x95a000` / `0x92d000`，各 4096B |
+| 安装基线及直接回退目标 | exact image drawer 三页与 stock 网络页 |
+| 当前冻结输入数 | 380；其中候选输入 374，另加候选 manifest 与五份证据 |
+| 候选 manifest SHA-256 | `e76bac29f5b74fdadf126996e1ad4c959daeb6309c5020276eeb33745500e17f` |
+| 冻结表 SHA-256 | `48fefb3bdc5d269b8e32f1d5e976935d6aa24397a181b2d14a2cd7dddc59ef14` |
 
-所有范围末端 exclusive。当前入口页沿用已有字节，但仍按三页集合完整校验。
+所有范围末端 exclusive。入口页新增禁用 `uorb_unit_test` builtin 的单字修改：page+`0xc3c`
+从 `0x3804cf3d` 改为 `0x3804b109`。它不是启动服务；其其他已发现引用属于命令描述/帮助
+统计，不会调用函数。网络段位于该独立审查函数内部，保留所在页最前 4B 和最后 12B；
+原厂完整网络页 SHA 为 `76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d`。
+安装 net→aux→code→entry，恢复 entry→code→aux→net，始终核对四个完整页面。
 共享 helper/be70、背光 callback/a920、JSON helper/ae28 和容器外所有字节保留。
 wifi_recorder 诊断 builtin 的禁用 stub 继承此前版本，它不是 Wi-Fi 驱动或启动服务；
 原工厂 socket worker 只有受控辅助容器被借用，未启用原工厂 UDP 服务。
 
-212B context 前 176B 延续 drawer，新增字段如下。旧 tap-fast 的反馈字段解释不可复用。
+212B context 的部分布局如下。大小保留，但维护版复用旧按键状态区为轻触/息屏状态，
+并把旧 reserved 改为地址页标记。旧 tap-fast 和旧 image drawer 的字段解释不可直接复用。
 
 | 字节偏移 | 字段 |
 | --- | --- |
+| +128 | 自有双击状态（含唤醒接触排除标记） |
+| +144 | screen_off：0=awake，1=off observed，2=等待首个唤醒接触松开 |
+| +148 | 抽屉手势状态 |
 | +164 / +168 / +172 | animation_from / pending / phase |
 | +176 / +180 | image / receive 槽指针 |
 | +184 | image_pending |
 | +188 / +192 | generation / displayed_generation |
 | +196 / +200 | server_state / server_error |
-| +204 | 未使用 reserved，保持 0 |
+| +204 | show_address：图片/地址页选择 |
 | +208 | IPv4 四个原始网络序字节 |
 
 ## 验证检查点与局限
 
 | 证据 | 当前版本结果 |
 | --- | --- |
-| 离线模型 | 33 组当前 ELF 实际 ARM 模型，12 组独立重点检查 |
-| 写入流程 | 70 项 Jim writer mock；独立程序及 writer 审查 |
-| 安装及暖启动 | 三页完整 SHA 读回、MCU 运行、临时断点和 reset catch 清理通过 |
-| 上传及实屏 | 两次各 307200B，VACK0；用户确认地址和两张测试图 |
-| 交互及米家 | 用户确认上下滑、key3 往返及米家在线控制 |
-| 后续只读状态 | generation/displayed_generation=2，pending=0，server=1/error=0，GUI 活跃 |
+| 离线模型 | 24 组维护版实际 ARM UI 模型；默认/已配置前端各 21 组实际 ARM HTTP 模型，host 轻触检查通过 |
+| 发布及写入流程 | 12 项 release 工具测试、93 项当前 Jim writer mock；独立 ownership、程序及 writer 审查 |
+| 安装及暖启动 | 四页完整 SHA 读回、native/cache/context 闭包与 GLOBAL 清理通过，暖启动正常 |
+| HTTP | GET/200 说明页、OPTIONS/204 CORS、16B 错误 body POST/400、307216B 完整测试图 POST/202、错误 FNV POST/422 通过 |
+| 用户实屏及交互 | 双击地址、手势、三击取消及息屏唤醒待用户验收 |
+| 米家 | 当前维护版在线/控制待用户验收 |
+| 新启动只读状态 | alive=1、ready=1、mode=1、server=1；上传前 generation/displayed_generation=0，完整上传后均为 1、pending=0，GUI 活跃 |
+| 当前恢复路线 | 精确目标及顺序已审查、mock 通过；该 release 的硬件 restore 未执行 |
 | 完整断电 | **按用户明确要求跳过**，没有借用旧版冷启动结论 |
 
-这些是保存的检查点，不表示实时运行监控。MEM-AP 样本非原子，VACK0 不测量扫描时刻。
-初次无效 header 和客户端半关闭未收到完整拒绝 ACK；重复无效 header、完整错误校验和
-有 VACK1/VACK2。空连接一次耗时 10.038 秒，应用计时不能严格约束底层 RPMsg/native RPC。
-详见 [协议限制](image-upload-protocol.md)。
+这些是保存的检查点，不表示实时运行监控。MEM-AP 样本非原子，HTTP 202 不测量扫描时刻。
+错误 FNV 请求保留 generation/displayed_generation=1、pending=0；其后 `server_error=422`
+是最近一次拒绝状态，`server_state=1` 仍在监听，不是 worker 故障。
+暖重启后太早读取可能见到旧 SRAM 的上下文值；本轮随后新启动状态确认正常，没有为此
+重复复位或回放旧上下文。已配置 URL 的 303 是模型结果，不能写成真实前端已经可用。
+
+历史 image drawer 的 33 组 ARM、12 组独立检查、70 项 writer mock，以及用户确认的两图、
+上下滑、key3 往返和米家控制仅属于旧三页 TCP 版本。其无效 header、half-close 和
+10.038 秒 idle 观察保留在 [历史协议](image-upload-protocol.md)，不作为当前 HTTP 验收。
 
 原字体只完成静态可行性分析，未调用实机字体文件或 glyph API。当前采用私有数字字形
 显示地址，来图已经光栅化；不能宣称已复用系统字库。

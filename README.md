@@ -1,81 +1,52 @@
-# Xiaomi Smart Panel
+# Xiaomi Smart Panel Image Drawer
 
-小米智能家庭面板（`xiaomi.controller.86v1`）的硬件分析、原生程序和自定义固件实验。
-产品名称见[小米官网](https://www.mi.com/intelligent-panel)。
+为小米智能家庭面板 `xiaomi.controller.86v1` 开发可远程更新内容的自定义下拉屏幕。
+设备端接收局域网上传的图片，与原界面在运行中交接显示和触摸；原米家应用继续运行。
 
-当前基线是这台设备的官方固件 **1.50.10**。当前已安装独立 **图片下拉屏幕测试版**：
-设备在默认深灰画面显示自己查询到的 `IP:18086`，电脑上传图片后替换整个自定义画面。
-上滑回原界面、原界面顶边下拉，以及第三键三击的交接逻辑保留。
-程序常驻设备，上传图片先保存在 RAM，重启后恢复默认地址画面。
+目前交付是针对**本机官方 1.50.10 映像**的持久化原生程序补丁，复用 NuttX、板级驱动、
+网络和 MCU 服务。它还不是能适用于任意同型号设备的完整替代固件。仓库不分发原厂映像、
+设备身份或包含它们的刷机包。
+
+## 当前可用功能
+
+- 默认画面显示设备查询的 `IP:18086`；上传后显示 480×320 图片。
+- 原界面顶边下拉展开自定义画面，上滑返回原界面；当前安装版也支持第三键三击。
+- 图片接收、合成和触摸运行在设备上，电脑只参与上传。
+- 程序写入 Flash 常驻；图片仅保存在 RAM，重启后恢复地址画面。
 
 ```powershell
 python -X utf8 analysis/image-push/push_panel_image.py PANEL_IP --image picture.png
 ```
 
-将 `PANEL_IP` 换成屏幕显示的地址。PNG/JPEG 转换需要电脑安装 Pillow；
-`--pattern` 无第三方依赖。这是 TCP 固定像素协议，暂时没有 HTTP 上传页面。
-两张完整图片已收到成功确认，用户已确认地址、两张测试图、上下滑、三击和米家
-在线控制均正常，单独记录在 `native-image-drawer-hardware-result.json`。33组实际ARM模型、12组独立
-检查及70项写入器mock通过，93项输入冻结，三页完整读回和普通重启运行状态通过。
-异常输入有一项限制：首次拒绝和发送端提前结束时未收到完整确认；空闲连接实测
-约10秒退出，不能把应用内超时等同于所有底层调用的墙钟上限。
-具体使用与回退见[图片推送程序](analysis/image-push/native-image-drawer.md)。
-当前及此前卡片的完整断电测试按用户要求跳过，不能声称已通过。
+将 `PANEL_IP` 换成面板显示的非零地址。PNG/JPEG 在电脑通过 Pillow 转成 RGB565；
+`--pattern` 和 `--raw` 不需要 Pillow。当前端口使用 TCP `VIMG/VACK`，**没有 HTTP 页面**。
+上传参数和协议见 [图片上传协议](docs/image-upload-protocol.md)。
 
-上一版常驻 A7 GitHub 下拉覆盖层测试版：
-开机显示 GitHub 标志、白色 `vilicvane`、灰色 `xiaomi.controller.86v1`，以及金色
-星形和 `Star on GitHub` 提示。上滑收起，原界面顶边下拉带出自定义界面，
-短拉松手回弹；第三个自定义物理键三击仍可往返。
-点击反馈在松手时将星标提示换成 `+1`；连续点击累加，约800ms无新点按后
-恢复提示，下一次从1开始。它沿用 smooth 的手势与交接。此前信息卡的排版、颜色和
-手势已经用户确认。tap v1整体正常，但用户报告连续点击有时响应慢、漏计或恢复提示；
-另一次测试顺畅，旧观察保留在native-github-tap-hardware-result.json。
-这项间歇问题的实机原因尚未确认。
-此前安装独立 `native-github-tap-fast`：53组实际ARM模型、68项写入器mock通过，
-68项输入冻结，三个完整Flash页面读回及正常重启后的owner/动画终态检查通过。
-用户反馈新版手感仍一般，并询问松手才加一的影响；不能宣称实际卡顿已解决。
-用户决定保留当前Demo的松手计数交互。
-点击与手势观察单独记录在native-github-tap-fast-hardware-result.json。它将800ms起点移到新计数PAN成功返回后的
-有效时钟，点击未释放或输入队列未空时保留序列；静止页面仅重画底部。
-软件画布写量减少93.45%，原PAN仍处理整帧，不能据此宣称实际漏点已解决。
-本次完整断电测试按用户要求跳过，没有记为通过。
-此前 smooth 的手感已获用户确认；松手动画从最后提交的位置开始，并限制每帧推进量。
-之前ease版本已通过上下滑、三击、完整断电和米家控制，但上滑收起时有较大首帧跳跃。
-之前的 broker 版本已经通过反复实机往返、完整断电和米家控制验证，可精确回退。
+当前安装版是 `native-image-drawer`：3416B 主程序、424B 辅助程序，93 项输入独立冻结。
+三页完整读回、普通重启、两张完整图片、上下滑、三击往返及米家在线控制均有独立记录。
+完整断电测试按用户要求跳过；异常连接不保证收到完整拒绝确认，原生网络调用没有严格
+墙钟上限。验证范围见 [当前架构](docs/architecture.md)，详细证据见
+[硬件结果](analysis/persistence/native-image-drawer-hardware-result.json)。
 
-程序目前复用原固件的 NuttX、板级初始化、显示和触摸驱动及 MCU 服务，
-包装原界面的启动入口，原应用只启动一次并在后台继续运行；还不是从源码
-独立构建的完整替代固件。
+## 开发与研究入口
 
-## 从这里开始
+| 文档 | 内容 |
+| --- | --- |
+| [当前架构](docs/architecture.md) | 启动、GUI/网络职责、RAM 布局、已验证状态 |
+| [图片上传协议](docs/image-upload-protocol.md) | 数据格式、客户端使用、确认及超时限制 |
+| [工程约束](docs/engineering-notes.md) | 供电、调试、版本专用 ABI、Flash 和失败处理 |
+| [开发与维护流程](docs/development.md) | 本地材料、冻结校验、新版本开发和精确回退 |
+| [研究与历史版本索引](docs/research-index.md) | 配网恢复、显示接管、版本演进和原始归档 |
+| [维护需求](docs/maintenance-plan.md) | 研究整理后的四项交互及 Web 入口需求 |
 
-- [工程经验与已验证状态](docs/engineering-notes.md)：硬件、电压、ABI、恢复闭包和实验陷阱。
-- [构建、验证与本地材料](docs/development.md)：工具链、只在本地保存的备份及检查方法。
-- [设备端计数程序](analysis/display-takeover/native-counter.md)：安装范围、回退和证据。
-- [常驻界面切换程序](analysis/display-takeover/native-ui-broker.md)：三击、显示/触摸交接及新回退入口。
-- [顶边下拉覆盖层](analysis/display-takeover/native-drawer.md)：跟手动画、整次手势拦截和回退到 broker。
-- [覆盖层缓动](analysis/display-takeover/native-drawer-ease.md)：120ms三次缓出、独立版本和逐级回退。
-- [松手动画节奏](analysis/display-takeover/native-drawer-smooth.md)：从已提交位置开始、缓入缓出及每帧进度上限。
-- [GitHub 信息卡](analysis/display-takeover/native-github-card.md)：设备绘制的排版、星标提示和恢复到 smooth。
-- [点击反馈](analysis/display-takeover/native-github-tap.md)：临时累加、自动恢复和三页回退到信息卡。
-- [点击反馈计时与局部绘图](analysis/display-takeover/native-github-tap-fast.md)：提交后计时、输入保护及三页回退到 tap v1。
-- [设备端图片接收](analysis/image-push/native-image-drawer.md)：IP显示、电脑图片转换、RAM替换及精确回退到tap-fast。
-- [启动时的 NOR 写入执行器](analysis/persistence/boot-nor-native-app-runner.md)：固定扇区写入流程。
+研究代码仍在 `analysis/`，PowerShell 入口在 `scripts/`，OpenOCD 配置在 `diagnostics/`。
+已经冻结的历史集合保留原路径和字节，不能为了整理目录而移动或重新生成。
 
-源码主要在 `analysis/display-takeover/`、`analysis/persistence/` 和 `analysis/pinout/`；
-`scripts/` 提供 PowerShell 入口，`diagnostics/` 保存 OpenOCD 配置。
-较早的电脑驱动屏幕测试和恢复研究保留为历史代码，不代表推荐部署路径。
+## 仓库与安装材料
 
-## 当前目标
+仓库保存第一方源码、文档和经过审查的结构化证据。完整 NOR/RAM 备份、扇区镜像、
+凭据、网络日志、工具链、第三方参考源码及生成的 BIN/ELF/Tcl 数组只在本地保存。
+全新 clone 不能直接安装或回退设备；必须准备与该设备、版本及安装基线匹配的材料。
 
-在设备上通过**顶边下拉、上滑或第三个物理按键三击**，无需重启地切换原界面和自定义界面。
-第三键已通过实际采样确认为 P3_1、低电平按下，目前没有米家动作绑定。
-新程序交接显示和触摸所有权，保留原 UI/JS 状态。它不拦截原 MCU 按键通知，
-以后给第三键绑定动作前需要另做过滤。
-
-## 仓库包含什么
-
-本仓库提交第一方源码、脚本、文档及选定的结构化分析证据。
-原厂固件、完整 Flash/RAM 备份、设备凭据、网络日志、工具链、第三方参考源码和
-生成文件保留在本地并被 Git 忽略。全新 clone 不能直接安装或回退设备；必须先准备
-与这台设备、这个版本完全对应的本地材料，详见开发文档。
+下一阶段先移除三击入口、增加双击地址画面及浏览器入口，并研究锁屏后自动打开；
+这些是 [已记录的维护需求](docs/maintenance-plan.md)，不属于本次研究整理的实现结果。

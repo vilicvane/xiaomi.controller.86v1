@@ -69,7 +69,7 @@ document.querySelector("#app")!.innerHTML = `
     <div class="workspace">
       <section class="editor card" aria-labelledby="preview-title">
         <div class="card-heading"><div><span class="step">01</span><h2 id="preview-title">调整画面</h2></div><span class="dimension">480 × 320 <span>·</span> 3:2</span></div>
-        <div class="preview-well" id="drop-zone"><div class="canvas-wrap"><canvas id="preview" width="${STAGE.width}" height="${STAGE.height}" tabindex="0" aria-label="图片裁切预览。拖动调整位置，滚轮或双指缩放。键盘方向键移动，加减号缩放，0 重置。"></canvas><div class="crop-frame"><div class="crop-guides" aria-hidden="true"></div><span class="sample-tag" id="sample-tag">默认画面</span></div></div><div class="preview-hint">${icon("image")}拖动裁切 · 滚轮或双指缩放</div><div class="drop-overlay">松开以更换图片</div></div>
+        <div class="preview-well" id="drop-zone"><div class="canvas-wrap"><canvas id="preview" width="${STAGE.width}" height="${STAGE.height}" tabindex="0" aria-label="图片裁切预览。拖动调整位置，滚轮或双指缩放。键盘方向键移动，加减号缩放，0 重置。"></canvas><div class="crop-frame"><div class="crop-guides" aria-hidden="true"></div><span class="sample-tag" id="sample-tag">默认画面</span></div></div><div class="drop-overlay">松开以更换图片</div></div>
         <div class="image-row"><span class="image-info">${icon("image")}<span><strong id="file-name">GitHub 自定义界面</strong><small id="image-size">480 × 320 · 默认画面</small></span></span><button id="choose-image" class="button secondary">选择图片</button><input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden /></div>
         <p id="image-error" class="inline-error" role="alert" hidden></p>
       </section>

@@ -179,12 +179,7 @@ main {
   color: #c5ccd5;
 }
 .preview-well {
-  padding: 26px 26px 15px;
-  background: #f3f5f8;
-  border: 1px solid #edf0f4;
-  border-radius: 11px;
   position: relative;
-  overflow: hidden;
 }
 .canvas-wrap {
   position: relative;
@@ -253,20 +248,6 @@ canvas.active + .crop-frame .crop-guides {
   background: #0c233354;
   color: #ffffffe0;
   padding: 3px 7px;
-}
-.preview-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  color: #9099a9;
-  font-size: 11px;
-  margin-top: 17px;
-  letter-spacing: 0.2px;
-}
-.preview-hint svg {
-  width: 14px;
-  height: 14px;
 }
 .drop-overlay {
   display: none;
@@ -609,15 +590,13 @@ footer svg {
 }
 
 .section-description,
-.preview-hint,
 .field-help,
 .local-note,
 .export-card p {
   color: #626e81;
 }
 .field-help,
-.local-note,
-.preview-hint {
+.local-note {
   font-size: 12px;
 }
 .export-card p {
@@ -634,9 +613,6 @@ footer svg {
   }
   .editor {
     padding: 20px;
-  }
-  .preview-well {
-    padding: 17px 17px 13px;
   }
   .dimension span {
     margin: 0 3px;
@@ -689,13 +665,6 @@ footer svg {
   }
   .dimension {
     font-size: 10px;
-  }
-  .preview-well {
-    padding: 12px 12px 11px;
-  }
-  .preview-hint {
-    font-size: 10px;
-    margin-top: 12px;
   }
   .image-info strong {
     max-width: 190px;

@@ -1,0 +1,310 @@
+{
+  "release": "maintained-images-five-page-20261008-a",
+  "factory_firmware": "1.50.10",
+  "date": "2026-10-08",
+  "candidate_sha256": "992b58c7aa72a162aca23756088ce8951467fa1d624ba8c7889a155ab430021b",
+  "freeze_sha256": "627a224c619b59a6813b47685e272cd19a4f8b25bb04af1bdbf690b31cf2a330",
+  "candidate_inputs": 471,
+  "frozen_inputs": 477,
+  "program": {
+    "mainBytes": 3368,
+    "auxBytes": 396,
+    "netBytes": 4012,
+    "codecBytes": 2916,
+    "elfSha256": "3f67d12758931a05fc22e20ddd89c51688ea9ec12de185ededce821b0ead79d3"
+  },
+  "context_bytes": 224,
+  "worker_stack_bytes": 16384,
+  "pages": {
+    "code": {
+      "offset": "0x92b000",
+      "before_sha256": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "after_sha256": "dee7b2a24fbd2e337d41ebb42042025e8cdc34ce0b54198f8629c2d6f777c427"
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "before_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "after_sha256": "ca86635afcef1510c8aea437b457e8131897f798d95dae0c1ed17800cbed93f0"
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "before_sha256": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+      "after_sha256": "1e207f75866b660291550e84d5d181a01e9beceb1e737eea48f90c3fcde4b0c3"
+    },
+    "net": {
+      "offset": "0x92d000",
+      "before_sha256": "76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d",
+      "after_sha256": "d98597db76c7a3bed079b4e2989042ecd9c73b459a8c9533c0ad61162bc11ff0"
+    },
+    "codec": {
+      "offset": "0x927000",
+      "before_sha256": "21c40d397e6ec14f61011544f736962470f623c91ba3bbf7a6d89d120ba23c02",
+      "after_sha256": "1cc5e1e4bc012b6b2e8e91d58de3ba8b2c89d466466e60d1707c15547f953ad2"
+    }
+  },
+  "baseline": {
+    "name": "native-image-drawer",
+    "freeze_sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "additional_pages": [
+      "stock 0x92d000",
+      "stock 0x927000"
+    ]
+  },
+  "upgrade": {
+    "from": "maintained-idle-return-four-page-20261007-a",
+    "previous_release_restore": {
+      "passed": true,
+      "full_four_page_readback": true,
+      "native_app_complete": true,
+      "safe_to_resume": true,
+      "protection_cache_context_closed": true,
+      "outer_global": true,
+      "warm_readback": true,
+      "result_sha256": "709caac31d30b840986558ae77175997a461f55cb9e7d1957e97cca3937401c7",
+      "outer_result_sha256": "3c2de7b619422e982cd7629b1b55faa9e881f05c8ca94778e1a80395740d2dbd"
+    },
+    "install_followed_exact_restore": true,
+    "short_execution_bundle_inputs_identical": true
+  },
+  "offline": {
+    "actual_arm_ui_groups": 36,
+    "actual_arm_http_groups": 34,
+    "actual_arm_settings_groups": 17,
+    "actual_arm_codec_cases": 420,
+    "exact_codec_reference_images": 20,
+    "independent_poisoned_jpeg_abi_groups": 7,
+    "actual_browser_canvas_png_to_native_http": true,
+    "writer_mocks": 116,
+    "node_release_tests": 12,
+    "host_http_checks": 299,
+    "web_tests": 29,
+    "hardware_proof": false
+  },
+  "installation": {
+    "passed": true,
+    "full_five_page_readback": true,
+    "native_app_complete": true,
+    "safe_to_resume": true,
+    "protection_cache_context_closed": true,
+    "outer_global": true,
+    "warm_readback": true,
+    "result_sha256": "67f4b632f015d966342e6a3542d8bb7e9af02edf531d21c48edfa826f49ea0d1",
+    "outer_result_sha256": "30b13415e34b2869b516061db6024743d6920fca3bd12c4ee1caf9900679a502",
+    "fresh_check": {
+      "patched": true,
+      "result_sha256": "7a7e936c4c5acd147301c61a85446dd915a7ca11b9ef01f244e418340005e269"
+    },
+    "own_restore_hardware_tested": false
+  },
+  "image_api": {
+    "endpoint": "/api/image",
+    "formats": [
+      "png",
+      "jpeg",
+      "vimg"
+    ],
+    "identification": "body signatures, no required Content-Type",
+    "dimensions": [
+      480,
+      320
+    ],
+    "max_bytes": 1048576,
+    "capabilities_status": 200,
+    "decoded_format": "RGB565LE",
+    "png": "8-bit noninterlaced, strict chunk CRC/order/metadata whitelist and complete stream",
+    "jpeg": "8-bit single-scan baseline; grayscale or three-component 444/422/420; no EXIF rotation",
+    "publication": "inactive receive buffer until complete validation and private-state cleanup; GUI owns slot swap",
+    "images_persistent": false
+  },
+  "direct_http": {
+    "passed": true,
+    "scope": "Node requests and fresh read-only MEM-AP RGB565 snapshots; not browser or LCD acceptance",
+    "uploads": [
+      {
+        "fixture": "card-original.png",
+        "bytes": 2204,
+        "sha256": "ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e",
+        "status": 202
+      },
+      {
+        "fixture": "photo-jpeg-q85.jpg",
+        "bytes": 55134,
+        "sha256": "92258a039937a73071bb61f3ec8dc43a14269838b74fe8e38aba1c087ec90e13",
+        "status": 202
+      },
+      {
+        "fixture": "restore_default_png",
+        "bytes": 2204,
+        "sha256": "ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e",
+        "status": 202
+      }
+    ],
+    "pixel_readbacks": [
+      {
+        "fixture": "readback-card-original-png",
+        "pixel_match": true,
+        "sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "generation": 1,
+        "displayed_generation": 1,
+        "pending": 0,
+        "stable_slot_and_generation": true
+      },
+      {
+        "fixture": "readback-photo-jpeg-q85-jpg",
+        "pixel_match": true,
+        "sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "generation": 2,
+        "displayed_generation": 2,
+        "pending": 0,
+        "stable_slot_and_generation": true
+      },
+      {
+        "fixture": "after-bad-png",
+        "pixel_match": true,
+        "sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "generation": 2,
+        "displayed_generation": 2,
+        "pending": 0,
+        "stable_slot_and_generation": true
+      },
+      {
+        "fixture": "final-default",
+        "pixel_match": true,
+        "sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "generation": 3,
+        "displayed_generation": 3,
+        "pending": 0,
+        "stable_slot_and_generation": true
+      }
+    ],
+    "bad_png_crc": {
+      "status": 422,
+      "current_image_unchanged": true,
+      "generation_unchanged": true
+    },
+    "final_runtime": {
+      "alive": 1,
+      "ready": 1,
+      "server_state": 1,
+      "server_error": 0,
+      "generation": 3,
+      "displayed_generation": 3,
+      "pending": 0,
+      "gui_cycles_advancing": true
+    },
+    "timing_benchmark": false,
+    "resolved_capture_issue": "OpenOCD -f/-l Windows path escaping failed before init; normalized path in a fresh read-only process; accepted PNG POST was not replayed"
+  },
+  "settings": {
+    "current_get_seconds": 60,
+    "status": 200,
+    "settings_written_this_release": false,
+    "paths": [
+      "/data/86v1-return.0",
+      "/data/86v1-return.1"
+    ],
+    "scope": "Existing persisted setting loaded after install; save/power-cycle evidence is not inherited"
+  },
+  "frontend": {
+    "url": "https://wan.sh/xiaomi-86v1/",
+    "version_id": "2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5",
+    "deployed": true,
+    "format_choice": "Explicit send probes GET capabilities; PNG when supported, only explicit 404 selects VIMG; no failed POST retry",
+    "live_browser_upload": {
+      "passed": true,
+      "scope": "Official HTTPS editor Send button in agent Chrome; not user LCD or permission-click acceptance",
+      "capabilities_status": 200,
+      "post_count": 1,
+      "format": "png",
+      "bytes": 6050,
+      "sha256": "6c143f6a071c80c02f05be1fecfbf99012f63b6e09869c24a2f877f1a96bb965",
+      "content_type": null,
+      "status": 202,
+      "button_state": "success",
+      "javascript_errors": 0,
+      "local_network_permission": {
+        "initial": "prompt; capability GET waited and no POST was sent",
+        "test": "Origin-scoped CDP grant for https://wan.sh",
+        "restored": "prompt, confirmed by navigator.permissions"
+      },
+      "read_only_pixel_verification": {
+        "pixel_match": true,
+        "bytes": 307200,
+        "sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "stable_slot_and_generation": true,
+        "generation": 4,
+        "displayed_generation": 4,
+        "pending": 0,
+        "alive": 1,
+        "ready": 1,
+        "server_state": 1,
+        "server_error": 0
+      }
+    },
+    "static_and_browser_validation": {
+      "passed": true,
+      "official_path": "https://wan.sh/xiaomi-86v1/",
+      "deployed_version_id": "2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5",
+      "static_assets": [
+        {
+          "path": "assets/index-9MlYzZU2.css",
+          "status": 200,
+          "bytes": 12575,
+          "sha256": "4ea220f00891b708906dc491cec686bf445bf865f752c0cb66c570c3ad510975",
+          "exact_match": true
+        },
+        {
+          "path": "assets/index-J3LokP87.js",
+          "status": 200,
+          "bytes": 42424,
+          "sha256": "c74241c9453f5280314a1d154585a1095f22e852c380272bc96fbadf97be2b7b",
+          "exact_match": true
+        },
+        {
+          "path": "favicon.svg",
+          "status": 200,
+          "bytes": 1830,
+          "sha256": "9deb6871422d648c4b38611b177a8e70d5b83b9f9f14e7adffc684c62866d750",
+          "exact_match": true
+        },
+        {
+          "path": "github-card.png",
+          "status": 200,
+          "bytes": 2204,
+          "sha256": "ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e",
+          "exact_match": true
+        },
+        {
+          "path": "index.html",
+          "status": 200,
+          "bytes": 720,
+          "sha256": "8b03e404289bf6212f113dc8868af2b5f9f00856bdf967bb6b9ff527d2a3755f",
+          "exact_match": true
+        }
+      ],
+      "exact_settings_spa_html": true,
+      "chrome_version": "154.0.8037.93",
+      "png_api_documentation": true,
+      "settings_navigation_and_direct_route": true,
+      "javascript_errors": 0,
+      "console_errors": 0,
+      "initial_lan_requests": 0,
+      "explicit_panel_api_actions": 0,
+      "acceptance": "Static/browser startup only; no upload, device display, settings read/save or firmware acceptance."
+    }
+  },
+  "user_observations": {
+    "LCD": "pending",
+    "gestures_and_doubletap": "pending",
+    "MiHome_online_and_control": "pending",
+    "browser_upload": "pending"
+  },
+  "cold_power_cycle": "skipped_by_user_request",
+  "uncertain_native_policy": "Preserve stopped state and NEEDS_INSPECTION; no automatic retry, resume, reset or native context replay",
+  "limitations": [
+    "Exact device and stock image only; no generic first-flash installer",
+    "New release own restore not hardware-tested",
+    "Real OOM, worker stack high-water and upload interruption are covered offline, not induced on device",
+    "PNG metadata whitelist may reject other browsers output; actual Chrome sRGB PNG is verified offline and by live HTTPS upload"
+  ]
+}

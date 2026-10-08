@@ -16,7 +16,48 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed release is maintained-idle-return-four-page-20261007-a, for this exact 1.50.10 image.
+- Current installed release is maintained-images-five-page-20261008-a, for this exact 1.50.10 image.
+  Candidate SHA 992b58c7aa72a162aca23756088ce8951467fa1d624ba8c7889a155ab430021b;
+  477-input freeze SHA 627a224c619b59a6813b47685e272cd19a4f8b25bb04af1bdbf690b31cf2a330.
+  Main/aux/net/codec are 3368/396/4012/2916B ending 0x3804be30/0x3807a8f0/0x3804dfac/0x38047bfc.
+  Fifth NOR page 0x927000 borrows only 0x38047098..0x38047dac in filldisk/fillcpu/fillmem diagnostics;
+  preserve page prefix156B/suffix592B and payload-exterior bytes. Entry page +d68/+d7c/+ca0 disabled
+  to3804b109; neighboring helper47dac has external callers and must remain intact.
+  Install codec→net→aux→code→entry; restore entry→code→aux→net→codec. Baseline is exact old image
+  experiment three pages plus stock net and stock codec. Never run four/three-page writers on this set.
+  Own frozen executor and adjacent verifier at complete byte-matching C:\p86-img-a are required.
+  168B caller/native execution kernel unchanged; controller0/live pointer gates, reset isolation,
+  full five-page/cache/protection/context closure, final GLOBAL and fresh warm readback passed.
+  Previous idle-a's own four-page restore passed first; its original result remains unchanged.
+  Fresh five-page check patched=true. New release own hardware restore remains untested.
+  Context remains224B/settings ABI unchanged. Network worker attributes retain native prefix
+  00010064/0/0 and grow stack4096→16384. PNG/JPEG use per-request private native state and row buffers;
+  never shared FILE/GUI wrappers/cache, nor native code/global callback patches.
+  JPEG uses exact interior LTO initialization3806b765 and private array callback LR3806b5a5 exit;
+  fixed frame/setjmp ABI and guards are image-specific. Models load stock then actual allocated
+  PROGBITS ELF sections, never PT_LOAD zero-filled gaps which overwrite needed stock code.
+  GET /api/image returns PNG/JPEG/VIMG capabilities; POST recognizes body signatures, length1..1MiB,
+  PNG480x320/8-bit/noninterlaced with metadata whitelist; JPEG single baseline gray/444/422/420.
+  Content-Type ignored, nonidentity Content-Encoding rejected. Decode only to inactive slot, validate
+  complete stream/warnings/cleanup before pending. Images remain RAM-only; no failed POST auto retry.
+  420 codec cases,36UI/34HTTP/17settings ARM groups,7 independent poisoned ABI groups,116 actual-candidate
+  writer mocks,12 release tests,299 host parser checks,29 web tests passed; OS boundaries are modeled.
+  Direct real PNG2204B and JPEG55134B POST202 and full307200B RGB565 readbacks exact; gen/display1,2.
+  Bad PNG CRC422 preserved previous pixels/gen2. Final defaultPNG202 had gen/display3,pending0,
+  alive/ready1,server1/error0 and advancing GUI cycles. Settings GET200 returned60 without writes.
+  These are Node/MEM-AP results, not LCD/user browser/MiHome observations or timing benchmarks.
+  Official frontend 2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5 deployed; HTML and four assets exact200,
+  Chrome154 PNG API/settings navigation+refresh passed, zero page/console errors and initialLANrequests.
+  Actual official HTTPS Send returned capabilityGET200 and one6050B PNG POST202/noContent-Type.
+  Agent Chrome origin-scoped CDP local-network grant was temporary and restored to prompt; initial
+  prompt had GET waiting/noPOST. This is not user permission-click or all-browser evidence.
+  Subsequent read-only MEM-AP full565 snapshot matched default pixels; gen/display4,pending0,
+  alive/ready1,server1/error0 and stable slot/generation. LCD/user gestures/MiHome remain pending.
+  Frontend explicit send queries capabilities, sends PNG; only404 uses legacyVIMG; no automaticLAN
+  calls on page load. Public result firmware/releases/maintained-images-20261008-a.json records stages.
+  Cold power-cycle remains user-skipped, do not ask again. Preserve NEEDS_INSPECTION on uncertainty;
+  no automatic retry/reset/resume/native replay. No device identities or actual LAN addresses in Git.
+- Previous installed release was maintained-idle-return-four-page-20261007-a, for this exact 1.50.10 image.
   Candidate SHA 6022cbd3e41cfc913a260ff17855582c47656318227dfb6defc55230be503f55;
   382-input freeze SHA 660534d525762b83b8029b3adebd82a20d84723d5706e53afc6f6790a5c64cb4.
   Main/aux/net are 3344/396/4072 B ending 0x3804be18/0x3807a8f0/0x3804dfe8.

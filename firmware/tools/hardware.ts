@@ -31,10 +31,10 @@ async function openocd(workspace: string, cfg: string, capture: string, label: s
   if (status !== 0) throw new Error(`${label} failed (${status}); inspect ${log}. No automatic retry or reset.`);
 }
 
-async function readState(workspace: string, capture: string, label: string) {
+async function readState(workspace: string, capture: string, label: string, pages: string[]) {
   const cfg = join(capture, label + '.cfg');
   const commands = ['source [find swd-memory.cfg]', 'adapter speed 1000', 'init'];
-  for (const page of ['92b000', 'ccd000', '95a000', '92d000'])
+  for (const page of pages)
     commands.push(`dump_image ${tclPath(join(capture, label + '-' + page + '.bin'))} 0x28${page} 4096`);
   commands.push('set panel_context [lindex [read_memory 0x384fc864 32 1] 0]',
     'if {$panel_context>=0x38000000 && $panel_context<0x39000000 && ($panel_context&3)==0} {',
@@ -46,8 +46,8 @@ async function readState(workspace: string, capture: string, label: string) {
   await openocd(workspace, cfg, capture, label);
 }
 
-function pageHashes(capture: string, label: string) {
-  return Object.fromEntries(['92b000', 'ccd000', '95a000', '92d000'].map(page => {
+function pageHashes(capture: string, label: string, pages: string[]) {
+  return Object.fromEntries(pages.map(page => {
     const bytes = readFileSync(join(capture, label + '-' + page + '.bin'));
     if (bytes.length !== 4096) throw new Error('Incomplete page capture');
     return [parseInt(page, 16), sha(bytes)];
@@ -78,6 +78,10 @@ async function main() {
   const { verifyRelease } = await import(new URL('./release.ts', import.meta.url).href);
   const verified = verifyRelease(root, name);
   if (!verified.frozen) throw new Error('Independent reviews and freeze are required before hardware access');
+  const pages = ['927000', '92b000', '92d000', '95a000', 'ccd000'];
+  const declaredPages = Object.values(verified.candidate.pages).map(page => page.offset.toString(16)).sort();
+  if (JSON.stringify(declaredPages) !== JSON.stringify(pages))
+    throw new Error('Executor admits only the five reviewed page offsets');
   mkdirSync(hardware, { recursive: true });
   writeFileSync(lock, `${process.pid}\n`, { flag: 'wx' });
   const capture = join(hardware, mode + '-' + new Date().toISOString().replaceAll(/[:.]/g, '-') + '-' + process.pid);
@@ -86,8 +90,8 @@ async function main() {
   try {
     if (mode !== 'check' && existsSync(uncertain))
       throw new Error('A previous operation needs inspection. Read-only check remains available; do not blindly retry.');
-    await readState(workspace, capture, 'before');
-    const before = pageHashes(capture, 'before');
+    await readState(workspace, capture, 'before', pages);
+    const before = pageHashes(capture, 'before', pages);
     const matches = (state: 'original' | 'patched') => Object.values(verified.candidate.pages)
       .every(page => before[page.offset] === page[state + 'Sha256']);
     const original = matches('original'), patched = matches('patched');
@@ -100,7 +104,7 @@ async function main() {
       return;
     }
     if (mode === 'install' ? !original : !original && !patched)
-      throw new Error('Live four-page set is unknown or mixed. No reset, native call or Flash write attempted.');
+      throw new Error('Live release pages are unknown or mixed. No reset, native call or Flash write attempted.');
     const operationCfg = join(capture, 'operation.cfg');
     const outer = join(capture, 'outer-result.txt');
     writeFileSync(operationCfg, [
@@ -110,14 +114,14 @@ async function main() {
     writeFileSync(uncertain, `Inspect before repeating any mutation: ${capture}\n`, { flag: 'wx' });
     summary.hardwareMutationPossible = true;
     writeFileSync(join(capture, 'result.json'), JSON.stringify(summary, null, 2) + '\n');
-    console.log(`Executing ${mode}: four NOR pages 92b000/92d000/95a000/ccd000; one warm reboot. Capture: ${capture}`);
+    console.log(`Executing ${mode}: ${pages.length} NOR pages ${pages.join('/')}; one warm reboot. Capture: ${capture}`);
     await openocd(workspace, operationCfg, capture, 'operation');
     closedOuter(readFileSync(outer, 'utf8'), mode);
     /* A completed GLOBAL may briefly lose DP. Retry only a fresh read-only process. */
     let afterLabel = '';
     for (let attempt = 1; attempt <= 4; attempt++) {
       const label = 'after-' + attempt;
-      try { await readState(workspace, capture, label); afterLabel = label; break; }
+      try { await readState(workspace, capture, label, pages); afterLabel = label; break; }
       catch (error) {
         const log = join(capture, label + '.log');
         if (attempt === 4 || !existsSync(log) ||
@@ -125,14 +129,14 @@ async function main() {
         await new Promise(accept => setTimeout(accept, 1000));
       }
     }
-    const after = pageHashes(capture, afterLabel);
+    const after = pageHashes(capture, afterLabel, pages);
     const state = mode === 'install' ? 'patchedSha256' : 'originalSha256';
     if (!Object.values(verified.candidate.pages).every(page => after[page.offset] === page[state]))
       throw new Error('Warm readback differs from exact release pages; inspect without replaying the writer.');
     summary.passed = true; summary.after = { pages: after };
     writeFileSync(join(capture, 'result.json'), JSON.stringify(summary, null, 2) + '\n');
     unlinkSync(uncertain);
-    console.log(JSON.stringify({ capture, passed: true, fullPages: 4, warmReadback: true }));
+    console.log(JSON.stringify({ capture, passed: true, fullPages: pages.length, warmReadback: true }));
   } finally { unlinkSync(lock); }
 }
 

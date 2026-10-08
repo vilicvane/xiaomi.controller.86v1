@@ -1,5 +1,6 @@
 #include "panel.h"
 #include "http.h"
+#include "image-codec.h"
 
 int panel_exact(int fd, u8 *data, u32 bytes, u32 start, u32 sending)
 {
@@ -54,18 +55,35 @@ static unsigned headers(struct incoming *input, u8 *buffer,
     return 431;
 }
 
-static unsigned image(struct broker *c, struct incoming *input)
+__attribute__((section(".text.codec.http"), noinline))
+static unsigned image(struct broker *c, struct incoming *input, unsigned length)
 {
-    u32 header[4];
-    if (body(input, (u8 *)header, sizeof(header)) || header[0] != 0x474d4956u ||
-        header[1] != 0x014001e0u || header[2] != PANEL_IMAGE_BYTES) return 400;
+    u32 header[4] = {0};
+    unsigned prefix = length < sizeof(header) ? length : sizeof(header);
+    if (body(input, (u8 *)header, prefix)) return 400;
+    int raw = header[0] == 0x474d4956u;
+    if (raw) {
+        if (length != PANEL_HTTP_BODY_BYTES || header[1] != 0x014001e0u ||
+            header[2] != PANEL_IMAGE_BYTES) return 400;
+    } else if (!((header[0] == 0x474e5089u && header[1] == 0x0a1a0a0du) ||
+                 (header[0] & 0xffffu) == 0xd8ffu)) return 415;
     u8 *destination = 0;
     if (!LOCK(c->mutex, 0)) { destination = (u8 *)c->receive; UNLOCK(c->mutex); }
     if (!destination) return 503;
-    if (body(input, destination, PANEL_IMAGE_BYTES)) return 400;
-    u32 checksum = 2166136261u;
-    for (u32 i = 0; i < PANEL_IMAGE_BYTES; ++i) checksum = (checksum ^ destination[i]) * 16777619u;
-    if (checksum != header[3]) return 422;
+    if (raw) {
+        if (body(input, destination, PANEL_IMAGE_BYTES)) return 400;
+        u32 checksum = 2166136261u;
+        for (u32 i = 0; i < PANEL_IMAGE_BYTES; ++i) checksum = (checksum ^ destination[i]) * 16777619u;
+        if (checksum != header[3]) return 422;
+    } else {
+        u8 *encoded = ALLOC(length);
+        if (!encoded) return 503;
+        for (unsigned i = 0; i < prefix; ++i) encoded[i] = ((u8 *)header)[i];
+        unsigned status = body(input, encoded + prefix, length - prefix) ? 400 :
+                          panel_image_decode(encoded, length, (u16 *)destination);
+        FREE(encoded);
+        if (status) return status;
+    }
     unsigned status = 503;
     if (!LOCK(c->mutex, 0)) {
         if (c->alive) { c->image_pending = 1; status = 202; }
@@ -75,19 +93,22 @@ static unsigned image(struct broker *c, struct incoming *input)
 }
 
 static void reply(struct broker *c, int fd, char *buffer, unsigned status,
-                  unsigned settings, unsigned seconds)
+                  unsigned resource, unsigned seconds)
 {
     static const char welcome[] =
         "86V1 custom firmware\nFrontend URL is not configured.\n"
-        "POST /api/image accepts VIMG + 480x320 RGB565LE.\n";
+        "POST /api/image accepts 480x320 PNG, JPEG or VIMG.\n";
+    static const char formats[] = "{\"formats\":[\"png\",\"jpeg\",\"vimg\"]}\n";
     char json[PANEL_SETTINGS_BODY_BYTES];
     unsigned size = 0;
     const char *payload = welcome;
     if (status == 200) {
-        if (settings) {
+        if (resource == PANEL_HTTP_SETTINGS) {
             int length = SNPRINTF(json, sizeof(json), "{\"return_after_seconds\":%u}\n", seconds);
             if (length < 0 || (unsigned)length >= sizeof(json)) return;
             size = (unsigned)length; payload = json;
+        } else if (resource == PANEL_HTTP_IMAGE) {
+            size = sizeof(formats) - 1u; payload = formats;
         } else size = sizeof(welcome) - 1u;
     }
     /* HTTP/1.1 permits an empty reason phrase after the status code and space. */
@@ -97,7 +118,8 @@ static void reply(struct broker *c, int fd, char *buffer, unsigned status,
         "Access-Control-Allow-Origin: %s\r\n"
         "Access-Control-Allow-Methods: GET, POST\r\nAccess-Control-Allow-Headers: Content-Type\r\n"
         "Allow: GET, POST, OPTIONS\r\n", status, size,
-        settings ? "application/json" : "text/plain; charset=utf-8", PANEL_FRONTEND_ORIGIN);
+        resource == PANEL_HTTP_SETTINGS || (resource == PANEL_HTTP_IMAGE && status == 200) ?
+        "application/json" : "text/plain; charset=utf-8", PANEL_FRONTEND_ORIGIN);
     if (n < 0 || (u32)n >= PANEL_HTTP_HEADER_BYTES) return;
     u32 used = (u32)n;
     if (status == 303) {
@@ -160,12 +182,11 @@ void panel_server(struct broker *c)
         c->server_state = 2;
         struct incoming input = {fd, buffer, 0, 0};
         struct panel_http_request request = {0};
-        unsigned settings = 0, seconds = 0;
+        unsigned seconds = 0;
         unsigned status = panel_clock(&input.start) ? 503 : headers(&input, buffer, &request);
         if (!status) {
-            settings = request.resource == PANEL_HTTP_SETTINGS;
             if (request.method == PANEL_HTTP_OPTIONS) status = 204;
-            else if (settings) {
+            else if (request.resource == PANEL_HTTP_SETTINGS) {
                 if (request.method == PANEL_HTTP_POST) {
                     char data[PANEL_SETTINGS_BODY_BYTES];
                     status = body(&input, (u8 *)data, request.length) ? 400 :
@@ -182,10 +203,11 @@ void panel_server(struct broker *c)
                         UNLOCK(c->mutex); status = 200;
                     }
                 }
-            } else if (request.method == PANEL_HTTP_POST) status = image(c, &input);
+            } else if (request.method == PANEL_HTTP_POST) status = image(c, &input, request.length);
+            else if (request.resource == PANEL_HTTP_IMAGE) status = 200;
             else status = PANEL_FRONTEND_URL[0] ? 303 : 200;
         }
-        reply(c, fd, (char *)buffer, status, settings, seconds);
+        reply(c, fd, (char *)buffer, status, request.resource, seconds);
         CLOSE(fd);
         c->server_error = status < 400 ? 0 : status;
         c->server_state = 1;

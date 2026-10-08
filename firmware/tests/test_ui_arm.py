@@ -14,7 +14,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'analysis/image-push'))
 import test_native_image_drawer_arm as image
-from unicorn.arm_const import UC_ARM_REG_R0
+from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R1
 
 ELF = Path(os.environ.get('PANEL_FIRMWARE_ELF',ROOT/'build/panel/panel.elf'))
 image.smooth.original.old.ELF = ELF
@@ -35,6 +35,13 @@ class Machine(image.Machine):
     def f(self,name,value=None): return self.field(F[name],value)
 
     def hook(self,address,method):
+        if address==0x383acc04:
+            def create():
+                attribute=self.uc.reg_read(UC_ARM_REG_R1)
+                assert attribute and attribute%4==0
+                assert bytes(self.uc.mem_read(attribute,16))==struct.pack('<4I',0x10064,0,0,16384)
+                method()
+            return super().hook(address,create)
         if address in (0x3800da2c,0x3800c1f8):
             def lock():
                 destination=self.uc.reg_read(UC_ARM_REG_R0)

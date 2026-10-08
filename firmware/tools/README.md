@@ -2,9 +2,11 @@
 
 `release.ts` 用 Node 24 的原生 TypeScript strip-types 运行，不需要 npm 依赖。
 它只准备、检查及绑定独立审查材料，**没有设备连接、live read 或 execute 命令**。
-当前离线候选采用本机 1.50.10 的独立四页方案：主 3432B、辅助 444B 的既有边界不变，
-网络段限 `0x3804d000..0x3804dff0`（4080B）。第四页属于单独审查的 `uorb_unit_test`，
-不能凭空间空闲或旧三页实验认定可写。任何段溢出立即拒绝。
+当前源码候选采用本机 1.50.10 的独立五页方案：主 3432B、辅助 444B 的既有边界不变，
+网络段限 `0x3804d000..0x3804dff0`（4080B），图片解码段限
+`0x38047098..0x38047dac`（3348B）。两个额外区域分别审查 `uorb_unit_test` 与
+`filldisk/fillcpu/fillmem` 的引用及入口，不能凭空白字节认定可写。任何段溢出立即拒绝。
+旧四页 release 继续使用各自的冻结执行器和相邻验证器，canonical 工具不代替旧快照。
 
 ## 流程
 
@@ -16,7 +18,7 @@ node --test firmware/tools/release.test.ts
 ```
 
 `baseline` 检查已冻结 image drawer 的精确 93 项输入、递归的 317 项历史集合、完整三页
-布局、168B caller，以及从完整 stock backup 提取的精确第四页。它不生成或改写旧文件，
+布局、168B caller，以及从完整 stock backup 提取的精确网络页和解码页。它不生成或改写旧文件，
 也不启动 OpenOCD。原冻结目录的 SHA 固定为
 `fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61`。
 
@@ -37,34 +39,35 @@ node firmware/tools/release.ts verify my-first-candidate
 
 | 路径 | 内容 |
 | --- | --- |
-| `candidate.json` | schema2 四页布局、来源、snapshot SHA、固定顺序，状态 candidate |
+| `candidate.json` | schema3 五页布局、来源、snapshot SHA、固定顺序，状态 candidate |
 | `snapshot/firmware/` | 可维护源码、头文件、端口链接/入口、构建记录器、release 和单独审查的 hardware 工具快照 |
-| `snapshot/build/panel/` | config、完成的 build 记录、三段 BIN、ELF、map |
-| `snapshot/reviews/storage-ownership.json` | 第四页明确已审核的 ownership 材料 |
+| `snapshot/build/panel/` | config、完成的 build 记录、四段 BIN、ELF、map |
+| `snapshot/reviews/storage-ownership.json` | 网络页和解码页分别绑定的 ownership 材料 |
 | `snapshot/firmware/tests/` | 当前维护版 ARM/model/host 测试源码；作为审查输入，不冒充编译依赖或已通过结果 |
 | `ownership-inputs/` | ownership review 引用的逐项来源快照 |
-| `workspace/` | 原冻结依赖的原字节副本、新四页及私有 writer/stage/session/mock |
+| `workspace/` | 原冻结依赖的原字节副本、新五页及私有 writer/stage/session/mock |
 
-当前 image drawer 的 patched 三页与精确 stock 第四页共同成为新 release 的
+旧图片实验程序的 patched 三页与精确 stock 网络页、解码页共同成为新 release 的
 **original**。新代码只覆盖各容器内自己的字节；网络页头 4B、尾 12B 以及所有其他
 尾部字节保留。入口页仅将 `+0xc3c` 的 `uorb_unit_test` 函数指针从 `0x3804cf3d`
-改成禁用 stub `0x3804b109`。restore 返回精确 image drawer 三页和 stock 网络页；
-再回更早版本必须使用原版本自己的链。
+改成禁用 stub `0x3804b109`，并禁用 `+0xd68/+0xd7c/+0xca0` 的三个 fill 诊断入口。
+解码页前 156B、后 592B 保留，所有段仅替换实际 BIN 的长度。restore 返回精确旧图片
+实验程序三页和两个原厂依赖页；再回更早版本必须使用原版本自己的链。
 
 Tcl writer、完整 stages 的 foreach/proc、outer 两 session 与 Python mock 从冻结原文
 生成到私有 workspace。168B caller 和原 `execute_call` 原样保留；stage 白名单仅增加
-同一 erase/program/cache callee 对固定第四页的入口，每页仍是 16 个 256B program
-单元及完整 4KiB 读回。四页基线必须在首次 mutation 前一起匹配；install 固定
-net→aux→code→entry，restore 固定 entry→code→aux→net，阶段之间验证完整页及状态。
-A7/WF/BT 持续保持复位；四页最终字节、保护/QE/WIP、I/D cache、native return/context
+同一 erase/program/cache callee 对固定网络页和解码页的入口，每页仍是 16 个 256B program
+单元及完整 4KiB 读回。五页基线必须在首次 mutation 前一起匹配；install 固定
+codec→net→aux→code→entry，restore 固定 entry→code→aux→net→codec，阶段之间验证完整页及状态。
+A7/WF/BT 持续保持复位；五页最终字节、保护/QE/WIP、I/D cache、native return/context
 都闭合后才允许完成 gate。session 前有 candidate gate；设备入口须由另行审查的
 `hardware.ts` 验证完整 freeze 后开放。本工具自身不执行它，也不能直接运行 candidate
 session。新 writer 必须另做独立审查，旧三页通过结果不能替代。
 
 Python 仅用于私有生成的独立 mock，TypeScript 管理准备和冻结；没有新增 Python 业务
-生成器。mock 的 rollback fixture 改为 image drawer 加 stock net，保留 70 个原有故障
-场景并增加 23 个第四页场景。旧 case 标签中的 fast-tap/image 命名属于历史名称，私有
-fixture 的明确含义以四页原始/补丁数据为准。OpenOCD exe 沿用冻结值，两份 DLL 和
+生成器。mock 的 rollback fixture 改为旧图片实验三页加 stock net 和 stock codec，保留 70 个原有故障
+场景并增加网络页、解码页各 23 个场景，共 116 项。旧 case 标签中的 fast-tap/image 命名属于历史名称，私有
+fixture 的明确含义以五页原始/补丁数据为准。OpenOCD exe 沿用冻结值，两份 DLL 和
 CMSIS-DAP 接口配置作为新的 snapshot 输入绑定，不能声称它们属于旧 93 项冻结。
 Windows xPack 的原配置位于 `tools/xpack-openocd-0.12.0-7/openocd/scripts/interface/cmsis-dap.cfg`；
 release 保留这个路径的原字节副本，同时为 `-s diagnostics` 提供
@@ -87,17 +90,22 @@ mock 使用复制的 exe/Jim 引擎，harness 屏蔽 init、adapter、reset、ha
 closed-return/posted transport，reset/fault，cache 闭合，错误来源/页号/任意 stage 拒绝，
 以及安装/回滚依赖顺序。离线通过不证明实机时序或掉电恢复。
 
-## 第四页 ownership 输入
+## 网络页与解码页 ownership 输入
 
 `prepare` 必须显式传入已经完成的 `storage-ownership-review` JSON；缺省拒绝。字段为
 `role`、`passed: true`、`firmware: "1.50.10"`、`baseline_freeze_sha256`、
 `stock_backup_sha256`、`net_page_sha256`、`net_offset`、`runtime_start`、
 `runtime_end_exclusive`、`builtin_entry_offset`、`builtin_original_word`、
-`builtin_disabled_word`，以及非空 `evidence_sha256`。地址接受十六进制字符串或数字，
+`builtin_disabled_word`；解码页另有 `codec_page_sha256`、`codec_offset`、
+`codec_runtime_start`、`codec_runtime_end_exclusive` 和三个 `codec_builtin_entries`
+（`offset` / `original_word` / `disabled_word`）。另须 `net_review` 与 `codec_review`
+分别指向不同的实际审查文件（`path` / `sha256`），两者都在非空 `evidence_sha256` 中绑定。
+地址接受十六进制字符串或数字，
 但必须精确匹配上述布局。
 
 stock backup SHA 是 `777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b`；
 net 页 SHA 是 `76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d`。
+codec 页 SHA 是 `21c40d397e6ec14f61011544f736962470f623c91ba3bbf7a6d89d120ba23c02`。
 `evidence_sha256` 必须包含完整 backup 路径/上述 hash，并绑定实际 ownership 审查来源。
 工具验证已提供审查材料与字节，不会自动把扫描结果标成 approved。
 
@@ -120,7 +128,7 @@ program review、writer review、当前 actual ARM ELF model 和当前 writer mo
 每份证据必须是不同的 JSON artifact，并明确包含 `role`、`passed: true`、
 `release_manifest_sha256`（candidate.json 完整 hash）、`reviewed_inputs`（candidate
 全部 inputs 的逐项 hash）。ARM artifact 另须 `scope: "actual-arm"`、正数 `check_count`
-和当前 `elf_sha256`；mock artifact 须 `all_passed: true` 及 93 个全通过、名称不重复、
+和当前 `elf_sha256`；mock artifact 须 `all_passed: true` 及 116 个全通过、名称不重复、
 精确覆盖继承和新增场景的 `cases`（`case`/`passed`）。storage artifact 另须
 `ownership_sha256` 绑定 candidate 的 ownership JSON。不能给旧 result 补字段冒充审查。
 

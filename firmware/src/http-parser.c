@@ -66,6 +66,8 @@ unsigned panel_http_parse(const char *data, unsigned bytes,
         while (value_end > value && (data[value_end - 1] == ' ' || data[value_end - 1] == '\t')) --value_end;
         if (equal(data + pos, colon - pos, "transfer-encoding", 1)) return 400;
         if (equal(data + pos, colon - pos, "expect", 1)) return 417;
+        if (equal(data + pos, colon - pos, "content-encoding", 1) &&
+            !equal(data + value, value_end - value, "identity", 1)) return 415;
         if (equal(data + pos, colon - pos, "content-length", 1)) {
             if (has_length++ || value == value_end) return 400;
             for (unsigned i = value; i < value_end; ++i) {
@@ -82,16 +84,19 @@ unsigned panel_http_parse(const char *data, unsigned bytes,
     if (!method) return 405;
     unsigned resource;
     if (equal(data + target, target_bytes, "/api/settings", 0)) resource = PANEL_HTTP_SETTINGS;
-    else if (equal(data + target, target_bytes,
-                   method == PANEL_HTTP_GET ? "/" : "/api/image", 0))
-        resource = method == PANEL_HTTP_GET ? PANEL_HTTP_ROOT : PANEL_HTTP_IMAGE;
+    else if (equal(data + target, target_bytes, "/api/image", 0)) resource = PANEL_HTTP_IMAGE;
+    else if (method == PANEL_HTTP_GET && equal(data + target, target_bytes, "/", 0))
+        resource = PANEL_HTTP_ROOT;
     else return 404;
     if (method == PANEL_HTTP_POST) {
         if (!has_length) return 411;
         if (resource == PANEL_HTTP_SETTINGS) {
             if (length > PANEL_SETTINGS_BODY_BYTES) return 413;
             if (!length) return 400;
-        } else if (length != PANEL_HTTP_BODY_BYTES) return length > PANEL_HTTP_BODY_BYTES ? 413 : 400;
+        } else {
+            if (length > PANEL_HTTP_IMAGE_MAX_BYTES) return 413;
+            if (!length) return 400;
+        }
     } else if (length) return 400;
     request->method = method;
     request->length = length;

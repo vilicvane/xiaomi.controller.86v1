@@ -1,6 +1,6 @@
 # 工程约束与稳定知识
 
-整理日期：2026-10-07。适用设备：本机 `xiaomi.controller.86v1`，官方映像 **1.50.10**。
+整理日期：2026-10-08。适用设备：本机 `xiaomi.controller.86v1`，官方映像 **1.50.10**。
 本页收敛跨实验仍有效的约束；当前版本、运行布局与证据见 [架构](architecture.md)。
 旧逐轮记录原文保留在 [研究归档](research/engineering-log-through-image-drawer.md)。
 
@@ -75,6 +75,21 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
 `0x3804d000..0x3804dff0`；页头 4B、尾 12B 和 payload 外原字节保留。它位于被禁用的
 单个 `uorb_unit_test` 命令内部，不是从全 FF 模式推断出来的空闲区。
 
+PNG/JPEG 后继版本另审查 NOR 页 `0x927000` 中的
+`0x38047098..0x38047dac`（3348B），借用 `filldisk/fillcpu/fillmem` 诊断组。
+完整 stock 页 SHA 为 `21c40d397e6ec14f61011544f736962470f623c91ba3bbf7a6d89d120ba23c02`；
+保留页头 156B、页尾 592B 和实际 payload 外的字节，禁用入口页 `+0xd68/+0xd7c/+0xca0`
+三个 builtin。相邻 `0x38047dac` helper 仍有其他调用者，不能覆盖。新五页安装必须从
+精确旧图片实验三页加两个 stock 依赖页开始，先恢复当前 release，不能叠加。
+
+原厂 PNG/JPEG 逐行解码使用每请求私有状态，只写备用 RGB565 槽，完整收尾后才交给 GUI。
+JPEG 初始化使用本映像固定的 LTO 内部片段，而非公共导出 API；其私有 frame、返回地址、
+回调和 native setjmp ABI 都要绑定精确字节。不得调用共享 FILE/GUI wrapper 或重新初始化
+原界面图像/字库 cache。网络 worker 使用已审查的 16KiB pthread 栈属性。
+
+实际 ARM 模型加载 stock 后，只覆盖 ELF 的 allocated PROGBITS sections，不能平铺
+PT_LOAD 中的零填空隙。堆与栈的模型数字属于观察，不保证设备上所有调用路径的上界。
+
 - **logical NOR controller 0 为 `0x40148000`**，访问前核对本映像 live pointer table。
   不访问未使用的 `0x40140000`，它曾造成调试总线锁死并需要完全断电。
 - 硬件操作串行，只有一个负责人持有 OpenOCD/native call；离线分析可并行。
@@ -95,7 +110,8 @@ closing/type/fbfd；不重新启动已关闭 timer。原 PAN 包含 SMP spin/WFE
   维护版先完整恢复旧图片实验版三页加原厂网络页，才允许进入旧三页回退链。
 - GLOBAL 后特定 IDR 暂时不可读，仅允许全新的只读连接重试；不重放 writer 或 native call。
 - 历史写入/恢复是在健康 MAIN 状态实测；d 的四页 restore 在 d→g 升级中通过，
-  g 自身 restore 在 g→a 迁移中通过，a 四页安装与暖读回已通过。a 自身 restore 尚未测试。
+  g 自身 restore 在 g→a 迁移中通过，a 四页安装与暖读回已通过；a 自身 restore 随后在
+  五页图片版迁移中通过，记录在新版本结果，原 a 结果保持当时字节。
   没有故意破坏 MAIN 后验证冷恢复。
   不宣称已具备任意故障状态的救砖能力。
 - OpenOCD `-l` 路径用正斜杠避免 Tcl 转义；日志分类应精确锚定顶层状态字段，不能把

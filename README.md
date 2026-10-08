@@ -42,7 +42,7 @@ JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供�
 
 具体命令、环境准备以及升级和恢复步骤见 **[完整刷写指南](docs/flashing.md)**。
 程序保存在 Flash 中，重启后仍会运行；上传的图片目前只保存在 RAM 中，重启后需要重新发送。
-当前 a 版已安装，安装与验证范围见 [发布结果](firmware/releases/maintained-idle-return-20261007-a.json)。
+当前图片格式支持版已安装，安装与验证范围见 [发布结果](firmware/releases/maintained-images-20261008-a.json)。
 
 ## 功能：自定义图片
 
@@ -58,7 +58,7 @@ JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供�
 6. 点击“发送画面”。如果浏览器询问本地网络访问权限，请允许；收到成功提示后查看面板画面。
 
 页面支持 PNG、JPEG、WebP 和 SVG，也可用方向键移动、`+` / `-` 缩放、`0` 重置。
-可以下载 PNG 留存，或下载完整 `.vimg` 文件用于 API 上传。
+可以下载 PNG 留存或直接用于 API 上传，也保留完整 `.vimg` 导出。
 
 当前固件取消了第三物理键三击切换。原界面息屏后会切回自定义画面，下次唤醒时显示它，
 继续使用原系统的背光和息屏设置。双击和上下滑不会清除已上传图片。
@@ -69,23 +69,28 @@ JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供�
 范围为 0–3600 秒。从网页导航进入“设置”，即可读取和保存等待时间，保存后按重启保留设计。
 物理按键不计入触摸，原系统的息屏规则独立生效。
 
-a 版的设置读写与暖重启保留已验证；自动返回和触摸延期的使用体验仍待用户确认。
+设置读写与暖重启保留已在此前版本验证；当前版重新读取为 60 秒，
+自动返回和触摸延期的使用体验仍待独立确认。
 使用方法和接口约定见 [自动返回说明](docs/auto-return.md)。
 
 ## 图片 API
 
-面板提供 `POST http://PANEL_IPV4:18086/api/image`。请求内容是完整 `.vimg` Payload，
-不能直接发送 PNG 或 JPEG。网页会完成裁切和格式转换；其他客户端可参考
+面板提供 `POST http://PANEL_IPV4:18086/api/image`，支持直接发送 **480×320 PNG 或 JPEG**，
+也接受完整 `.vimg`。设备按文件内容识别格式；网页负责裁切缩放，其他客户端可参考
 [HTTP 图片 API](docs/http-image-api.md)。
 
-下载 `.vimg` 后，也可以在能访问面板的电脑上发送：
+下载 PNG 后，也可以在能访问面板的电脑上发送：
 
 ```sh
-curl -X POST "http://PANEL_IPV4:18086/api/image" --data-binary "@picture-480x320.vimg"
+curl --data-binary "@picture-480x320.png" "http://PANEL_IPV4:18086/api/image"
 ```
 
 替换 IP 和文件名时，保留文件名前的 `@`，它表示读取文件内容。收到 HTTP 202 表示面板
 已接收并排队显示，图片不会写入 Flash。
+
+PNG 限 8-bit 非隔行；JPEG 支持常见单扫描 baseline，不支持 progressive 或 CMYK。
+透明图片铺黑底。文件最大 1MiB，设备不处理 EXIF 旋转；完整格式范围见协议文档。
+网页发送时自动查询支持能力，旧固件仍使用 VIMG。
 
 ## 开发
 
@@ -113,7 +118,7 @@ Cloudflare 发布使用 `npm --prefix web run deploy`，正式路径为 `/xiaomi
 | [HTTP 图片 API](docs/http-image-api.md) | 请求格式、响应及连接限制 |
 | [研究记录](docs/research-index.md) | 配网恢复、硬件探索和历史版本 |
 | [自动返回说明](docs/auto-return.md) | 定时返回、重启保留的设置及 API |
-| [当前发布结果](firmware/releases/maintained-idle-return-20261007-a.json) | 本次安装和验证范围 |
+| [当前发布结果](firmware/releases/maintained-images-20261008-a.json) | 本次安装和验证范围 |
 
 历史实验保留在 `analysis/`、`scripts/` 和研究文档中，包括此前的第三键三击逻辑。
 备份、设备身份、原始日志及第三方工具链不在 Git 中分发。

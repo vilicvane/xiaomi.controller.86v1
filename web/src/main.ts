@@ -15,7 +15,7 @@ import {
   imageBody,
   normalizeDeviceEndpoint,
   rgbaToRgb565,
-  sendImage,
+  sendCanvasImage,
 } from "./panel-api.ts";
 const github =
   '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.77-.24.77-.54v-2.1c-3.12.68-3.78-1.32-3.78-1.32-.51-1.3-1.24-1.65-1.24-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.62 1.22 3.26.93.1-.73.39-1.22.71-1.5-2.49-.28-5.1-1.24-5.1-5.54 0-1.23.44-2.23 1.16-3.01-.12-.28-.5-1.42.11-2.96 0 0 .95-.3 3.08 1.15a10.7 10.7 0 0 1 5.6 0c2.14-1.45 3.08-1.15 3.08-1.15.61 1.54.23 2.68.11 2.96.73.78 1.16 1.78 1.16 3.01 0 4.32-2.61 5.26-5.11 5.54.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8Z"/></svg>';
@@ -49,7 +49,7 @@ document.querySelector("#app")!.innerHTML = `
       </aside>
     </div>
     <section class="api card" id="api" aria-labelledby="api-title"><div class="api-heading"><span class="api-icon">${icon("code")}</span><h2 id="api-title">图片上传 API</h2><span class="api-badge">HTTP</span></div>
-      <div class="api-body"><dl class="request-fields"><div><dt>Method</dt><dd><code class="method">POST</code></dd></div><div><dt>URL</dt><dd><code id="api-url">http://PANEL_IPV4:18086/api/image</code></dd></div><div><dt>Content-Length</dt><dd><code>307216</code> 字节</dd></div><div><dt>Payload</dt><dd>16 字节 VIMG 头 + 307200 字节 RGB565LE 像素</dd></div></dl><div><p>需要先将图片裁切缩放为 <strong>480 × 320</strong>，再编码成 RGB565LE，并添加 VIMG 头和 FNV-1a 校验。网页发送时会完成转换；下载的 VIMG Payload 已包含完整头部，可直接作为请求 body。</p><h3>cURL 示例</h3><pre class="api-example"><code id="api-curl"></code></pre><p>保留文件名前的 <code>@</code>，它表示让 cURL 读取本地文件内容。只将 <code>@</code> 后面的文件名或路径替换为下载的 <code>.vimg</code> 文件。cURL 会自动发送 Content-Length。</p><p><code>202</code> 表示面板已接收并排队显示。图片保存在 RAM，重启后清除。</p><a class="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md" target="_blank" rel="noopener noreferrer">完整协议 ${icon("arrow")}</a></div></div></section>
+      <div class="api-body"><dl class="request-fields"><div><dt>Method</dt><dd><code class="method">POST</code></dd></div><div><dt>URL</dt><dd><code id="api-url">http://PANEL_IPV4:18086/api/image</code></dd></div><div><dt>Content-Length</dt><dd>文件实际字节数，最大 <code>1 MiB</code></dd></div><div><dt>Payload</dt><dd>完整的 480 × 320 PNG 或 JPEG 文件</dd></div></dl><div><p>将图片裁切缩放为 <strong>480 × 320</strong> 后，直接发送图片文件即可，不需要专用头部或 Content-Type。网页下载的 PNG 可直接用于 API；网页发送时会检查固件能力，旧版设备仍使用 VIMG。</p><h3>cURL 示例</h3><pre class="api-example"><code id="api-curl"></code></pre><p>保留文件名前的 <code>@</code>，它表示让 cURL 读取本地文件内容。只将 <code>@</code> 后面的文件名或路径替换为下载的 <code>.png</code> 文件，或其他符合格式要求的 JPEG。cURL 会自动发送 Content-Length。旧版固件请使用下载的 <code>.vimg</code> 文件。</p><p><code>202</code> 表示面板已接收并排队显示。图片保存在 RAM，重启后清除。</p><a class="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md" target="_blank" rel="noopener noreferrer">完整协议 ${icon("arrow")}</a></div></div></section>
     </div>
     <section id="settings-page" hidden></section>
     <section id="not-found-page" class="not-found card" hidden><h2 tabindex="-1">找不到这个页面</h2><a href="${BASE}" class="button secondary" data-page="editor">返回画面 ${icon("arrow")}</a></section>
@@ -339,6 +339,17 @@ canvas.addEventListener("keydown", (event) => {
 function pixels() {
   return rgbaToRgb565(ctx.getImageData(0, 0, FRAME.width, FRAME.height).data);
 }
+function pngBody(): Promise<Uint8Array<ArrayBuffer>> {
+  return new Promise((resolve, reject) => {
+    imageCanvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("无法生成 PNG 图片，尚未上传。"));
+        return;
+      }
+      void blob.arrayBuffer().then((buffer) => resolve(new Uint8Array(buffer)), reject);
+    }, "image/png");
+  });
+}
 function download(blob: Blob, extension: string, name = basename) {
   const url = URL.createObjectURL(blob),
     link = document.createElement("a");
@@ -399,7 +410,9 @@ element<HTMLFormElement>("send-form").addEventListener(
     status("正在发送画面，请稍候…", "working");
     try {
       const sentRevision = revision;
-      await sendImage(endpoint, imageBody(pixels()));
+      const vimg = imageBody(pixels());
+      const png = await pngBody();
+      await sendCanvasImage(endpoint, png, vimg);
       let addressChanged = true;
       try {
         addressChanged =
@@ -438,7 +451,7 @@ function updateApiUrl() {
   const url = `${endpoint}/api/image`;
   element("api-url").textContent = url;
   element("api-curl").textContent =
-    `curl -X POST "${url}" --data-binary "@xiaomi-panel-github-480x320.vimg"`;
+    `curl --data-binary "@xiaomi-panel-github-480x320.png" "${url}"`;
 }
 // Navigo decodes query components strictly; normalize user-supplied escapes first.
 const query = new URLSearchParams(location.search).toString();

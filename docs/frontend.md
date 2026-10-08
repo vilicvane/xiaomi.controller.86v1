@@ -2,10 +2,16 @@
 
 本页面用于 86V1 自定义固件的图片下拉屏幕功能。页面源码在 [web](../web/README.md)，
 使用 Vite 和 TypeScript 构建为静态文件，Navigo 管理页面路由；网页显示名称为“小米智能家庭面板”。
-目标画面固定为 480×320、横向 3:2；裁切、缩放和 RGB565 转换都在用户的浏览器执行。
-当前固件的图片接收程序处理已完成的像素，不解码 PNG/JPEG。
-a 的自动返回设置接口、真实读写与暖复位加载通过；设置页导航是后续网页维护，
-固件和用户观察范围保持原记录，不用网页改版推定实机验收。
+目标画面固定为 480×320、横向 3:2；裁切和缩放在用户的浏览器执行。
+当前已安装 `maintained-images-five-page-20261008-a`，设备端接收并解码 PNG/JPEG。
+网页在点击发送时查询设备能力，支持 PNG 时发送完整 PNG；旧 idle-return a 或 g 的能力查询
+明确返回 404 时才选择 VIMG。新版网页已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`，
+五项线上文件均为 200 且字节与构建一致；Chrome 启动无错误、无自动 LAN 请求。
+官方 HTTPS 页面的发送按钮已完成一次真实 PNG 上传：能力 GET 200、单次 POST 202，
+按钮显示“画面已接收”。本轮 LCD、米家及手势的用户观察仍独立待验收。
+本轮安装、Node 图片请求及 RGB565 读回见
+[images 发布结果](../firmware/releases/maintained-images-20261008-a.json)。历史 idle-return a 的设置
+读写和暖复位加载保持原范围；images 本轮仅 GET 读到已有设置 60 秒，未重新保存设置。
 
 页面从编辑工作区开始，默认显示此前设备端的 GitHub 卡片，保留 GitHub 标志、
 `vilicvane`、完整项目名称和金色星标提示。页面主题采用克制的深灰色 `#303b4b`，
@@ -21,7 +27,7 @@ a 的自动返回设置接口、真实读写与暖复位加载通过；设置页
 其 SHA-256 为 `ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e`。
 
 API 指南保持展开可见，按 METHOD、URL、PAYLOAD 呈现请求方法、设备目标 URL 和
-body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 文件。完整二进制定义
+body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.png`，也保留 `.vimg` 用法。完整格式定义
 仍由 [HTTP 图片 API](http-image-api.md)维护。
 
 操作图标使用按需导入的 `lucide@1.52.0`，GitHub 品牌 SVG 保留。favicon 按实物描绘
@@ -50,7 +56,7 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.vimg` 
 设备地址也可通过 URL 查询参数提供：`?device=` 后接编码过的 `http://PANEL_IPV4:18086`，例如
 `https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2FPANEL_IPV4%3A18086`。
 此前 g 的 `303 Location` 使用同一格式，真实跳转与 Chrome 地址填入已验证。
-a 沿用相同配置，实际跳转结果由新发布独立记录。
+当前 images 和历史 idle-return a 沿用相同配置，实际跳转结果由每版发布独立记录。
 页面和面板须能在同一局域网直接通信；Cloudflare 仅托管页面静态文件。
 
 没有云端图片存储、服务端代理、账户或设备 token。图片只有用户点击发送后才离开浏览器，
@@ -74,35 +80,44 @@ GET/POST `/api/settings`，POST 声明 `application/json`；只在明确点击�
 19 项网页测试与 Chrome 模拟接口检查通过，涵盖范围/JSON、读写、0关闭、取消/超时、
 状态按钮、旧响应和新编辑、390/360px 布局且图片预览不变。该检查没有访问面板，不能
 替代 a 的实际 API 或重启保留验证，见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
-本轮真实 GET 默认 60 秒，POST/GET 0 和 5 一致；3601 返回 422 且保留运行值 0。
+idle-return a 当轮真实 GET 默认 60 秒，POST/GET 0 和 5 一致；3601 返回 422 且保留运行值 0。
 保存 5 后独立 AON GLOBAL 暖复位，224B context 和 GET 重新加载为 5，随后保存回 60。
 这些真实接口与暖加载结果不代替用户的网页读写、触摸延期或完整断电验收。
 
 ## 像素与上传语义
 
-浏览器把裁切结果转换为 RGB565LE，按 [HTTP 图片 API](http-image-api.md) 生成 VIMG header
-和 FNV-1a 校验和，发送 `POST /api/image`。固定请求 body 为 307216B。
+浏览器把裁切结果绘制为 480×320 的 sRGB 画布，透明处铺黑底。用户点击发送后，
+只读查询 `GET /api/image`；响应明确支持 PNG 时，发送完整 PNG 文件到 `POST /api/image`。
+JPEG 可由 cURL 或第一方命令行工具直接发送，网页编辑后的成品统一使用无损 PNG。
+设备按文件头选择解码器，接受的文件最大 1MiB；完整格式要求见
+[HTTP 图片 API](http-image-api.md)。设备不再要求普通图片带 VIMG 头或 FNV。
+只有能力查询明确返回 404 的旧固件才选择 VIMG：浏览器转换为 RGB565LE，
+附上 16B header 与 FNV-1a，总长 307216B。查询失败、响应不合法或 POST 未获确认时，
+不自动换格式或重复上传。查询发生在明确发送操作中，打开页面不会自动访问局域网设备。
 地址页收到新图片时仍保持地址页，双击返回图片可查看新画面。
 
 当前下载的 `.vimg` 就是完整请求 body：16B VIMG header 加 307200B RGB565LE 像素，
-校验和已填写，总长 307216B。PNG 用于查看或继续编辑，不能直接作为上传 body；
+校验和已填写，总长 307216B；它仍可用于旧固件及既有 API 客户端。下载的 PNG 可以直接
+作为当前接口的上传 body，也能用于查看或继续编辑；
 页面不再提供仅像素的 raw RGB565 下载。文件名保留原图名称并追加 `-480x320` 和格式后缀。
 
 将面板地址和文件名替换后可直接调用：
 
 ```sh
-curl -X POST "http://PANEL_IPV4:18086/api/image" --data-binary "@picture-480x320.vimg"
+curl --data-binary "@picture-480x320.png" "http://PANEL_IPV4:18086/api/image"
 ```
 
 保留 `@` 前缀，它表示读取本地文件内容；只替换后面的文件名或路径。
 不需要 Content-Type；cURL 会自动计算并发送 Content-Length。
+旧固件请改用下载的 `.vimg`，不要直接发送 PNG/JPEG。第一方 CLI 会查询 PNG/JPEG 能力，
+不兼容时提示升级并停止；命令见 [HTTP 图片 API](http-image-api.md)。
 
 `202` 仅确认完整图像已接受并排队供 GUI 消费，不证明 LCD 扫描已经完成；图片仅存于
 RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，结果可能不确定，不能报告成功。
 页面不会自动重复发送来掩盖失败。
 
-此前已安装 `maintained-http-four-page-20261007-g` 接受不指定 Content-Type 的该 HTTP API；
-a 沿用图片协议和正式 URL，以下 g 的检查保留为历史证据。
+此前安装过的 `maintained-http-four-page-20261007-g` 接受不指定 Content-Type 的 VIMG HTTP API；
+idle-return a 沿用该图片协议和正式 URL，以下 g 的检查保留为历史证据，不能作为新 PNG/JPEG 的实机结果。
 访问设备根地址会 303 到 `https://wan.sh/xiaomi-86v1/`，通过 `?device=` 自动填入设备地址；
 无需电脑开发服务器。真实 GET/303 与 Windows Chrome 跟随、输入框/API URL 同步通过。
 用户另行确认正式页面跳转和 HTTPS 网页上传正常；随后只读状态观察到
@@ -140,10 +155,16 @@ npm --prefix web run build
 `web/node_modules` 与构建产物不入库。构建后可用 `npm --prefix web run preview` 查看该子路径。
 API 文档无需连接设备即可阅读，上传需要使用当前非零设备地址。
 `0.0.0.0` 使开发服务器能从局域网访问；固定 5173 并用 `--strictPort` 避免占用时自动
-更换端口。真实电脑/面板地址不提交到 Git。这个服务器仅用于开发，a 的正式网页入口
+更换端口。真实电脑/面板地址不提交到 Git。这个服务器仅用于开发，正式网页入口
 不依赖它；历史 d 的临时 LAN 跳转记录保留原范围。
 
 ## Cloudflare Workers 静态部署
+
+新增 PNG 能力查询与直接图片上传的网页改版已部署，版本为
+`2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`。HTML、JS、CSS、SVG favicon 和默认 PNG 五项文件
+均返回 200，字节及 SHA-256 与构建一致。Chrome 页面和设置路径检查通过，启动时
+页面/控制台错误为 0、自动 LAN 请求为 0。另行执行的真实发送见下节；以下旧线上
+检查点保留原范围。
 
 网页已于 2026-10-07 发布为 Worker `xiaomi-86v1`，独立入口为
 [Workers 页面](https://xiaomi-86v1.vilicvane.workers.dev/xiaomi-86v1/)，已返回 HTTP 200。
@@ -206,11 +227,37 @@ Cloudflare 发布或面板联网验收。
 Chrome 142 引入该权限；对 private IP literal 的请求在授权后可获得 mixed-content 豁免，见
 [Chrome 本地网络访问说明](https://developer.chrome.com/blog/local-network-access?hl=en)。
 当前已实现的 CORS 不能代替此权限。用户已在 g 上确认正式 HTTPS 网页上传正常，
-这项报告不证明所有浏览器支持。自动化 Chrome 只跟随跳转，未执行 POST。上传失败时检查
+这项历史报告不证明所有浏览器支持；当轮自动化 Chrome 只跟随跳转，未执行 POST。
+当前 images 的 Chrome 发送验证另见下节。上传失败时检查
 面板地址、同一局域网及浏览器授权，或下载
-完整 Payload 后使用上述 cURL 命令。编辑和下载不依赖设备连接。
+PNG 后使用上述 cURL 命令；旧固件改用完整 `.vimg`。编辑和下载不依赖设备连接。
 
 ## 验证范围
+
+当前 images 版本通过 420 个实际 ARM 解码案例、36 组 UI、34 组 HTTP 和 17 组设置模型；
+新版网页通过 29 项单元测试。PNG/JPEG 解码运行实际原厂指令，仅替换 allocator/getenv 等 OS 边界，
+不是用主机解码器代替设备程序。本机 Chrome 的真实 sRGB Canvas 导出 PNG 已在离线 native HTTP
+模型中完成接收、解码、发布和 GUI 缓冲转换，结果逐像素一致；这项 Chrome 检查没有请求真实面板。
+
+本轮先用 idle-return a 自身冻结执行器恢复精确基线，再安装 images 的五页；完整读回、
+native 闭包、GLOBAL、暖启动及新鲜 patched 检查通过。Node 向真实面板发送 2204B PNG
+和 55134B JPEG 均返回 202，RGB565 读回与参考一致，GUI 消费 generation 1 和 2。
+坏 CRC PNG 返回 422，保留 generation 2 和原图片；最后重新上传默认 PNG，generation 3
+像素一致且 GUI 持续运行。该结果不包含浏览器上传、LCD 观察或性能测量。
+官方 HTTPS 页面的真实发送随后完成：`GET /api/image` 返回 200，单次 6050B PNG
+`POST /api/image` 返回 202，未指定 Content-Type，发送按钮显示“画面已接收”。
+初始本地网络权限提示出现时 GET 等待且没有 POST；测试期间通过 CDP 临时授予该
+origin 的本地网络权限后才完成上传。这不是用户点击许可的证据，也不验证所有浏览器。
+浏览器请求结果与 LCD、GUI 像素读回分别记录；此检查没有保存设置或刷写固件。
+随后只读核验完整 307200B RGB565 与默认画面一致，稳定 slot 下 generation/displayed_generation
+均为 4、pending 0、alive/ready/server 1、error 0，GUI 持续运行；这不证明 LCD scanout。
+Chrome 临时 origin 权限已恢复为 prompt 并查询确认。
+images 自身恢复尚未实机测试，完整断电由用户跳过；本轮手势、双击、定时返回、网页设置
+和米家用户观察仍待验收，不继承历史版本结果。
+安装和图片请求证据见 [images 发布结果](../firmware/releases/maintained-images-20261008-a.json)。
+实现与输入边界见 [直接 PNG/JPEG 研究](research/direct-image-upload.md)。
+
+以下保留各轮旧版本的验证范围。
 
 2026-10-07 已用 Windows Chrome 验证本地 HTTP 页面到面板的真实上传，收到 202，
 并逐字节确认请求像素与导出的 RGB565 相同、FNV 正确。纵向 SVG 的居中裁切和拖动
@@ -274,7 +321,7 @@ Windows Chrome 跟随后自动填写 endpoint/API，页面错误为 0，没有�
 没有记录自动化 POST 的状态/body 或 LCD 扫描。g 的实屏内容、
 双击、上下滑、第三键三击取消、息屏和米家仍待单列验收；完整断电按用户要求跳过。
 历史范围见 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)，
-本轮安装与设置结果另见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
+idle-return a 当轮安装与设置结果另见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
 
 后续独立设置页改版已通过本地 Wrangler 生产产物检查：根 shell 副本与嵌套 HTML 字节一致；
 设置路径、query、尾斜线、未知路径、HEAD 和标准 SPA 缺资源行为符合配置，根路径 307，

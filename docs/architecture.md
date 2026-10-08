@@ -1,12 +1,16 @@
 # 86V1 自定义固件架构
 
-本页描述 **86V1 自定义固件**，本轮发布为 `maintained-idle-return-four-page-20261007-a`，
+本页描述 **86V1 自定义固件**的当前五页版 `maintained-images-five-page-20261008-a`，
 适用于本机精确的 1.50.10 映像。图片上传、下拉画面和可保存的自动返回设置是当前功能。
-源码、四页布局与离线审查已冻结；安装路线是 g 自身恢复精确基线，再安装 a。
-g 恢复、a 四页安装与暖启动、真实设置读写及独立暖复位加载已通过；用户观察单列，
-不继承旧版结果。
+本轮新增 PNG/JPEG 原生解码，模型、116 项 writer 与 freeze 已完成；五页实机安装及
+完整页/native/cache/context、outer GLOBAL 和暖读回通过，随后 fresh check 为 patched。
+迁移前四页自动返回版检查匹配 patched；随后其自身恢复通过四页/native/context、
+outer GLOBAL 和暖读回，新五页检查为 `original=true` 后才安装。原四页版安装、设置和暖复位
+结果作为历史检查点保留，不继承给新候选。
 源码入口见 [firmware](../firmware/README.md)，精确材料位于 ignored 的 release 快照。
-[当前发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)单列离线、硬件及用户观察。
+[本轮发布结果](../firmware/releases/maintained-images-20261008-a.json)分别记录安装、直接HTTP、
+完整RGB565读回及尚未验收的LCD、用户浏览器和米家项目。
+[历史四页自动返回版结果](../firmware/releases/maintained-idle-return-20261007-a.json)单列离线、硬件及用户观察。
 [此前 g 的结果](../firmware/releases/maintained-http-20261007-g.json)、
 [此前 d 的结果](../firmware/releases/maintained-http-20261007-d.json)、
 [此前 c 的结果](../firmware/releases/maintained-http-20261007.json)及冻结材料独立保留。
@@ -22,8 +26,10 @@ g 恢复、a 四页安装与暖启动、真实设置读写及独立暖复位加�
 
 ```mermaid
 flowchart LR
-    Client[上传器或图片编辑网页] -->|HTTP VIMG body| Worker[A7 网络 worker]
-    Worker -->|校验后发布| Slots[两个 RGB565 RAM 槽]
+    Client[上传器或图片编辑网页] -->|HTTP PNG / JPEG / VIMG body| Worker[A7 网络 worker]
+    Worker -->|独立请求状态解码| Codec[原厂 PNG / JPEG 解码器]
+    Codec -->|RGB565| Slots[两个 RGB565 RAM 槽]
+    Worker -->|校验后发布| Slots
     Slots -->|GUI 安全边界交换| GUI[原 GUI 线程中的自定义显示代理]
     Original[原米家 UI 和 JS] --> GUI
     Touch[物理和虚拟触摸] --> GUI
@@ -33,6 +39,8 @@ flowchart LR
 ```
 
 bootstrap pthread 使原 GUI 所属 timer 完成代理安装，等待 ready 后继续运行网络 server。
+本轮创建线程时显式传递 16B 默认调度属性和 16384B 栈，容纳原生解码调用；
+模型中的栈观测及边界守护不等于实机调度或所有输入的栈上界证明。
 稳态触摸、手势和绘图在原 GUI 线程执行；这个独立网络 worker 不在 GUI callback
 内等 socket。早期纯界面实验的 bootstrap 安装后退出属于历史版本，不能套用于当前程序。
 系统 `panel_apps` 仍负责背光和息屏。自定义固件观察系统状态来准备自定义 owner，
@@ -89,32 +97,44 @@ GET/POST `/api/settings` 与图片共享网络 worker，设置值通过 broker m
 ## 网络与图片 RAM
 
 端口 **HTTP 18086** 采用 [HTTP 图片 API](http-image-api.md)，不提供旧 raw TCP/VACK
-兼容入口。`POST /api/image` 接收固定 307216B 的 VIMG header 与 480×320 RGB565 body。
-完整校验并发布到 GUI 待消费槽后返回 202；它不是 LCD 扫描或 Flash 保存完成确认。
-a 的 `GET /` 沿用正式网页 `https://wan.sh/xiaomi-86v1/` 的 303 配置，把设备
+兼容入口。本轮 `POST /api/image` 按内容签名识别完整 PNG、JPEG 或 VIMG，
+Content-Length 为 1..1048576B。PNG/JPEG 要求 480×320，受支持范围见
+[HTTP 图片 API](http-image-api.md)；设备不自动裁切缩放。旧 VIMG 仍是固定 307216B
+header/body 和 FNV 校验。完整接收、解码、校验并发布到 GUI 待消费槽后返回 202；
+它不是 LCD 扫描或 Flash 保存完成确认。
+候选的 `GET /` 沿用正式网页 `https://wan.sh/xiaomi-86v1/` 的 303 配置，把设备
 endpoint 放在普通 `device` query 参数中，不依赖电脑开发服务器。更换目标 URL 要创建、
-冻结并安装新 release。显式配置空 URL 的构建仍提供 200 说明页，但它不是当前 a 的配置。
+冻结并安装新 release。显式配置空 URL 的构建仍提供 200 说明页，但它不是本轮候选的配置。
 
-接收端不要求或检查 Content-Type，直接验证 Content-Length、VIMG、尺寸及 FNV；
-图片网页请求不添加该 header，图片 cURL 示例也不指定 `-H`。真实网页和 cURL 的完整 POST/202
-及错误内容拒绝曾在 d 验证；g 的新用户上传报告单独记录，不借用旧请求作为本轮实测。
+接收端不要求 Content-Type；非 identity Content-Encoding 返回 415。PNG 使用完整 chunk、
+CRC、IEND 与压缩流收尾检查，JPEG 要求受限 baseline 单扫描、真实 EOI 和无损坏警告。
+仅解码出足够像素不会发布。两个解码器都使用每请求的独立状态及 row 缓冲，不初始化
+或复用共享 GUI 图片缓存；JPEG 包装只进入已审查的私有初始化路径，不接管原 GUI 资源。
+PNG/JPEG 先分配完整 encoded body（最多 1MiB），在 inactive RGB565 槽解码，
+所有临时资源释放后才标记 pending。失败保留旧 active 图片，网络等待和解码不持
+GUI/publisher 锁；可用堆及原生 RPC 的真实耗时仍须实机确认。
 
-[图片编辑网页](frontend.md)在浏览器内完成裁切、缩放和 RGB565 转换，直接调用面板
+[图片编辑网页](frontend.md)在浏览器内完成裁切、缩放，生成 PNG 和旧 VIMG，直接调用面板
 API；Cloudflare 托管静态文件，不代理图片或访问用户的局域网。设备地址可由
-`device` query 或用户手动输入，图片处理与下载不依赖面板连接。
+`device` query 或用户手动输入，图片处理与下载不依赖面板连接。只有用户点击发送才
+GET `/api/image` 查询能力；新候选返回 PNG/JPEG/VIMG，已安装旧维护版明确 404 才选择
+VIMG。网络错误、无效能力响应及失败 POST 都不会触发自动换格式重发。
 
-OPTIONS/CORS 已实现，origin 为 `*`，允许 GET、POST 与 Content-Type。本轮 a 实际 GET
+OPTIONS/CORS 已实现，origin 为 `*`，允许 GET、POST 与 Content-Type。历史四页 a 实际 GET
 默认 60 秒，POST/GET 0 与 5 一致，3601 返回 422 且仍保留运行值 0；直接 Node 图片
 POST 返回 202。这些接口检查不证明浏览器预检或 LCD 扫描。
 此前 g 的 Windows Chrome 跟随真实 303 打开正式 HTTPS 页面、填写 endpoint 且无页面错误，
 随后出现浏览器本地网络访问授权提示，自动验证没有发送 POST。用户报告该正式页面上传
 正常；随后只读状态显示新 generation 已被 GUI 消费。这不是自动采集的 HTTP 状态、
 内容读回或 LCD 扫描证据。
-没有客户端认证或设备端 PNG/JPEG 解码。A7 socket 经 usrsock/RPMsg 使用原 MCU 网络服务。
+这些旧 HTTP 检查不验证本轮 PNG/JPEG。本轮能力 GET200 返回三种格式，设置 GET60
+通过。直接 Node 的 PNG/JPEG POST202 及完整 RGB565 读回通过，具体记录见下表；
+不把它们作为浏览器上传、LCD扫描或用户实屏验收。
+没有客户端认证。A7 socket 经 usrsock/RPMsg 使用原 MCU 网络服务。
 一次处理一条连接；待发布图片被 GUI 消费前，worker 不继续接受下一次上传。
 
 一次 1843200B owned 分配包含 RGB32 画布 614400B、原画面快照 614400B，以及两个各
-307200B 的 RGB565 槽。worker 只写 inactive 槽，接收完整并通过 FNV 后标记 pending。
+307200B 的 RGB565 槽。worker 只写 inactive 槽，接收完整并通过对应格式校验后标记 pending。
 GUI 在帧队列为空、无活动 gesture/overlay 时短持 broker mutex 交换槽位，再把 RGB565
 合成到 RGB32。部分/损坏上传不替换现有图片，网络等待不持 GUI/publisher 锁。
 
@@ -133,30 +153,35 @@ IPv4@24；在 broker mutex 外以约 1 秒间隔查询，仅改变地址时标�
 
 | 项目 | 当前值 |
 | --- | --- |
-| 主 BIN | 3344B，`0x3804b108..0x3804be18` |
+| 主 BIN | 3368B，`0x3804b108..0x3804be30`，容器余 64B |
 | 主代码容器 | 3432B，exclusive 末端 `0x3804be70` |
 | 辅助 BIN | 396B，`0x3807a764..0x3807a8f0` |
 | 辅助容器 | 444B，exclusive 末端 `0x3807a920` |
 | Thumb 入口 | `0x3804b2f5` |
-| 网络 BIN | 4072B，`0x3804d000..0x3804dfe8`，容器余 8B |
+| 网络 BIN | 4012B，`0x3804d000..0x3804dfac`，容器余 68B |
 | 网络代码容器 | 4080B，exclusive 末端 `0x3804dff0` |
-| NOR code/entry/aux/net 页 | `0x92b000` / `0xccd000` / `0x95a000` / `0x92d000`，各 4096B |
-| 安装基线及直接回退目标 | 精确的旧图片实验版三页与原厂网络页 |
-| 当前冻结输入数 | 382；其中候选输入 376，另加候选 manifest 与五份证据 |
-| 候选 manifest SHA-256 | `6022cbd3e41cfc913a260ff17855582c47656318227dfb6defc55230be503f55` |
-| 冻结表 SHA-256 | `660534d525762b83b8029b3adebd82a20d84723d5706e53afc6f6790a5c64cb4` |
+| 解码 BIN | 2916B，`0x38047098..0x38047bfc`，容器余 432B |
+| 解码代码容器 | 3348B，exclusive 末端 `0x38047dac` |
+| NOR code/entry/aux/net/codec 页 | `0x92b000` / `0xccd000` / `0x95a000` / `0x92d000` / `0x927000`，各 4096B |
+| 安装基线及直接回退目标 | 精确的旧图片实验版三页与原厂网络/解码页 |
+| 完整 ELF SHA-256 | `3f67d12758931a05fc22e20ddd89c51688ea9ec12de185ededce821b0ead79d3` |
+| candidate 输入及 SHA-256 | 471 项；`992b58c7aa72a162aca23756088ce8951467fa1d624ba8c7889a155ab430021b` |
+| freeze 输入及 SHA-256 | 477 项；`627a224c619b59a6813b47685e272cd19a4f8b25bb04af1bdbf690b31cf2a330` |
 
 所有范围末端 exclusive。入口页新增禁用 `uorb_unit_test` builtin 的单字修改：page+`0xc3c`
 从 `0x3804cf3d` 改为 `0x3804b109`。它不是启动服务；其其他已发现引用属于命令描述/帮助
 统计，不会调用函数。网络段位于该独立审查函数内部，保留所在页最前 4B 和最后 12B；
 原厂完整网络页 SHA 为 `76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d`。
-安装 net→aux→code→entry，恢复 entry→code→aux→net，始终核对四个完整页面。
+解码页借用 `filldisk/fillcpu/fillmem` 诊断群；入口页 `+0xd68/+0xd7c/+0xca0` 的原指针
+改为相同禁用 stub。解码页前 156B、后 592B 和实际 BIN 外字节保留，原页 SHA 为
+`21c40d397e6ec14f61011544f736962470f623c91ba3bbf7a6d89d120ba23c02`。
+安装 codec→net→aux→code→entry，恢复 entry→code→aux→net→codec，始终核对五个完整页面。
 共享 helper/be70、背光 callback/a920、JSON helper/ae28 和容器外所有字节保留。
 wifi_recorder 诊断 builtin 的禁用 stub 继承此前版本，它不是 Wi-Fi 驱动或启动服务；
 原工厂 socket worker 只有受控辅助容器被借用，未启用原工厂 UDP 服务。
 
 这里的“安装基线”指设备 Flash 必须先处于指定的完整字节集合：“三页”是已装旧图片
-实验程序的三个 4KiB Flash 区域，第四个网络区域仍为原厂字节，四页都要逐字节匹配。
+实验程序的三个 4KiB Flash 区域，网络和解码两个区域仍为原厂字节，五页都要逐字节匹配。
 它不是三个屏幕界面页，也不是任意原厂设备都能直接首刷的通用起点。
 
 224B context 的部分布局如下，已有字段的偏移不变，新计时状态追加在尾部。
@@ -180,24 +205,50 @@ wifi_recorder 诊断 builtin 的禁用 stub 继承此前版本，它不是 Wi-Fi
 
 | 证据 | 当前版本结果 |
 | --- | --- |
-| 离线模型 | 76 组实际 ARM，290 项 host HTTP parser 检查 |
-| 发布及写入流程 | 12 项 release、93 项当前 Jim writer mock、19 项前端测试；独立 ownership、程序及 writer 审查 |
-| 执行路径 | 长路径 mock 77/93，完整材料逐项核对后 `C:\p86-idle-a` 为 93/93；writer 逻辑与页面范围未变 |
-| 安装及暖启动 | g 自身恢复后 a 四页安装与暖读回通过；两次新鲜 check 均匹配 patched |
-| 图片与设置 HTTP | 直接 Node 图片 POST/202；真实默认 GET60、POST/GET0 和 5、越界 422 且保持运行值通过 |
-| 新鲜运行状态 | 224B context；generation/displayed_generation=1、pending=0、server=1/error=0、return_after_ms=60000；不等于 LCD 实屏确认 |
-| 设置重启加载 | 保存 5 秒后独立 AON GLOBAL 暖复位，224B context 和 GET 再读到 5 秒；随后保存回 60 秒 |
-| 前端设置 | Chrome 模拟接口的显式读取/保存、10 秒超时取消、新编辑/地址保护、移动布局通过；没有真实面板请求 |
-| 正式网页 | ecf90b3d-d93f-4a09-aab7-7d5b513a9d49，200 与四项精确资源、Chrome 设置卡片、初始零 LAN 请求/无页面错误 |
-| 用户交互和米家 | a 的图片、定时返回、手势、双击、息屏和米家待单列验收 |
-| 当前恢复路线 | g 自身 restore 到精确基线后 a 自身 install 已通过；a 自身 restore 尚未执行 |
+| 离线模型 | 420 项解码器实际 ARM 检查、36 组 UI、34 组 HTTP、17 组设置；299 项 host HTTP 检查 |
+| 客户端 | 29 项网页测试；Chrome154 真实 Canvas 多 IDAT PNG 在离线 HTTP/native/GUI 路径完整像素比对通过 |
+| 发布及写入流程 | 12 项 release、116 项 writer mock 及 477-input freeze 已完成 |
+| 执行路径 | `C:\p86-img-a` 完整 bundle 全部 hash 核对、116 项 mock 与冻结 CLI verify 通过；旧 `C:\p86-idle-a` 只用于其自身四页 release |
+| 安装及暖启动 | 五页安装、完整页/native/cache/context、outer GLOBAL 和五页暖读回通过；fresh check 为 patched=true |
+| 硬件能力与设置 GET | 能力 GET200 返回 png/jpeg/vimg；设置 GET60。没有继承旧版设置 POST 验收 |
+| 直接图片 HTTP 与读回 | Node上传2204B PNG为202/计数1、55134B JPEG为202/计数2；两张完整RGB565匹配独立参考 |
+| 错误图保护与最终状态 | 坏PNG CRC为422且保留JPEG及计数2；恢复默认PNG为202/计数3且完整像素匹配；alive/ready1、pending0、server1/error0，GUI cycles推进 |
+| 正式网页 | 版本2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5，五项资源一致、零浏览器错误、初始零自动LAN请求 |
+| 实际HTTPS浏览器上传 | agent Chrome点击Send：GET能力200、单次6050B PNG POST202，未添加Content-Type；origin-scoped CDP临时granted本地网络权限，非用户点击许可 |
+| 用户验收 | 用户浏览器权限/上传、LCD、原界面交互、自动返回、息屏与米家待分别确认；Node请求耗时不作为性能基准 |
+| 迁移前后检查 | 旧四页版 patched→自身 restore→新五页 original→五页 install→fresh patched，各自完整集合单列验证 |
+| 当前恢复路线 | 旧四页版自身 restore 已通过；新五页版自身硬件 restore 尚未测试 |
 | 完整断电 | **按用户明确要求跳过**，没有借用旧版冷启动结论 |
+
+模型执行真实 ELF 和已核对 SHA 的原厂解码指令，OS、分配器、部分 libc、锁和 GUI 驱动边界
+仍由 mock 提供；不证明可用堆、真实 RPC/调度、LCD 或全输入的栈上界。HTTP ELF 仅加载
+allocated PROGBITS sections，保留原厂代码在 ELF 地址空洞中的字节，不能用 PT_LOAD
+的空洞零填充代替。上述 Canvas 检查也不是浏览器实际网络 POST 或实机显示证据。
+正式页面的独立实机浏览器请求已在上表记录，不能与离线Canvas证据混为一项。
+最初浏览器本地网络prompt阶段GET等待，没有POST；agent仅对测试Chrome的正式网页
+origin临时授予CDP权限后才完成一次发送，没有把它记录为用户授予权限。
+
+## 历史四页自动返回版检查点
+
+历史四页自动返回版为 `maintained-idle-return-four-page-20261007-a`：main/aux/net
+3344/396/4072B，382-input freeze，候选 SHA
+`6022cbd3e41cfc913a260ff17855582c47656318227dfb6defc55230be503f55`，冻结表 SHA
+`660534d525762b83b8029b3adebd82a20d84723d5706e53afc6f6790a5c64cb4`。
+当时 76 组实际 ARM、290 项 host、93 项短根 writer mock、12 项 release 和 19 项网页测试
+通过。g 自身恢复后四页 a 安装、完整页和暖读回通过；原始结果中 a 自身恢复未测试。
+其自身恢复现已在本轮五页迁移中通过，记录在新迁移证据，不改写旧发布结果。
+真实默认 GET60、POST/GET0 和 5、3601 返回422且保留运行值通过；保存5后一次独立
+AON GLOBAL 暖复位加载5，随后保存回60。直接 Node VIMG POST202，GUI消费后
+generation/displayed_generation=1、pending0/server1/error0/return_after_ms60000。
+它不证明 LCD、浏览器上传或用户交互/米家验收。正式网页部署为
+`ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`，精确资源和初始零LAN请求/无页面错误通过。
+这类历史 result 保持原样；后续恢复结果将在新迁移记录中补充，不改写旧结果。
 
 这些是保存的检查点，不表示实时运行监控。MEM-AP 样本非原子，HTTP 202 不测量扫描时刻。
 此前 g 的 GET 与浏览器自动填地址有独立实测；HTTPS 网页上传由用户报告正常，随后只读
 状态显示 generation/displayed_generation=1。本轮没有自动采集其 POST 状态或上传后
 像素。用户同时收到米家、默认图等合并问题，但简短回复未
-分别确认这些项目，因此保留当时未验收范围。g 自身 restore 在本轮迁移中另行记录，
+分别确认这些项目，因此保留当时未验收范围。g 自身 restore 在迁移至四页自动返回版时另行记录，
 不改写旧 g 的原结果。
 
 此前 d 的错误 FNV/magic 请求没有增加 generation；两次完整上传后 generation 和

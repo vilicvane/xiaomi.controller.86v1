@@ -2,14 +2,15 @@
 
 这些地址只适用于已备份并审核的这台 `xiaomi.controller.86v1`。完整原厂 16MiB NOR
 SHA-256 为 `777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b`。
-维护版使用既有 image drawer 的完整三页作为基线，新增网络页必须另核对原厂字节。
+维护版使用旧图片实验程序的精确三页作为基线；新增网络页与图片解码页分别核对原厂字节。
 
 | 用途 | A7 运行地址，末端不含 | NOR 页 | 约束 |
 | --- | --- | --- | --- |
 | UI 主段 | `0x3804b108..0x3804be70` | `0x92b000` | 保留 `be70` 起的共享 helper |
 | UI 辅助段 | `0x3807a764..0x3807a920` | `0x95a000` | 保留相邻背光 callback 和 JSON helper |
 | HTTP 网络段 | `0x3804d000..0x3804dff0` | `0x92d000` | 位于被禁用的单个 `uorb_unit_test` 命令内部 |
-| builtin 入口表 | 不作代码段 | `0xccd000` | 原有入口加禁用 `uorb_unit_test` |
+| 图片解码段 | `0x38047098..0x38047dac` | `0x927000` | 借用 `filldisk/fillcpu/fillmem` 诊断群，保留 `47dac` 起的共享 helper |
+| builtin 入口表 | 不作代码段 | `0xccd000` | 禁用借用的诊断入口，保留其他字节 |
 
 A7 装载映射为 runtime `0x38000000` 对应 NOR `0x8e0004`。网络页的运行映射实际起于
 `0x3804cffc`；可借区段避开首 4B、末 12B，以保留边界处完整原厂指令。
@@ -36,8 +37,16 @@ A7 装载映射为 runtime `0x38000000` 对应 NOR `0x8e0004`。网络页的运�
 原厂 ABI 地址和硬编码 glyph 的 context 偏移需重新验证。所有状态仍位于 owned heap，
 allocated `.data/.bss` 不允许进入这些原厂代码槽位。
 
-安装按 network → aux → main → entry；恢复按 entry → main → aux → network。
-四页完成、保护状态及 caller cleanup 全闭合后才允许 MCU GLOBAL 重启。
-A7 在各中间阶段保持 reset，不能在部分写入或原始入口已恢复而 network 未恢复时运行。
-维护版直接回退目标是 **exact image drawer 三页加 exact stock network 页**；仅在这个
-完整集合恢复后，才可以使用历史 image drawer 的三页回退器。
+后继图片解码候选采用五页：安装 codec → network → aux → main → entry，
+恢复 entry → main → aux → network → codec。完整页面、保护状态及 caller cleanup
+全闭合后才允许 MCU GLOBAL 重启；A7/WF/BT 在各中间阶段保持 reset。
+回退目标为旧图片实验程序的精确三页、原厂网络页与原厂解码页；仅在完整集合恢复后，
+才可以使用历史三页回退器。当前四页 release 仍使用它自己的冻结工具，不套用新工具。
+
+解码页运行映射起于 `0x38046ffc`。仅借用页内 `+0x9c..+0xdb0` 的 3348B，
+保留前 156B、后 592B；页面原 SHA-256 为
+`21c40d397e6ec14f61011544f736962470f623c91ba3bbf7a6d89d120ba23c02`。
+入口页的 `+0xd68/+0xd7c/+0xca0` 分别是 `filldisk/fillcpu/fillmem`，
+原指针 `0x38047099/0x38047849/0x38047b3d` 都改为已有 `-ENOSYS` stub。
+完整 A7 引用扫描、指令影子分类及启动脚本检查单列在私有解码页 ownership 证据中。
+页内尾部共享 helper 有真实外部调用，不能扩大覆盖范围。

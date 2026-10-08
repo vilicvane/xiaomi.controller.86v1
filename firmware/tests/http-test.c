@@ -38,7 +38,7 @@ int main(void)
     CHECK("GET / HTTP/1.1\r\nHost: panel\r\nHOST: panel\r\n\r\n", 400, 0, 0);
     CHECK("PUT /api/image HTTP/1.1\r\nHost: panel\r\n\r\n", 405, 0, 0);
     CHECK("get / HTTP/1.1\r\nHost: panel\r\n\r\n", 405, 0, 0);
-    CHECK("GET /api/image HTTP/1.1\r\nHost: panel\r\n\r\n", 404, 0, 0);
+    CHECK("GET /api/image HTTP/1.1\r\nHost: panel\r\n\r\n", 0, PANEL_HTTP_GET, 0);
     CHECK("POST / HTTP/1.1\r\nHost: panel\r\n\r\n", 404, 0, 0);
     CHECK("GET /?device=panel HTTP/1.1\r\nHost: panel\r\n\r\n", 404, 0, 0);
     CHECK("GET / HTTP/2.0\r\nHost: panel\r\n\r\n", 400, 0, 0);
@@ -52,8 +52,17 @@ int main(void)
     CHECK("GET / HTTP/1.1\r\nHost: panel\r\nX: a\nb\r\n\r\n", 400, 0, 0);
     CHECK("GET / HTTP/1.1\r\nHost: panel\r\nX: a\177b\r\n\r\n", 400, 0, 0);
     CHECK(POST "\r\n", 411, 0, 0);
-    CHECK(POST "Content-Length: 307215\r\n\r\n", 400, 0, 0);
-    CHECK(POST "Content-Length: 307217\r\n\r\n", 413, 0, 0);
+    CHECK(POST "Content-Length: 307215\r\n\r\n", 0, PANEL_HTTP_POST, 307215);
+    CHECK(POST "Content-Length: 307217\r\n\r\n", 0, PANEL_HTTP_POST, 307217);
+    CHECK(POST "Content-Length: 0\r\n\r\n", 400, 0, 0);
+    CHECK(POST "Content-Length: 1\r\n\r\n", 0, PANEL_HTTP_POST, 1);
+    CHECK(POST "Content-Length: 1048576\r\n\r\n", 0, PANEL_HTTP_POST, PANEL_HTTP_IMAGE_MAX_BYTES);
+    CHECK(POST "Content-Length: 1048577\r\n\r\n", 413, 0, 0);
+    CHECK(POST "Content-Length: 2204\r\nContent-Encoding: identity\r\n\r\n", 0, PANEL_HTTP_POST, 2204);
+    CHECK(POST "Content-Length: 2204\r\nContent-Encoding: IDENTITY\r\n\r\n", 0, PANEL_HTTP_POST, 2204);
+    CHECK(POST "Content-Length: 2204\r\nContent-Encoding: gzip\r\n\r\n", 415, 0, 0);
+    CHECK(POST "Content-Length: 2204\r\nContent-Encoding: deflate\r\n\r\n", 415, 0, 0);
+    CHECK(POST "Content-Length: 2204\r\nContent-Encoding:\r\n\r\n", 415, 0, 0);
     CHECK(POST "Content-Length: 4294967295\r\n\r\n", 413, 0, 0);
     CHECK(POST "Content-Length: 4294967296\r\n\r\n", 400, 0, 0);
     CHECK(POST "Content-Length: 999999999999999999999\r\n\r\n", 400, 0, 0);

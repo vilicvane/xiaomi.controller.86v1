@@ -1,8 +1,8 @@
-"""Run the maintained HTTP ARM ELF with native APIs mocked, without hardware.
+"""Run HTTP/GUI and original PNG/JPEG ARM instructions without hardware.
 
 Historical Machine helpers are imported without their result writers. Native
-RPC latency, real scheduling, locks, heap availability and LCD timing are not
-established by these offline instruction and ownership checks.
+OS boundaries are mocked, not image decoding. Native RPC latency, real
+scheduling, locks, heap availability and LCD timing remain unestablished.
 """
 from pathlib import Path
 import hashlib
@@ -10,23 +10,50 @@ import json
 import os
 import struct
 import sys
+import zlib
 
 ROOT = Path(__file__).resolve().parents[2]
+TEST_SHA = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 sys.path.insert(0, str(ROOT / 'analysis/image-push'))
 import test_native_image_drawer_arm as previous
+from elftools.elf.elffile import ELFFile
+from unicorn import UC_HOOK_BLOCK
 from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2,
-    UC_ARM_REG_R3, UC_ARM_REG_SP, UC_ARM_REG_PC, UC_ARM_REG_LR)
+    UC_ARM_REG_R3, UC_ARM_REG_SP, UC_ARM_REG_PC, UC_ARM_REG_LR,
+    UC_CPU_ARM_CORTEX_A7, UC_ARM_REG_C1_C0_2, UC_ARM_REG_FPEXC)
 
 ELF = Path(os.environ.get('PANEL_FIRMWARE_ELF', ROOT / 'build/panel/panel.elf'))
 previous.smooth.original.old.ELF = ELF
 CTX, PIXELS, IMAGE, RECEIVE, ERROR, STOP = (previous.CTX, previous.PIXELS,
     previous.IMAGE, previous.RECEIVE, previous.ERROR, previous.STOP)
 HEADER, SCRATCH, REQUEST = 0x38720000, 0x38722000, 0x38723000
+HEAP, WORKER_SP, WORKER_STACK_BYTES = 0x38a00000, 0x389cff00, 16384
+MAX_IMAGE_BYTES = 1048576
+FIXTURES = ROOT / 'build/compression-research/direct-image-fixtures-20261008/fixtures'
+ORIGINAL = (ROOT / 'backups/mi-panel-flash-16m-1.50.10-20261004.bin').read_bytes()
+ORIGINAL_SHA = '777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b'
+assert hashlib.sha256(ORIGINAL).hexdigest() == ORIGINAL_SHA
+STOCK_A7 = ORIGINAL[0x8e0004:0xdd3fe4]
 F = dict(previous.F, show_address=204, screen_off=144,
          return_after_ms=212, activity_ms=216, activity_valid=220)
 GUARD = bytes([0xa7]) * 128
 FRONTEND = os.environ.get('PANEL_TEST_FRONTEND_URL', '')
 ORIGIN = os.environ.get('PANEL_TEST_FRONTEND_ORIGIN', '*')
+CODEC_EVIDENCE = []
+_previous_uc = previous.smooth.original.old.Uc
+
+
+def a7_emulator(*args, **kwargs):
+    # Unicorn fixes the CPU model on first memory operation, before the
+    # historical harness reaches _install_hooks. Keep its helpers unchanged.
+    uc = _previous_uc(*args, **kwargs)
+    uc.ctl_set_cpu_model(UC_CPU_ARM_CORTEX_A7)
+    uc.reg_write(UC_ARM_REG_C1_C0_2, 0xf00000)
+    uc.reg_write(UC_ARM_REG_FPEXC, 0x40000000)
+    return uc
+
+
+previous.smooth.original.old.Uc = a7_emulator
 
 
 def request(method='GET', path='/', fields=(), version='1.1'):
@@ -42,7 +69,7 @@ def upload(payload, checksum=None, content_type='application/octet-stream'):
 
 
 class Machine(previous.Machine):
-    def __init__(self, **options):
+    def __init__(self, fail_allocation=0, **options):
         self.ip_family = 2
         self.ip_queries = 0
         self.receive_calls = []
@@ -53,11 +80,20 @@ class Machine(previous.Machine):
         self.lock_fail_calls = set()
         self.lock_calls = 0
         self.file_calls = []
+        self.heap_live = {}
+        self.heap_next = HEAP
+        self.heap_attempts = 0
+        self.heap_fail_at = fail_allocation
+        self.heap_peak = 0
+        self.heap_events = []
+        self.minimum_worker_sp = WORKER_SP
+        self.create_calls = []
         super().__init__(**options)
         self.allocations = [HEADER]
         for address in (HEADER - 128, HEADER + 2048, PIXELS - 128,
-                        RECEIVE + 307200):
+                        RECEIVE + 307200, WORKER_SP - WORKER_STACK_BYTES - 128):
             self.uc.mem_write(address, GUARD)
+        self.native_code_hash = hashlib.sha256(self.uc.mem_read(0x38000000, 0x4e0000)).hexdigest()
 
     def f(self, name, value=None):
         return self.field(F[name], value)
@@ -69,12 +105,68 @@ class Machine(previous.Machine):
         self.word(0x384ea638, 1)
 
     def _install_hooks(self):
+        # The historical harness loads project ELF only. Native codecs require
+        # the verified stock A7 first, with current allocated sections reloaded.
+        self.uc.mem_write(0x38000000, STOCK_A7)
+        with ELF.open('rb') as stream:
+            for section in ELFFile(stream).iter_sections():
+                if section['sh_flags'] & 2 and section['sh_size']:
+                    self.uc.mem_write(section['sh_addr'], section.data())
         super()._install_hooks()
+        self.hook(0x380051ec, lambda: self.ret(0))  # getenv OS boundary
+        self.hook(0x38018c30, lambda: (_ for _ in ()).throw(AssertionError('stack protector')))
+        self.uc.hook_add(UC_HOOK_BLOCK, lambda uc, address, size, data: self.observe_stack())
         for address, method in ((0x3802c900, self.file_open),
                                 (0x3802954c, self.file_read),
                                 (0x3802b378, self.file_write),
                                 (0x3802b3ec, self.file_sync)):
             self.hook(address, method)
+
+    def observe_stack(self):
+        sp = self.uc.reg_read(UC_ARM_REG_SP)
+        if WORKER_SP - 0x10000 <= sp <= WORKER_SP:
+            self.minimum_worker_sp = min(self.minimum_worker_sp, sp)
+            assert sp >= WORKER_SP - WORKER_STACK_BYTES, 'Worker exceeds requested16KiB stack'
+
+    def allocate(self):
+        assert not self.locks, 'Heap allocation while GUI locked'
+        size = self.uc.reg_read(UC_ARM_REG_R0)
+        assert 0 < size <= 2 * MAX_IMAGE_BYTES, size
+        self.heap_attempts += 1
+        if self.heap_attempts == self.heap_fail_at:
+            self.heap_events.append({'failed': size})
+            self.ret(0)
+            return
+        if self.allocations:
+            pointer = self.allocations.pop(0)
+            if not pointer:
+                self.heap_events.append({'failed': size})
+                self.ret(0)
+                return
+            assert (pointer, size) in ((HEADER, 2048), (CTX, 224), (PIXELS, 1843200))
+        else:
+            pointer = self.heap_next + 128
+            self.heap_next = pointer + ((size + 15) & ~15) + 128
+            assert self.heap_next < ERROR - 128, 'Dynamic heap overlaps errno'
+        assert pointer not in self.heap_live
+        self.heap_live[pointer] = size
+        self.heap_peak = max(self.heap_peak, sum(self.heap_live.values()))
+        self.uc.mem_write(pointer - 128, GUARD)
+        self.uc.mem_write(pointer, bytes(size))
+        self.uc.mem_write(pointer + size, GUARD)
+        self.heap_events.append({'allocated': size})
+        self.ret(pointer)
+
+    def free(self):
+        assert not self.locks, 'Heap free while GUI locked'
+        pointer = self.uc.reg_read(UC_ARM_REG_R0)
+        if pointer:
+            size = self.heap_live.pop(pointer)
+            assert bytes(self.uc.mem_read(pointer - 128, 128)) == GUARD
+            assert bytes(self.uc.mem_read(pointer + size, 128)) == GUARD
+            self.freed.append(pointer)
+            self.heap_events.append({'freed': size})
+        self.ret(0)
 
     def file_open(self):
         r = self.uc.reg_read
@@ -146,6 +238,19 @@ class Machine(previous.Machine):
 
     def hook(self, address, method):
         r = self.uc.reg_read
+        if address == 0x383d9420:
+            return super().hook(address, self.allocate)
+        if address == 0x383d93e4:
+            return super().hook(address, self.free)
+        if address == 0x383acc04:
+            def create():
+                attributes = r(UC_ARM_REG_R1)
+                assert attributes and bytes(self.uc.mem_read(attributes, 16)) == struct.pack('<IIII', 0x00010064, 0, 0, WORKER_STACK_BYTES)
+                assert r(UC_ARM_REG_R2) == self.symbols['bootstrap']
+                assert r(UC_ARM_REG_R3) == CTX
+                self.create_calls.append({'attributes': attributes, 'stack_bytes': WORKER_STACK_BYTES})
+                self.ret(self.create_result)
+            return super().hook(address, create)
         if address in (0x38025678, 0x38025de0):
             def descriptor():
                 if r(UC_ARM_REG_R0) >= 20:
@@ -185,6 +290,10 @@ class Machine(previous.Machine):
                         assert pointer + size <= HEADER + 2048
                     if RECEIVE <= pointer < RECEIVE + 307200:
                         assert pointer + size <= RECEIVE + 307200
+                    if HEAP <= pointer < ERROR:
+                        block = next((base, length) for base, length in self.heap_live.items()
+                                     if base <= pointer < base + length)
+                        assert pointer + size <= block[0] + block[1]
                 else:
                     self.now += self.send_delay
                     self.send_calls.append((pointer, size, flags))
@@ -202,24 +311,33 @@ class Machine(previous.Machine):
 
     def worker(self):
         if self.worker_saved is None:
-            self.uc.reg_write(UC_ARM_REG_SP, 0x389cff00)
+            self.uc.reg_write(UC_ARM_REG_SP, WORKER_SP)
             self.uc.reg_write(UC_ARM_REG_LR, STOP | 1)
             self.uc.reg_write(UC_ARM_REG_R0, CTX)
             pc = self.symbols['panel_server'] | 1
         else:
             self.uc.context_restore(self.worker_saved)
             pc = self.uc.reg_read(UC_ARM_REG_PC) | 1
-        self.uc.emu_start(pc, STOP, count=30000000)
+        self.uc.emu_start(pc, STOP, count=100000000)
         assert not self.locks
         self.worker_saved = self.uc.context_save()
         self.guards()
         return self.uc.reg_read(UC_ARM_REG_PC) == STOP
 
     def guards(self):
-        for address in (HEADER - 128, HEADER + 2048, PIXELS - 128, RECEIVE + 307200):
+        for address in (HEADER - 128, HEADER + 2048, PIXELS - 128,
+                        RECEIVE + 307200, WORKER_SP - WORKER_STACK_BYTES - 128):
             assert bytes(self.uc.mem_read(address, 128)) == GUARD, hex(address)
+        for pointer, size in self.heap_live.items():
+            assert bytes(self.uc.mem_read(pointer - 128, 128)) == GUARD, hex(pointer)
+            assert bytes(self.uc.mem_read(pointer + size, 128)) == GUARD, hex(pointer)
 
-    def response(self, status, body=None, settings=False):
+    def codec_cleanup(self):
+        assert self.heap_live == {HEADER: 2048}, self.heap_live
+        self.guards()
+        assert hashlib.sha256(self.uc.mem_read(0x38000000, 0x4e0000)).hexdigest() == self.native_code_hash
+
+    def response(self, status, body=None, settings=False, image_capability=False):
         header, separator, received = bytes(self.sent).partition(b'\r\n\r\n')
         assert separator, (status, bytes(self.sent))
         lines = header.decode('ascii').split('\r\n')
@@ -227,7 +345,7 @@ class Machine(previous.Machine):
         fields = dict(line.split(': ', 1) for line in lines[1:])
         assert fields['Connection'] == 'close'
         assert int(fields['Content-Length']) == len(received)
-        assert fields['Content-Type'] == ('application/json' if settings else 'text/plain; charset=utf-8')
+        assert fields['Content-Type'] == ('application/json' if settings or image_capability else 'text/plain; charset=utf-8')
         assert fields['Cache-Control'] == 'no-store'
         assert fields['Access-Control-Allow-Origin'] == ORIGIN
         assert fields['Access-Control-Allow-Methods'] == 'GET, POST'
@@ -272,6 +390,7 @@ def parser_checks():
         (b'GET / HTTP/1.0\r\n\r\n', 0),
         (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: APPLICATION/OCTET-STREAM')), 0),
         (request('OPTIONS', '/api/image'), 0),
+        (request('GET', '/api/image'), 0),
         (request('GET', '/api/settings'), 0),
         (request('OPTIONS', '/api/settings'), 0),
         (request('POST', '/api/settings', ('Content-Length: 1',)), 0),
@@ -282,8 +401,17 @@ def parser_checks():
         (request('PUT', '/api/image'), 405),
         (request('GET', '/missing'), 404),
         (request('POST', '/api/image'), 411),
-        (request('POST', '/api/image', ('Content-Length: 307217',)), 413),
-        (request('POST', '/api/image', ('Content-Length: 307215',)), 400),
+        (request('POST', '/api/image', ('Content-Length: 307217',)), 0),
+        (request('POST', '/api/image', ('Content-Length: 307215',)), 0),
+        (request('POST', '/api/image', ('Content-Length: 1',)), 0),
+        (request('POST', '/api/image', ('Content-Length: 1048576',)), 0),
+        (request('POST', '/api/image', ('Content-Length: 1048577',)), 413),
+        (request('POST', '/api/image', ('Content-Length: 0',)), 400),
+        (request('POST', '/api/image', ('Content-Length: 1', 'Content-Encoding: identity')), 0),
+        (request('POST', '/api/image', ('Content-Length: 1', 'cOnTeNt-EnCoDiNg: IDENTITY')), 0),
+        (request('POST', '/api/image', ('Content-Length: 1', 'Content-Encoding: gzip')), 415),
+        (request('POST', '/api/image', ('Content-Length: 1', 'Content-Encoding: deflate')), 415),
+        (request('POST', '/api/image', ('Content-Length: 1', 'Content-Encoding:')), 415),
         (request('POST', '/api/image', ('Content-Length: 307216',)), 0),
         (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: application/x-www-form-urlencoded')), 0),
         (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: text/plain')), 0),
@@ -316,11 +444,11 @@ def parser_checks():
             first = data.split(b'\r\n', 1)[0].split()
             assert method == {b'GET': 1, b'POST': 2, b'OPTIONS': 3}[first[0]]
             assert resource == {b'/': 0, b'/api/image': 1, b'/api/settings': 2}[first[1]]
-            assert length == (307216 if resource == 1 and method == 2 else
-                              64 if b'Content-Length: 64\r\n' in data else
-                              1 if resource == 2 and method == 2 else 0)
+            content_lengths = [line.split(b':', 1)[1].strip() for line in data.split(b'\r\n')
+                               if line.split(b':', 1)[0].lower() == b'content-length']
+            assert length == (int(content_lengths[0]) if content_lengths else 0)
         assert bytes(m.uc.mem_read(REQUEST + 12, 128)) == GUARD
-    checks.append('Actual ARM parser ignores absent/arbitrary/empty/duplicate Content-Type while preserving HTTP1.0/1.1 method/path/Host/length/TE/Expect/control rejection statuses')
+    checks.append('Actual ARM parser accepts GET image capability and image ContentLength1..1048576, ignores Content-Type, rejects nonidentity Content-Encoding415, and preserves method/path/Host/TE/Expect/control/output-mutation boundaries')
     valid = request()
     for size in range(len(valid)):
         m.uc.mem_write(SCRATCH, valid[:size])
@@ -357,12 +485,22 @@ def response_checks():
     assert not m.f('image_pending') and not m.f('generation')
     checks.append('Browser OPTIONS returns204 without publishing pixels; CORS derives from configured origin rather than reflecting requester')
 
+    m = Machine().ready().custom()
+    before = tuple(m.f(name) for name in ('image', 'receive', 'image_pending', 'generation', 'displayed_generation'))
+    slots = bytes(m.uc.mem_read(IMAGE, 614400))
+    m.transact([request('GET', '/api/image')])
+    m.response(200, b'{"formats":["png","jpeg","vimg"]}\n', image_capability=True)
+    assert tuple(m.f(name) for name in ('image', 'receive', 'image_pending', 'generation', 'displayed_generation')) == before
+    assert bytes(m.uc.mem_read(IMAGE, 614400)) == slots
+    m.codec_cleanup()
+    checks.append('GET/api/image returns exact PNG/JPEG/VIMG capability JSON with application/json, close/no-store/CORS, without image-slot/pending/generation mutation or transient allocation')
+
     cases = [
         (request('PUT', '/'), 405),
-        (request('GET', '/api/image'), 404),
         (request('POST', '/api/image'), 411),
-        (request('POST', '/api/image', ('Content-Length: 307217',)), 413),
-        (request('POST', '/api/image', ('Content-Length: 307215',)), 400),
+        (request('POST', '/api/image', ('Content-Length: 1048577',)), 413),
+        (request('POST', '/api/image', ('Content-Length: 0',)), 400),
+        (request('POST', '/api/image', ('Content-Length: 1', 'Content-Encoding: gzip')), 415),
         (request('POST', '/api/image', ('Content-Length: 307216', 'Content-Type: a\x01b')), 400),
         (request(fields=('Expect: 100-continue',)), 417),
         (request(fields=('Transfer-Encoding: identity',)), 400),
@@ -469,23 +607,32 @@ def image_checks():
     assert bytes(m.uc.mem_read(PIXELS, 614400)) == struct.pack('<I', previous.rgb(0x001f)) * 153600
     checks.append('Fragmented HTTP and split16B VIMG header survive EINTR/EAGAIN; second upload uses opposite owned slot and active first image survives until GUI admission')
 
-    for invalid in (b'NOPE' + binary[4:], struct.pack('<4sHHII', b'VIMG', 481, 320, 307200, 0),
-                    struct.pack('<4sHHII', b'VIMG', 480, 320, 307201, 0)):
+    for status, invalid in ((415, b'NOPE' + binary[4:]),
+                            (400, struct.pack('<4sHHII', b'VIMG', 481, 320, 307200, 0)),
+                            (400, struct.pack('<4sHHII', b'VIMG', 480, 320, 307201, 0))):
         m = Machine().ready().custom()
         m.transact([http + invalid])
-        m.response(400)
+        m.response(status)
         assert not m.f('image_pending')
         assert bytes(m.uc.mem_read(RECEIVE, 307200)) == previous.frame(0x001f)
     m = Machine().ready().custom()
     m.transact([http + binary, previous.frame(0x001f)])
     m.response(422)
     assert not m.f('image_pending') and m.f('image') == IMAGE
-    checks.append('Wrong VIMG magic/dimensions/length rejects before body write; independently wrong FNV returns422 without replacing active image')
+    checks.append('Unknown signature415 and invalid VIMG dimensions/pixel length400 reject before body write; independently wrong FNV422 cannot replace active image')
+
+    for length in (307215, 307217):
+        m = Machine().ready().custom()
+        m.transact([request('POST', '/api/image', (f'Content-Length: {length}',)) + binary])
+        m.response(400)
+        assert not m.f('image_pending') and m.f('generation') == 1
+        m.codec_cleanup()
+    checks.append('Generic parser accepts lengths around old fixed body size; VIMG handler independently rejects any encoded body length except307216 before payload mutation')
 
     for content_type in (None, 'application/x-www-form-urlencoded'):
         http_variant, binary_variant, _ = upload(payload, content_type=content_type)
         for status, events in (
-            (400, [http_variant + b'NOPE' + binary_variant[4:]]),
+            (415, [http_variant + b'NOPE' + binary_variant[4:]]),
             (422, [http_variant + binary_variant, previous.frame(0x001f)]),
         ):
             rejected = Machine().ready().custom()
@@ -497,7 +644,7 @@ def image_checks():
             assert rejected.f('server_error') == status and not rejected.f('image_pending')
             assert rejected.f('image') == IMAGE and bytes(rejected.uc.mem_read(IMAGE, 307200)) == active
             assert rejected.f('generation') == generation and rejected.f('displayed_generation') == displayed
-    checks.append('Ignoring absent or curl-default Content-Type does not weaken content validation: bad VIMG400 and wrong FNV422 preserve active pixels, pending0 and both generation counters')
+    checks.append('Ignoring absent or curl-default Content-Type does not weaken content validation: unknown signature415 and wrong FNV422 preserve active pixels, pending0 and both generation counters')
 
     for events in ([http + binary[:8], 0], [http + binary, data[:100], 0],
                    [http + binary, data[:100], ('error', 5)]):
@@ -574,6 +721,167 @@ def image_checks():
     return checks
 
 
+def encoded_request(encoded, content_type=None, declared_length=None):
+    fields = [f'Content-Length: {len(encoded) if declared_length is None else declared_length}']
+    if content_type is not None:
+        fields.append(f'Content-Type: {content_type}')
+    return request('POST', '/api/image', fields)
+
+
+def encoded_events(encoded, fragmented=False, content_type=None):
+    http = encoded_request(encoded, content_type)
+    if fragmented:
+        return [http[:7], ('error', 11), http[7:] + encoded[:3], ('error', 4),
+                encoded[3:15], encoded[15:1000], ('error', 11), encoded[1000:]]
+    return [http + encoded]
+
+
+def expanded_pixels(reference):
+    return struct.pack('<153600I', *(previous.rgb(value) for value in struct.unpack('<153600H', reference)))
+
+
+def reject_encoded(name, encoded, status, events=None, fail_allocation=0):
+    m = Machine(fail_allocation=fail_allocation).ready().custom()
+    active = bytes(m.uc.mem_read(IMAGE, 307200))
+    generation = m.f('generation'), m.f('displayed_generation')
+    m.transact(encoded_events(encoded) if events is None else events)
+    m.response(status)
+    assert m.f('image') == IMAGE and m.f('receive') == RECEIVE and not m.f('image_pending')
+    assert (m.f('generation'), m.f('displayed_generation')) == generation
+    assert bytes(m.uc.mem_read(IMAGE, 307200)) == active
+    assert m.f('server_error') == status
+    m.codec_cleanup()
+    CODEC_EVIDENCE.append({'case': name, 'status': status, 'active_preserved': True,
+        'generation_preserved': True, 'transient_heap_cleanup': True,
+        'heap_peak_bytes': m.heap_peak, 'allocation_attempts': m.heap_attempts,
+        'worker_stack_observed_bytes': WORKER_SP - m.minimum_worker_sp})
+    return m
+
+
+def encoded_image_checks(formats=('png', 'jpeg')):
+    checks = []
+    names = {'png': ('card-original.png', 'card-rgba-alpha.png'),
+             'jpeg': ('card-jpeg-q85.jpg', 'photo-jpeg-q85.jpg')}
+    assert formats and set(formats) <= set(names)
+    for image_format in formats:
+        for fragmented, name in enumerate(names[image_format]):
+            encoded = (FIXTURES / name).read_bytes()
+            reference = (FIXTURES / (name + '.expected.rgb565')).read_bytes()
+            m = Machine().ready().custom()
+            before = bytes(m.uc.mem_read(IMAGE, 307200))
+            m.transact(encoded_events(encoded, bool(fragmented),
+                'application/x-www-form-urlencoded' if fragmented else None))
+            m.response(202)
+            assert m.f('image_pending') == 1 and m.f('image') == IMAGE
+            assert m.f('generation') == 1 and m.f('displayed_generation') == 0
+            assert bytes(m.uc.mem_read(IMAGE, 307200)) == before
+            assert bytes(m.uc.mem_read(RECEIVE, 307200)) == reference
+            m.codec_cleanup()
+            m.tick(ms=0)
+            assert m.f('image') == RECEIVE and m.f('receive') == IMAGE and not m.f('image_pending')
+            assert m.f('generation') == m.f('displayed_generation') == 2
+            assert bytes(m.uc.mem_read(PIXELS, 614400)) == expanded_pixels(reference)
+            m.codec_cleanup()
+            CODEC_EVIDENCE.append({'case': name, 'format': image_format,
+                'transfer': 'fragmented/EAGAIN/EINTR' if fragmented else 'coalesced',
+                'status': 202, 'encoded_bytes': len(encoded),
+                'encoded_sha256': hashlib.sha256(encoded).hexdigest(),
+                'rgb565_sha256': hashlib.sha256(reference).hexdigest(),
+                'exact_inactive_rgb565': True, 'exact_gui_rgb32': True,
+                'active_preserved_until_gui_swap': True, 'transient_heap_cleanup': True,
+                'heap_peak_bytes': m.heap_peak, 'allocation_attempts': m.heap_attempts,
+                'worker_stack_observed_bytes': WORKER_SP - m.minimum_worker_sp})
+            m.f('alive', 0)
+            assert m.worker() and not m.heap_live
+        checks.append(f'Actual ARM HTTP→stock {image_format.upper()} decoder handles coalesced and fragmented/EAGAIN/EINTR binary input without Content-Type; exact RGB565 stays inactive until actual GUI swap/render matches full RGB32 reference; encoded/native heap frees before202')
+
+    if 'png' in formats:
+        png = (FIXTURES / 'card-original.png').read_bytes()
+        bad_crc = bytearray(png)
+        bad_crc[29] ^= 1
+        position, idats = 8, []
+        while position < len(png):
+            length, kind = struct.unpack_from('>I4s', png, position)
+            if kind == b'IDAT':
+                idats.append((position, length))
+            position += length + 12
+        last_idat, idat_bytes = idats[-1]
+        bad_idat_crc = bytearray(png)
+        bad_idat_crc[last_idat + 8 + idat_bytes] ^= 1
+        bad_adler = bytearray(png)
+        bad_adler[last_idat + 8 + idat_bytes - 1] ^= 1
+        struct.pack_into('>I', bad_adler, last_idat + 8 + idat_bytes,
+                         zlib.crc32(bad_adler[last_idat + 4:last_idat + 8 + idat_bytes]))
+        for name, malformed in (
+            ('png-bad-IHDR-CRC', bytes(bad_crc)),
+            ('png-bad-IDAT-CRC', bytes(bad_idat_crc)),
+            ('png-bad-Adler-with-valid-chunk-CRC', bytes(bad_adler)),
+            ('png-no-IEND', png[:-12]),
+            ('png-truncated-IDAT', png[:len(png) // 2]),
+            ('png-trailing', png + b'extra'),
+            ('png-second-image', png + png),
+        ):
+            reject_encoded(name, malformed, 422)
+        checks.append('Bad PNG IHDR/IDAT CRC, independently bad Adler with valid chunkCRC, missing IEND, truncated IDAT, trailing bytes and a concatenated second PNG return422 without active/pending/generation changes; native/encoded cleanup and guards remain intact')
+        for name, fail_at in (('png-encoded-OOM', 2), ('png-native-initial-OOM', 3)):
+            reject_encoded(name, png, 503, fail_allocation=fail_at)
+        checks.append('Encoded-buffer allocation failure and first PNG decoder allocation failure return503, free any transient heap and preserve the old active image')
+        for name, events in (
+            ('png-body-EOF', [encoded_request(png) + png[:100], 0]),
+            ('png-body-error', [encoded_request(png) + png[:100], ('error', 5)]),
+            ('png-body-idle', [encoded_request(png) + png[:100]] + [('error', 11)] * 300),
+        ):
+            reject_encoded(name, png, 400, events=events)
+        checks.append('PNG transport truncation, terminal error and idle deadline return400 before decoding/publication, freeing the complete-size encoded allocation and preserving active pixels')
+
+    if 'jpeg' in formats:
+        jpeg = (FIXTURES / 'card-jpeg-q85.jpg').read_bytes()
+        for name, malformed in (
+            ('jpeg-invalid-markers', b'\xff\xd8invalid-jpeg\xff\xd9'),
+            ('jpeg-no-EOI', jpeg[:-2]),
+            ('jpeg-truncated', jpeg[:len(jpeg) // 2]),
+            ('jpeg-truncated-with-EOI', jpeg[:len(jpeg) // 2] + b'\xff\xd9'),
+            ('jpeg-trailing', jpeg + b'extra'),
+        ):
+            reject_encoded(name, malformed, 422)
+        checks.append('Bad JPEG markers, missing EOI, truncation including a physical EOI and trailing data return422 rather than accepting synthetic EOI/warnings; active image and generations remain unchanged')
+        for name, fail_at in (('jpeg-encoded-OOM', 2), ('jpeg-native-initial-OOM', 3)):
+            reject_encoded(name, jpeg, 503, fail_allocation=fail_at)
+        checks.append('Encoded-buffer and first JPEG decoder allocation failures return503 with complete transient cleanup and no pending publication')
+
+    if set(formats) == {'png', 'jpeg'}:
+        m = Machine().ready().custom()
+        for index, name in enumerate(('card-original.png', 'card-jpeg-q85.jpg', 'card-rgba-alpha.png')):
+            encoded = (FIXTURES / name).read_bytes()
+            reference = (FIXTURES / (name + '.expected.rgb565')).read_bytes()
+            active, receive = m.f('image'), m.f('receive')
+            before = bytes(m.uc.mem_read(active, 307200))
+            generation = m.f('generation')
+            m.sent.clear()
+            m.closed.clear()
+            m.transact(encoded_events(encoded, fragmented=bool(index & 1)))
+            m.response(202)
+            assert m.f('image') == active and m.f('receive') == receive and m.f('image_pending')
+            assert m.f('generation') == generation
+            assert bytes(m.uc.mem_read(active, 307200)) == before
+            assert bytes(m.uc.mem_read(receive, 307200)) == reference
+            m.codec_cleanup()
+            m.tick(ms=0)
+            assert m.f('image') == receive and m.f('receive') == active and not m.f('image_pending')
+            assert m.f('generation') == m.f('displayed_generation') == generation + 1
+            assert bytes(m.uc.mem_read(PIXELS, 614400)) == expanded_pixels(reference)
+            m.codec_cleanup()
+        m.f('alive', 0)
+        assert m.worker() and not m.heap_live
+        CODEC_EVIDENCE.append({'case': 'png-jpeg-png-same-worker', 'status': 202,
+            'uploads': 3, 'exact_inactive_rgb565': True, 'exact_gui_rgb32': True,
+            'active_preserved_until_gui_swap': True, 'transient_heap_cleanup': True,
+            'heap_peak_bytes': m.heap_peak, 'allocation_attempts': m.heap_attempts,
+            'worker_stack_observed_bytes': WORKER_SP - m.minimum_worker_sp})
+        checks.append('PNG→JPEG→PNG on the same HTTP worker alternates both owned image slots, produces exact GUI frames, advances generation once per admission and leaves no decoder state or transient allocations between requests')
+    return checks
+
+
 def exact_checks():
     checks = []
     for sending in (False, True):
@@ -613,6 +921,14 @@ def exact_checks():
 
 def server_checks():
     checks = []
+    m = Machine()
+    m.allocations = [CTX, PIXELS]
+    m.create_result = -1
+    assert m.call('broker_main', 2, 0x389d0200) == 17
+    assert len(m.create_calls) == 1 and m.create_calls[0]['stack_bytes'] == WORKER_STACK_BYTES
+    assert m.allocation_sizes == [224, 1843200] and m.freed == [PIXELS, CTX]
+    assert not m.heap_live and m.word(0x384fc864) == 0
+    checks.append('Actual ARM CREATE passes image-specific16B default pthread scheduling attributes with explicit16384B worker stack; create rejection unwinds both owned allocations')
     for setting, value, error in (('socket_result', -1, 1), ('bind_result', -1, 2), ('listen_result', -1, 2)):
         m = Machine().ready()
         setattr(m, setting, value)
@@ -691,17 +1007,17 @@ def server_checks():
     return checks
 
 
-def main():
-    checks = parser_checks() + response_checks() + image_checks() + exact_checks() + server_checks()
+def main(formats=('png', 'jpeg')):
+    checks = parser_checks() + response_checks() + image_checks() + encoded_image_checks(formats) + exact_checks() + server_checks()
     result = {'passed': True, 'hardware_operation': False, 'check_count': len(checks),
         'checks': checks, 'elf_sha256': hashlib.sha256(ELF.read_bytes()).hexdigest(),
-        'test_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'test_sha256': TEST_SHA,
         'context_bytes': 224, 'header_heap_bytes': 2048, 'image_payload_bytes': 307200,
+        'original_nor_sha256': ORIGINAL_SHA, 'stock_native_decoders_executed': list(formats),
+        'worker_stack_requested_bytes': WORKER_STACK_BYTES, 'encoded_image_cases': CODEC_EVIDENCE,
         'configured_redirect_tested': bool(FRONTEND), 'configured_cors_tested': ORIGIN != '*',
-        'limitations': 'Actual ARM instructions execute, but native APIs/socketRPC timing/locks/OS scheduling/LCD scanout/heap availability/cold boot are mocked or unchecked.'}
-    output = Path(os.environ.get('PANEL_TEST_OUTPUT', ROOT / (
-        'build/reviews/http-configured-arm-offline-result.json'
-        if FRONTEND or ORIGIN != '*' else 'firmware/tests/http-arm-offline-result.json')))
+        'limitations': 'Actual project and original PNG/JPEG ARM instructions execute; allocator/getenv/socket APIs, selected libc formatting/zeroing, locks and GUI driver boundaries are mocked. Worker stack is block-observed with a lower boundary guard on tested paths only. Real RPC timing/OS scheduling/LCD scanout/available heap/cold boot are unchecked.'}
+    output = Path(os.environ.get('PANEL_TEST_OUTPUT', ROOT / 'build/reviews/direct-images-http-arm-offline-result.json'))
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(result, indent=2))

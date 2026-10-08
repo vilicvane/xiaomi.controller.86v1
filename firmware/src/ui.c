@@ -318,6 +318,11 @@ static void *bootstrap(void *argument)
     return 0;
 }
 
+/* Exact1.50.10 pthread attributes: retain default scheduling and let NuttX
+ * own the stack. Decoding runs on this worker rather than the GUI thread.
+ */
+static const u32 server_attributes[4] = {0x00010064u, 0, 0, 16384};
+
 __attribute__((section(".text.entry")))
 int broker_main(int argc, char **argv)
 {
@@ -335,7 +340,7 @@ int broker_main(int argc, char **argv)
 
     WORD(0x384fc864u) = (u32)c;
     __sync_synchronize();
-    if (CREATE(&c->tid,0,bootstrap,c)) {
+    if (CREATE(&c->tid,(void *)server_attributes,bootstrap,c)) {
         FREE(c->pixels); FREE(c); WORD(0x384fc864u) = 0;
         return ORIGINAL(argc,argv);
     }

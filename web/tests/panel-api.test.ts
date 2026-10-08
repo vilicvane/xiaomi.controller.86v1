@@ -1,8 +1,15 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { imageBody as firmwareImageBody } from "../../firmware/tools/upload.ts";
+import {
+  imageBody as firmwareImageBody,
+  uploadFileBody,
+  uploadImage,
+} from "../../firmware/tools/upload.ts";
 import {
   BODY_BYTES,
+  CAPABILITY_TIMEOUT_MS,
+  MAX_IMAGE_BYTES,
   PANEL_HEIGHT,
   PANEL_PORT,
   PANEL_WIDTH,
@@ -10,11 +17,14 @@ import {
   UPLOAD_TIMEOUT_MS,
   PanelUploadError,
   fnv1a32,
+  getImageFormats,
   queryEndpoint,
   imageBody,
+  imageFormat,
   normalizeDeviceEndpoint,
   rgbaToRgb565,
   sendImage,
+  sendCanvasImage,
 } from "../src/panel-api.ts";
 
 test("device addresses use explicit dotted-decimal IPv4 and a canonical port", () => {
@@ -146,6 +156,7 @@ test("upload POST omits Content-Type, preserves the binary body and only 202 rep
     assert.deepEqual(new Uint8Array(await request.arrayBuffer()), body);
     assert.equal(init?.credentials, "omit");
     assert.equal(init?.cache, "no-store");
+    assert.equal(init?.redirect, "error");
     assert.ok(init?.signal instanceof AbortSignal);
     assert.equal(init.signal.aborted, false);
     assert.deepEqual(new Uint8Array(init?.body as ArrayBuffer), body);
@@ -163,6 +174,164 @@ test("upload POST omits Content-Type, preserves the binary body and only 202 rep
         return true;
       },
     );
+  }
+});
+
+const png = new Uint8Array(readFileSync(new URL("../public/github-card.png", import.meta.url)));
+// Client tests identify signatures only; the device decoder validates complete JPEG contents.
+const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
+const vimg = imageBody(new Uint8Array(PIXEL_BYTES));
+const capabilities = () => Response.json({ formats: ["png", "jpeg", "vimg"] });
+
+test("standard image signatures accept variable file lengths without trusting filenames", () => {
+  assert.equal(imageFormat(png), "png");
+  assert.equal(imageFormat(jpeg), "jpeg");
+  assert.equal(imageFormat(vimg), "vimg");
+  for (const invalid of [
+    new Uint8Array(),
+    new Uint8Array(MAX_IMAGE_BYTES + 1),
+    png.subarray(0, 7),
+    new Uint8Array([0x56, 0x49, 0x4d, 0x47]),
+    new TextEncoder().encode("GIF89a"),
+  ]) assert.throws(() => imageFormat(invalid));
+});
+
+test("capability GET is explicit, has no extra request headers and only 404 selects deployed VIMG", async (context) => {
+  context.mock.method(AbortSignal, "timeout", (milliseconds: number) => {
+    assert.equal(milliseconds, CAPABILITY_TIMEOUT_MS);
+    return new AbortController().signal;
+  });
+  let calls = 0;
+  assert.deepEqual(await getImageFormats("192.0.2.20", async (url, init) => {
+    calls++;
+    assert.equal(url, "http://192.0.2.20:18086/api/image");
+    assert.equal(init?.method, "GET");
+    assert.equal(init?.headers, undefined);
+    assert.equal(init?.body, undefined);
+    assert.equal(init?.credentials, "omit");
+    assert.equal(init?.cache, "no-store");
+    assert.equal(init?.redirect, "error");
+    return Response.json({ formats: ["png", "jpeg", "vimg", "png"] });
+  }), ["png", "jpeg", "vimg"]);
+  assert.equal(calls, 1);
+  assert.deepEqual(await getImageFormats("192.0.2.20", async () =>
+    new Response(null, { status: 404 })), ["vimg"]);
+});
+
+test("canvas upload selects PNG on new firmware and VIMG only on an explicit legacy 404", async () => {
+  for (const legacy of [false, true]) {
+    const methods: string[] = [];
+    const result = await sendCanvasImage("192.0.2.20", png, vimg, async (url, init) => {
+      methods.push(init!.method!);
+      if (init?.method === "GET")
+        return legacy ? new Response(null, { status: 404 }) : capabilities();
+      assert.equal(init?.headers, undefined);
+      assert.equal(new Request(url, init).headers.has("Content-Type"), false);
+      assert.deepEqual(new Uint8Array(init?.body as ArrayBuffer), legacy ? vimg : png);
+      return new Response(null, { status: 202 });
+    });
+    assert.deepEqual(methods, ["GET", "POST"]);
+    assert.deepEqual(result, { status: 202, accepted: true });
+  }
+});
+
+test("failed or invalid capability reads never POST and never silently select VIMG", async () => {
+  const failures = [
+    () => { throw new TypeError("Network failed"); },
+    () => new Response(null, { status: 503 }),
+    () => new Response("not JSON", { status: 200 }),
+    () => Response.json({ formats: [] }),
+    () => Response.json({ formats: "png" }),
+    () => Response.json({ formats: ["png", 1] }),
+    () => Response.json({ formats: ["jpeg"] }),
+  ];
+  for (const failure of failures) {
+    const methods: string[] = [];
+    await assert.rejects(sendCanvasImage("192.0.2.20", png, vimg, async (_url, init) => {
+      methods.push(init!.method!);
+      return failure();
+    }), PanelUploadError);
+    assert.deepEqual(methods, ["GET"]);
+  }
+});
+
+test("a failed PNG POST stays uncertain or rejected without a second POST in VIMG", async () => {
+  for (const transport of [false, true]) {
+    const methods: string[] = [];
+    await assert.rejects(sendCanvasImage("192.0.2.20", png, vimg, async (_url, init) => {
+      methods.push(init!.method!);
+      if (init?.method === "GET") return capabilities();
+      if (transport) throw new TypeError("Connection lost after send");
+      return new Response(null, { status: 422 });
+    }), (error: unknown) => error instanceof PanelUploadError &&
+      error.kind === (transport ? "transport" : "http"));
+    assert.deepEqual(methods, ["GET", "POST"]);
+  }
+});
+
+test("direct PNG and JPEG POST preserve file bytes and require only HTTP 202", async () => {
+  for (const file of [png, jpeg]) {
+    await sendImage("192.0.2.20", file, async (url, init) => {
+      assert.equal(init?.method, "POST");
+      const request = new Request(url, init);
+      assert.equal(request.headers.has("Content-Type"), false);
+      assert.deepEqual(new Uint8Array(await request.arrayBuffer()), file);
+      return new Response(null, { status: 202 });
+    });
+  }
+});
+
+test("CLI keeps standard files intact and requires explicit .rgb565 for raw pixels", () => {
+  assert.deepEqual(new Uint8Array(uploadFileBody(png, "wallpaper.dat")), png);
+  assert.deepEqual(new Uint8Array(uploadFileBody(jpeg, "photo.png")), jpeg);
+  assert.deepEqual(new Uint8Array(uploadFileBody(vimg, "wallpaper.vimg")), vimg);
+  assert.deepEqual(new Uint8Array(uploadFileBody(new Uint8Array(PIXEL_BYTES), "raw.RGB565")), vimg);
+  assert.throws(() => uploadFileBody(new Uint8Array(PIXEL_BYTES), "raw.png"));
+});
+
+test("CLI standard-file capability probes precede one exact POST; VIMG stays usable on deployed firmware", async () => {
+  for (const file of [png, jpeg, vimg]) {
+    const methods: string[] = [];
+    await uploadImage("192.0.2.20", file, async (url, init) => {
+      methods.push(init!.method!);
+      if (init?.method === "GET") return capabilities();
+      assert.equal(init?.redirect, "error");
+      const request = new Request(url, init);
+      assert.equal(request.headers.has("Content-Type"), false);
+      assert.deepEqual(new Uint8Array(await request.arrayBuffer()), file);
+      return new Response(null, { status: 202 });
+    });
+    assert.deepEqual(methods, file === vimg ? ["POST"] : ["GET", "POST"]);
+  }
+});
+
+test("CLI rejects old, unavailable or invalid standard-file capabilities before any POST", async () => {
+  for (const response of [
+    new Response(null, { status: 404 }),
+    new Response(null, { status: 503 }),
+    new Response("invalid", { status: 200 }),
+    Response.json({ formats: [] }),
+    Response.json({ formats: ["png", 1] }),
+  ]) {
+    const methods: string[] = [];
+    await assert.rejects(uploadImage("192.0.2.20", png, async (_url, init) => {
+      methods.push(init!.method!);
+      return response;
+    }), /no image was uploaded/);
+    assert.deepEqual(methods, ["GET"]);
+  }
+});
+
+test("CLI does not retry a rejected or uncertain standard-image POST", async () => {
+  for (const transport of [false, true]) {
+    const methods: string[] = [];
+    await assert.rejects(uploadImage("192.0.2.20", png, async (_url, init) => {
+      methods.push(init!.method!);
+      if (init?.method === "GET") return capabilities();
+      if (transport) throw new TypeError("Connection lost");
+      return new Response(null, { status: 503 });
+    }), transport ? /may have been accepted/ : /HTTP 503/);
+    assert.deepEqual(methods, ["GET", "POST"]);
   }
 });
 

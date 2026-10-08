@@ -278,25 +278,26 @@ function SettingsButton({ operation, state, busy, onClick }: {
 export function SettingsPage() {
   const { form, editSeconds, update, secondsInput } = useContext(SettingsContext)!;
   return <section id="settings-page">
-    <div className="page-heading"><h2>设置</h2></div>
     <div className="settings-layout">
       <section className="settings-card card" aria-labelledby="settings-title">
-        <h3 id="settings-title"><Timer strokeWidth={1.65} aria-hidden="true" />自动返回</h3>
+        <h2 id="settings-title"><Timer strokeWidth={1.65} aria-hidden="true" />自动返回</h2>
         <p>原界面一段时间未触摸后，返回自定义图片。</p>
         <form id="settings-form" onSubmit={(event) => {
           event.preventDefault();
           void update("save");
         }}>
           <label className="field-label" htmlFor="return-seconds">等待时间</label>
-          <div className="settings-field"><input ref={secondsInput} id="return-seconds" type="number"
-            min="0" max="3600" step="1" placeholder="0–3600" inputMode="numeric"
-            aria-describedby="settings-help" aria-invalid={form.invalid || undefined}
-            value={form.seconds} onChange={(event) => editSeconds(event.target.value)} /><span>秒</span></div>
-          <p id="settings-help" className="settings-help">0 表示关闭；保存的设置在重启后保留。</p>
-          <div className="settings-actions">
-            <SettingsButton operation="read" state={form.read} busy={form.busy} onClick={() => void update("read")} />
-            <SettingsButton operation="save" state={form.save} busy={form.busy} />
+          <div className="settings-controls">
+            <div className="settings-field"><input ref={secondsInput} id="return-seconds" type="number"
+              min="0" max="3600" step="1" placeholder="60" inputMode="numeric"
+              aria-describedby="settings-help" aria-invalid={form.invalid || undefined}
+              value={form.seconds} onChange={(event) => editSeconds(event.target.value)} /><span>秒</span></div>
+            <div className="settings-actions">
+              <SettingsButton operation="read" state={form.read} busy={form.busy} onClick={() => void update("read")} />
+              <SettingsButton operation="save" state={form.save} busy={form.busy} />
+            </div>
           </div>
+          <p id="settings-help" className="settings-help">0 表示关闭，最多 3600 秒；保存后重启仍保留。</p>
           <p id="settings-feedback" className="settings-feedback" role="status" aria-live="polite"
             data-state={form.feedbackState}>{form.feedback}</p>
         </form>

@@ -417,6 +417,8 @@ export function ImageActions() {
     </button>
     <input id="file-input" ref={input} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden
       onChange={(event) => { const file = event.currentTarget.files?.[0]; if (file) void load(file); event.currentTarget.value = ""; }} />
+    <button id="download-png" className="button secondary" type="button" disabled={!source}
+      onClick={() => { void downloadPng(); }}><Download aria-hidden="true" />下载 PNG</button>
     <form id="send-form" onSubmit={(event) => { event.preventDefault(); void send(); }}>
       <button id="send" className="button primary" type="submit" disabled={!source || sending}
         data-state={upload.kind} aria-live="polite" aria-busy={sending}>
@@ -426,7 +428,5 @@ export function ImageActions() {
       <p id="send-feedback" className="send-feedback" role="status" aria-live="polite"
         hidden={!upload.message || upload.kind === "working"} data-state={upload.kind}>{upload.message}</p>
     </form>
-    <button id="download-png" className="button secondary" type="button" disabled={!source}
-      onClick={() => { void downloadPng(); }}><Download aria-hidden="true" />下载 PNG</button>
   </>;
 }

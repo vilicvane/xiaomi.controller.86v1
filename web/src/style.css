@@ -151,36 +151,38 @@ main {
 }
 .app-sidebar {
   grid-area: sidebar;
+  align-self: stretch;
 }
 .image-actions {
   gap: 12px;
+  margin-top: auto;
 }
 .image-actions > .button {
   min-height: 45px;
   font-size: 13px;
 }
-#settings-page {
-  max-width: 680px;
-  margin: 0;
-}
-.page-heading h2 {
-  margin: 0 0 18px;
-  font-size: 18px;
-  font-weight: 650;
-}
 .settings-layout {
   display: grid;
   gap: 18px;
 }
+.settings-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 .settings-layout .settings-field {
+  flex: 1 1 140px;
   max-width: 200px;
 }
 .settings-layout .settings-actions {
-  justify-content: flex-end;
+  flex-shrink: 0;
 }
 .settings-layout .settings-actions button {
   flex: initial;
+  width: 120px;
   padding: 8px 15px;
+  min-height: 44px;
 }
 .not-found {
   max-width: 680px;
@@ -422,7 +424,7 @@ canvas.active + .crop-frame .crop-guides {
 .settings-card {
   padding: 21px 24px;
 }
-.settings-card h3 {
+.settings-card h2 {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -430,7 +432,7 @@ canvas.active + .crop-frame .crop-guides {
   font-size: 13px;
   font-weight: 600;
 }
-.settings-card h3 svg {
+.settings-card h2 svg {
   width: 16px;
   height: 16px;
   color: #8e9cb0;
@@ -760,6 +762,17 @@ footer svg {
   }
   .image-actions {
     grid-area: actions;
+    margin-top: 0;
+  }
+  .settings-layout .settings-field {
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .settings-layout .settings-actions {
+    width: 100%;
+  }
+  .settings-layout .settings-actions button {
+    flex: 1;
   }
   .editor {
     padding: 18px;

@@ -41,8 +41,8 @@ JTDI/JTDO 不需要连接。供电单独接到**已经确认的主板低压供�
 4. 面板启动后，按下面的功能说明查看地址并发送图片。
 
 具体命令、环境准备以及升级和恢复步骤见 **[完整刷写指南](docs/flashing.md)**。
-程序保存在 Flash 中，重启后仍会运行；上传的图片目前只保存在 RAM 中，重启后需要重新发送。
-当前图片格式支持版已安装，安装与验证范围见 [发布结果](firmware/releases/maintained-images-20261008-a.json)。
+程序保存在 Flash 中，上传的图片保存在 MMC 中，启动时自动恢复最近一张有效图片。
+安装与验证范围见 [发布结果](firmware/releases/maintained-persistent-images-20261008-a.json)。
 
 ## 功能：自定义图片
 
@@ -86,11 +86,12 @@ curl --data-binary "@picture-480x320.png" "http://PANEL_IPV4:18086/api/image"
 ```
 
 替换 IP 和文件名时，保留文件名前的 `@`，它表示读取文件内容。收到 HTTP 202 表示面板
-已接收并排队显示，图片不会写入 Flash。
+已保存并排队显示。图片写入 MMC，不会反复擦写存放固件的 NOR Flash。
 
 PNG 限 8-bit 非隔行；JPEG 支持常见单扫描 baseline，不支持 progressive 或 CMYK。
 透明图片铺黑底。文件最大 1MiB，设备不处理 EXIF 旋转；完整格式范围见协议文档。
 网页发送时自动查询支持能力，旧固件仍使用 VIMG。
+图片保存及异常恢复的说明见 [图片持久保存](docs/persistent-images.md)。
 
 ## 开发
 
@@ -118,7 +119,8 @@ Cloudflare 发布使用 `npm --prefix web run deploy`，正式路径为 `/xiaomi
 | [HTTP 图片 API](docs/http-image-api.md) | 请求格式、响应及连接限制 |
 | [研究记录](docs/research-index.md) | 配网恢复、硬件探索和历史版本 |
 | [自动返回说明](docs/auto-return.md) | 定时返回、重启保留的设置及 API |
-| [当前发布结果](firmware/releases/maintained-images-20261008-a.json) | 本次安装和验证范围 |
+| [图片持久保存](docs/persistent-images.md) | 重启恢复、保存失败及备份范围 |
+| [当前发布结果](firmware/releases/maintained-persistent-images-20261008-a.json) | 本次安装和验证范围 |
 
 历史实验保留在 `analysis/`、`scripts/` 和研究文档中，包括此前的第三键三击逻辑。
 备份、设备身份、原始日志及第三方工具链不在 Git 中分发。

@@ -886,6 +886,7 @@ main {
 }
 .api-body code {
   font-size: 12px;
+  overflow-wrap: anywhere;
 }
 .api-example {
   white-space: pre-wrap;

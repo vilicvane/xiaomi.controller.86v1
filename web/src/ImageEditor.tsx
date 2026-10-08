@@ -40,7 +40,7 @@ type EditorState = {
   metadata: Metadata;
   revision: number;
   imageError: string;
-  upload: { kind: UploadKind; message: string; uncertain?: boolean };
+  upload: { kind: UploadKind; message: string; uncertain?: boolean; persistent?: boolean };
 };
 type EditorContextValue = {
   state: EditorState;
@@ -63,7 +63,7 @@ const INITIAL: EditorState = {
   upload: { kind: "idle", message: "" },
 };
 const EditorContext = createContext<EditorContextValue | null>(null);
-const UNCERTAIN_POST = "旧面板可能已接收图片，请确认后手动发送。";
+const UNCERTAIN_POST = "旧面板可能已接收或保存图片，请确认后手动发送。";
 
 function closeImage(image: EditorImage | null) {
   if (image instanceof ImageBitmap) image.close();
@@ -239,23 +239,29 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       const vimg = vimgBody(frame);
       const png = new Uint8Array(await (await pngBlob(frame)).arrayBuffer());
       requireAddress();
-      await sendCanvasImage(endpoint, png, vimg, guardedFetch);
+      const result = await sendCanvasImage(endpoint, png, vimg, guardedFetch);
       if (generation !== sendGeneration.current) return;
       const edited = snapshot.revision !== current.current.revision || addressChanged();
       change((state) => ({ ...state, upload: {
         kind: "success",
-        message: edited ? "本次画面已接收；当前编辑或地址已改变，可再次发送。" : "",
+        persistent: result.persistent,
+        message: edited ? `本次画面已${result.persistent ? "保存" : "接收"}；当前编辑或地址已改变，可再次发送。` : "",
       } }));
     } catch (cause) {
       if (generation !== sendGeneration.current) return;
+      // These maintained-firmware rejections occur before any image-file write.
+      // A 503 or missing confirmation can follow a successful save and failed publication.
+      const rejected = cause instanceof PanelUploadError && cause.kind === "http" &&
+        [400, 404, 405, 408, 409, 411, 413, 415, 417, 422, 431].includes(cause.status!);
+      const uncertain = request.posted && (addressChanged() || !rejected);
       change((state) => ({ ...state, upload: {
-        uncertain: request.posted && (addressChanged() ||
-          cause instanceof PanelUploadError && cause.kind === "transport"),
+        uncertain,
         kind: "error", message: addressChanged()
           ? request.posted
             ? "面板地址已改变，本次发送已取消；" + UNCERTAIN_POST
             : "面板地址已改变，本次发送已取消，尚未上传。"
-          : cause instanceof Error ? cause.message : "发送未获确认，请检查网络后手动重试。",
+          : (cause instanceof Error ? cause.message : "发送未获确认，请检查网络后手动重试。") +
+            (uncertain ? " 面板可能已接收或保存图片，请确认后再手动发送。" : ""),
       } }));
     } finally {
       if (activeSend.current === request) activeSend.current = null;
@@ -423,7 +429,7 @@ export function ImageActions() {
       <button id="send" className="button primary" type="submit" disabled={!source || sending}
         data-state={upload.kind} aria-live="polite" aria-busy={sending}>
         <span id="send-icon"><SendIcon aria-hidden="true" /></span>
-        <span id="send-label">{UPLOAD_LABELS[upload.kind]}</span><ArrowRight aria-hidden="true" />
+        <span id="send-label">{upload.kind === "success" && upload.persistent ? "画面已保存" : UPLOAD_LABELS[upload.kind]}</span><ArrowRight aria-hidden="true" />
       </button>
       <p id="send-feedback" className="send-feedback" role="status" aria-live="polite"
         hidden={!upload.message || upload.kind === "working"} data-state={upload.kind}>{upload.message}</p>

@@ -17,7 +17,7 @@ function collect(directory: string) {
 for (const directory of ['firmware/src', 'firmware/include', 'firmware/ports']) collect(directory);
 const sources = Object.fromEntries(sourcePaths.sort().map(path => [path, hash(join(root, path))]));
 const recordPath = join(out, 'build-inputs.json');
-const units = ['ui', 'http', 'http-parser', 'settings', 'image-codec'];
+const units = ['ui', 'http', 'http-parser', 'settings', 'image-codec', 'image-store'];
 function headerHashes(makefiles: string[]) {
   const dependencies = new Set<string>();
   for (const makefile of makefiles) {
@@ -62,7 +62,7 @@ if (process.argv[2] === 'begin') {
     writeFileSync(join(root, relative), bytes);
     record.headerCopies[relative] = expected;
   }
-  record.artifacts = Object.fromEntries(['panel.elf', 'panel.bin', 'panel-aux.bin', 'panel-net.bin', 'panel-codec.bin', 'panel.map']
+  record.artifacts = Object.fromEntries(['panel.elf', 'panel.bin', 'panel-aux.bin', 'panel-net.bin', 'panel-codec.bin', 'panel-store.bin', 'panel.map']
     .map(name => [`build/panel/${name}`, hash(join(out, name))]));
   record.completed = true;
   writeFileSync(recordPath, JSON.stringify(record, null, 2) + '\n');

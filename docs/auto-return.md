@@ -3,7 +3,8 @@
 自动返回用于在原界面连续未触摸一段时间后，切回自定义图片。默认等待 **60 秒**；
 可设置为 **0–3600 的整数秒**，其中 `0` 关闭定时返回。
 
-本功能对应已安装的 `maintained-idle-return-four-page-20261007-a`。真实设置接口和暖重启
+本功能最初在 `maintained-idle-return-four-page-20261007-a` 验证，当前六页图片持久保存版
+保留相同设置接口和 224B broker 布局。此前真实设置接口和暖重启
 加载已验证；自动返回、触摸延期和关闭状态的用户观察仍待确认，见
 [发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
 此前 g 版没有设置接口。安装限制见 [刷写指南](flashing.md)。
@@ -14,8 +15,8 @@
 2. 从页面导航进入“设置”，在“自动返回”中点击“读取设置”，查看这台面板当前的等待时间。
 3. 填写整数秒，点击“保存设置”。例如 `60` 表示原界面连续 60 秒未触摸后返回，
    `0` 表示关闭定时返回。
-4. 获得保存确认后，重新开始完整的等待间隔。设置按重启保留实现，上传图片仍只
-   保存在 RAM 中，重启后需要重新发送。
+4. 获得保存确认后，重新开始完整的等待间隔。设置按重启保留实现；当前版上传图片也
+   单独保存到 MMC，见 [图片持久保存](persistent-images.md)。旧五页及更早版图片只在 RAM 中。
 
 自动返回位于独立的 `/xiaomi-86v1/settings` 页面，图片编辑位于 `/xiaomi-86v1/`。
 可以直接打开设置页；没有有效 URL 地址和本地地址时，会先进入连接配置，保存后返回设置页。
@@ -43,7 +44,8 @@
 
 POST body 必须是 JSON 对象，**只有一个成员** `return_after_seconds`，值是 0–3600 的
 整数。完整 body 长度为 **1–64 字节**，必须提供准确的 Content-Length；浏览器或 cURL
-会为下面这样的完整请求自动设置长度。网页声明 `Content-Type: application/json`。
+会为下面这样的完整请求自动设置长度。网页客户端声明 `Content-Type: application/json`，
+接收端不依赖这个 header，cURL 示例无需添加。
 通用 HTTP 请求和连接约束见 [HTTP 图片 API](http-image-api.md)。
 
 ```json
@@ -54,11 +56,11 @@ POST body 必须是 JSON 对象，**只有一个成员** `return_after_seconds`�
 
 ```sh
 curl "http://PANEL_IPV4:18086/api/settings"
-curl -X POST "http://PANEL_IPV4:18086/api/settings" -H "Content-Type: application/json" --data-binary '{"return_after_seconds":60}'
+curl --data-binary '{"return_after_seconds":60}' "http://PANEL_IPV4:18086/api/settings"
 ```
 
 以上保存命令使用 POSIX shell 的引号规则；在 PowerShell 中可先把 JSON 原文保存为
-UTF-8 文件，再用 `curl.exe --data-binary "@settings.json"` 读取文件，避免引号被修改。
+无 BOM 的 UTF-8 文件，再用 `curl.exe --data-binary "@settings.json"` 读取文件，避免引号被修改。
 
 | 状态 | 含义 |
 | --- | --- |
@@ -88,8 +90,11 @@ publisher 锁与 ownership 条件满足、没有待处理触摸时执行 PAN；�
 `+216` `activity_ms` 和 `+220` `activity_valid`；旧版 212 字节 context、冻结输入及历史
 解释保持原样。
 
-本轮真实接口先读到默认 60 秒；保存 0 和 5 秒后均读回一致，3601 返回 422 且仍保留
+历史 idle-return a 的真实接口先读到默认 60 秒；保存 0 和 5 秒后均读回一致，3601 返回 422 且仍保留
 运行值 0。保存 5 秒后进行一次不经过 OS 关机钩子的 AON GLOBAL 暖复位，新 context
 和 GET 都重新读到 5 秒；之后已保存回 60 秒。这证明本轮暖重启加载，完整断电仍按
 用户要求跳过。网页读取/保存、到期返回、触摸延期及 0 关闭的用户观察单独记录，不从
 接口成功或旧 g 版推定通过。
+
+六页持久保存版安装时只通过 GET 读到已有的 60 秒，没有新的设置 POST。
+这些记录不等于本轮 React 页面的新实机设置验收。

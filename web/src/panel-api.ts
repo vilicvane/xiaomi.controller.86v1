@@ -120,6 +120,7 @@ const rejectionMessages: Record<number, string> = {
   404: "设备未提供图片接口，请确认维护版固件。",
   405: "设备不接受此请求方法。",
   408: "设备等待请求超时。",
+  409: "面板的图片存储存在冲突，本次画面未替换。",
   411: "设备未收到图片长度。",
   413: "图片数据超过设备要求的大小。",
   415: "设备不支持这种图片格式或编码。",
@@ -130,10 +131,10 @@ const rejectionMessages: Record<number, string> = {
 };
 
 /** Explicit send-time probe. Only the deployed firmware's 404 selects legacy VIMG. */
-export async function getImageFormats(
+export async function getImageCapabilities(
   endpoint: string,
   fetcher: typeof fetch = fetch,
-): Promise<ImageFormat[]> {
+): Promise<{ formats: ImageFormat[]; persistent: boolean }> {
   let address: string;
   try {
     address = normalizeDeviceEndpoint(endpoint);
@@ -155,7 +156,7 @@ export async function getImageFormats(
       "transport",
     );
   }
-  if (response.status === 404) return ["vimg"];
+  if (response.status === 404) return { formats: ["vimg"], persistent: false };
   if (response.status !== 200)
     throw new PanelUploadError(
       `读取图片能力时面板返回 HTTP ${response.status}，尚未上传。`,
@@ -164,13 +165,16 @@ export async function getImageFormats(
     );
   try {
     const value: unknown = await response.json();
-    const formats = (value as { formats?: unknown } | null)?.formats;
+    const capability = value as { formats?: unknown; persistent?: unknown } | null;
+    const formats = capability?.formats;
     if (!Array.isArray(formats) ||
         formats.some((format) => typeof format !== "string")) throw new Error();
+    if (capability?.persistent !== undefined && typeof capability.persistent !== "boolean")
+      throw new Error();
     const supported = formats.filter((format): format is ImageFormat =>
       format === "png" || format === "jpeg" || format === "vimg");
     if (!supported.length) throw new Error();
-    return [...new Set(supported)];
+    return { formats: [...new Set(supported)], persistent: capability?.persistent === true };
   } catch {
     throw new PanelUploadError(
       "面板的图片能力响应无效，尚未上传。请确认设备固件。",
@@ -179,17 +183,24 @@ export async function getImageFormats(
   }
 }
 
+export async function getImageFormats(
+  endpoint: string,
+  fetcher: typeof fetch = fetch,
+): Promise<ImageFormat[]> {
+  return (await getImageCapabilities(endpoint, fetcher)).formats;
+}
+
 /** Capture both representations before probing; never retry a failed POST in another format. */
 export async function sendCanvasImage(
   endpoint: string,
   png: Uint8Array,
   vimg: Uint8Array,
   fetcher: typeof fetch = fetch,
-): Promise<{ status: 202; accepted: true }> {
-  const formats = await getImageFormats(endpoint, fetcher);
-  if (formats.includes("png")) return sendImage(endpoint, png, fetcher);
-  if (formats.includes("vimg")) return sendImage(endpoint, vimg, fetcher);
-  throw new PanelUploadError("面板未提供 PNG 或 VIMG 上传能力，尚未上传。", "capability");
+): Promise<{ status: 202; accepted: true; persistent: boolean }> {
+  const capability = await getImageCapabilities(endpoint, fetcher);
+  const body = capability.formats.includes("png") ? png : capability.formats.includes("vimg") ? vimg : null;
+  if (!body) throw new PanelUploadError("面板未提供 PNG 或 VIMG 上传能力，尚未上传。", "capability");
+  return { ...(await sendImage(endpoint, body, fetcher)), persistent: capability.persistent };
 }
 
 /** One request only. HTTP 202 means queued in RAM, not LCD completion or persistent storage. */

@@ -201,7 +201,7 @@ cURL 无 `-H` POST/202、无 type 坏 FNV/422、任意 type 坏 VIMG/400 已实�
 | [固定原生应用 writer](../analysis/persistence/boot-nor-native-app-runner.md) | 固定扇区写入及 safe-to-resume gate |
 | [padding 测试计划](../analysis/persistence/boot-nor-padding-test-plan.md) | 当轮监督下的写入边界研究 |
 
-这些研究不授权照抄其中旧命令到当前五页、历史四页或其他版本的三页集合。`0x40140000` 访问曾锁总线，当前逻辑
+这些研究不授权照抄其中旧命令到当前六页、历史五页/四页或其他版本的三页集合。`0x40140000` 访问曾锁总线，当前逻辑
 controller 0 为 `0x40148000` 且要先验证 live pointer table。任何不确定 native 调用后
 保留停止状态，不能回放旧 CPU/SRAM 或自动推进。逐级恢复表见 [开发流程](development.md)。
 

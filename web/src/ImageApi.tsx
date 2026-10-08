@@ -34,14 +34,19 @@ export function ImageApi() {
           <p>保留文件名前的 <code>@</code>，替换它后面的文件名或路径。cURL 自动提供
             Content-Length；Windows PowerShell 中使用 <code>curl.exe</code>。</p>
           <dl className="api-statuses">
-            <div><dt><code>202</code></dt><dd>完整图像已校验并在 RAM 排队，重启后清除；不代表 LCD 已完成显示。</dd></div>
+            <div><dt><code>202</code></dt><dd>当前维护版已校验、保存图片并在 RAM 排队，重启后自动恢复；不代表 LCD 已完成显示。</dd></div>
+            <div><dt><code>409</code></dt><dd>图片存储路径存在不属于本项目的文件，不覆盖该文件。</dd></div>
             <div><dt><code>411 / 413</code></dt><dd>缺少 Content-Length，或文件超过大小限制。</dd></div>
             <div><dt><code>415 / 422</code></dt><dd>格式或编码不支持，或尺寸、内容校验失败；不会替换当前图片。</dd></div>
-            <div><dt><code>503</code></dt><dd>设备资源或发布暂不可用，请确认后手动重试。</dd></div>
+            <div><dt><code>503</code></dt><dd>资源、保存确认或发布暂不可用，持久文件可能已更新；请确认后手动重试。</dd></div>
           </dl>
           <p><code>GET /api/image</code> 成功时返回 <code>200</code> 和
-            <code>{'{"formats":["png","jpeg","vimg"]}'}</code>。
+            <code>{'{"formats":["png","jpeg","vimg"],"persistent":true}'}</code>。
+            只有明确的 <code>persistent: true</code> 和上传成功才表示图片已保存；
+            缺省或 <code>false</code> 的旧版固件只在 RAM 接收，重启后清除。
             网页仅在发送时查询能力；旧固件明确返回 404 才使用 VIMG，不在失败 POST 后换格式重发。</p>
+          <p>未收到 202 也可能已有新文件，或保存后未能排队显示。失败不保证旧持久图片未变；
+            请检查设备后再决定是否手动发送，不自动重试。</p>
           <a className="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md"
             target="_blank" rel="noopener noreferrer">图片格式与完整协议 <ArrowRight aria-hidden="true" /></a>
         </div>

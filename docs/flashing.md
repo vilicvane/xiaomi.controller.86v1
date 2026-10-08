@@ -6,11 +6,12 @@
 硬件工作前还需阅读 [工程约束](engineering-notes.md)、[开发流程](development.md)及
 [项目工作约束](../AGENTS.md)。日常图片功能使用见 [项目 README](../README.md)。
 
-本轮已安装版为 `maintained-images-five-page-20261008-a`，新增 PNG/JPEG 解码和第五个
-Flash 页，已冻结并安装。完整五页/native/cache/context、outer GLOBAL 和暖读回通过，
-随后 fresh check 为 `patched=true`。迁移前四页
-`maintained-idle-return-four-page-20261007-a` 检查为 `patched=true`；其自身恢复现已通过，
-新五页检查为 `original=true`。两者名称中的 `a` 不能混用执行器或验证结果。
+本轮六页图片持久保存版为 `maintained-persistent-images-six-page-20261008-a`，candidate
+和freeze已完成并已安装。旧五页自身恢复、六页基线检查和安装、完整页/native/cache/context、
+outer GLOBAL、暖读回及fresh patched检查通过。旧五页
+`maintained-images-five-page-20261008-a`的安装与上传证据保留在历史章节。
+升级路线为：先用五页版自身工具恢复精确基线，再用六页版自身工具检查和安装。
+两个版本名称中的 `a` 不能混用执行器或验证结果。
 
 ## 安装材料
 
@@ -18,9 +19,9 @@ Flash 页，已冻结并安装。完整五页/native/cache/context、outer GLOBA
 端口审查和独立安装材料；同型号、同版本号不能代替字节与安装状态校验。
 
 安装器只接受精确的**旧图片实验版（技术标识 `native-image-drawer`）三个 Flash 区域，
-加原厂网络与解码区域**作为五页安装器的起点。这是已装历史实验程序的特定存储内容，
-并非原厂状态。旧四页版本只核对其中三页加网络页，五页版本还必须核对解码页。
-这里的“三页/四页/五页”是相应数量的 4KiB Flash 区域，**不是屏幕上的界面页**。
+加原厂网络、解码及存储区域**作为六页安装器的起点。这是已装历史实验程序的特定存储内容，
+并非原厂状态。旧四页只核对三页加网络页，五页还核对解码页，六页另外核对存储页。
+这里的“三页/四页/五页/六页”是相应数量的 4KiB Flash 区域，**不是屏幕上的界面页**。
 
 已经安装 86V1 自定义固件时，必须先用当前版本自身保存的执行工具恢复这个精确起点，
 再装新版本；不能直接覆盖旧自定义固件，也不能把原厂状态当作旧图片实验版。
@@ -30,7 +31,7 @@ Flash 页，已冻结并安装。完整五页/native/cache/context、outer GLOBA
 | --- | --- |
 | 本机 16MiB 原厂 NOR 备份 | 本机已审核 SHA-256 为 `777de42c53a1c95495c55b3a9a0c27f907f68ab87a9512bee6b5f4356acb695b` |
 | 旧图片实验版及其冻结材料 | 93 项旧实验版输入及递归历史依赖，不能通过改 hash 绕过 |
-| `build/releases/<release>/` | 该版本的 candidate、freeze、源码/工具快照、完整页镜像和独立证据；本轮为五页，旧版本保持自身布局 |
+| `build/releases/<release>/` | 该版本的 candidate、freeze、源码/工具快照、完整页镜像和独立证据；本轮为六页，旧版本保持自身布局 |
 | 冻结的 Windows OpenOCD 包 | exe、DLL、两份字节相同的 CMSIS-DAP 接口配置，随 release 绑定 |
 
 这些私有材料包含原厂字节或设备数据，不在 Git 中分发。缺失时先补齐和审查，不能仅靠
@@ -133,12 +134,135 @@ URL 保留 `/xiaomi-86v1/` 子路径，origin 可为 `*` 或不带路径的协�
 本轮沿用 CORS `*`，允许正式页面及本地开发 origin 读取响应。也可在新 release 中把 origin
 设为 `https://wan.sh`，限定正式来源；origin 不能带路径。命令行 cURL 不受浏览器 CORS 限制。
 
-新版本还必须完成程序/容器审查、实际 ARM 模型、116 个 writer mock、独立 storage 和
+新版本还必须完成程序/容器审查、实际 ARM 模型、139 个 writer mock、独立 storage 和
 writer 审查，再通过 [离线发布流程](../firmware/tools/README.md)创建唯一 release 和 freeze。
-构建成功不等于已审核或可刷写，不能覆盖既有 release 快照。本轮 471 项 candidate 输入、
-477 项 freeze 和 116 项 writer 已完成；下方旧四页 hash 仅属于旧 release，不能替代新版本材料。
+构建成功不等于已审核或可刷写，不能覆盖既有 release 快照。本轮 522 项 candidate 输入、
+528 项 freeze 和 139 项当前候选 writer 已完成；历史五页及四页 hash 不能替代新版本材料。
 
 ## 安装、升级与恢复
+
+以下为本轮五页升级到六页的流程，不是自动批处理。每次 check、restore、install 都应
+查看完整输出后再继续。本轮该迁移和安装已通过；六页自身硬件恢复尚未测试。
+设备现为六页patched状态，不能重跑下方旧五页check/restore或新六页install；示例说明的是
+已完成迁移的顺序，继续维护先用当前六页自身工具核对状态。
+
+Windows/Jim 深路径可能超长，使用已准备的完整短路径执行副本：五页包 `C:\p86-img-a`，
+六页包 `C:\p86-persist-a`。副本必须包含同一套备份、历史依赖、release、exe/DLL 和接口
+配置，逐项匹配各自 freeze；新 clone 不会自动得到这些目录。不能只复制 executor、
+改 hash 或使用 canonical 工具代替旧五页验证器。
+
+先在六页包中做离线验证，缺材料或 hash 不匹配时停在这里：
+
+```powershell
+Set-Location 'C:\p86-persist-a'
+$panelNewRelease = 'maintained-persistent-images-six-page-20261008-a'
+$panelNewExecutor = "build/releases/$panelNewRelease/snapshot/firmware/tools/hardware.ts"
+$panelNewVerifier = "build/releases/$panelNewRelease/snapshot/firmware/tools/release.ts"
+node $panelNewVerifier verify $panelNewRelease
+```
+
+再检查已安装五页版；必须匹配完整 `patched=true`，不能只看 check 的退出码：
+
+```powershell
+Set-Location 'C:\p86-img-a'
+$panelOldRelease = 'maintained-images-five-page-20261008-a'
+$panelOldExecutor = "build/releases/$panelOldRelease/snapshot/firmware/tools/hardware.ts"
+$panelOldVerifier = "build/releases/$panelOldRelease/snapshot/firmware/tools/release.ts"
+node $panelOldVerifier verify $panelOldRelease
+node $panelOldExecutor check $panelOldRelease
+```
+
+五页和 native 状态确认后，用该五页版自身恢复器：
+
+```powershell
+node $panelOldExecutor restore $panelOldRelease
+```
+
+恢复到精确旧图片实验版三页与原厂网络/解码页；完整页、native/cache/context、GLOBAL
+和暖读回闭合后，切回六页包检查。六页工具还会核对新增 NOR `0x932000` 存储页为
+审核过的完整原厂字节，不能把五页恢复成功当作六页基线已匹配：
+
+```powershell
+Set-Location 'C:\p86-persist-a'
+$panelNewRelease = 'maintained-persistent-images-six-page-20261008-a'
+$panelNewExecutor = "build/releases/$panelNewRelease/snapshot/firmware/tools/hardware.ts"
+$panelNewVerifier = "build/releases/$panelNewRelease/snapshot/firmware/tools/release.ts"
+node $panelNewVerifier verify $panelNewRelease
+node $panelNewExecutor check $panelNewRelease
+```
+
+只有全部六页 `original=true`、`patched=false` 且无检查标记，才执行安装：
+
+```powershell
+node $panelNewExecutor install $panelNewRelease
+node $panelNewExecutor check $panelNewRelease
+```
+
+完成后应为完整 `patched=true`、`original=false`，不重复 install。安装依次写
+**store→codec→net→aux→code→entry**，对应 NOR `0x932000`、`0x927000`、`0x92d000`、
+`0x95a000`、`0x92b000`、`0xccd000` 六个完整 4KiB 页，保留容器外及页内其余字节。
+存储页只借用可选 `monkey` 诊断尾部，并禁用入口页 `+0xe6c`；正常启动/恢复所需的
+`mkgpt` 不借用。执行器保持 A7/WF/BT 复位，完整页面、保护/QE/WIP、cache/native
+上下文和 caller cleanup 闭合，且 `app_complete=1`、`safe_to_resume=1`、GLOBAL 与暖读回
+全部完成后，才算本次安装完成。
+
+将来回退时仍使用六页自身工具：
+
+```powershell
+node $panelNewExecutor restore $panelNewRelease
+```
+
+恢复顺序 **entry→code→aux→net→codec→store**，目标为精确旧图片实验版三页加原厂
+网络/解码/存储页。继续回原厂必须再走历史版本自己的恢复链，不能直接对六页版运行
+旧 `Set-Panel*.ps1`。install/restore 会中断服务并暖重启；NOR 备份和回退不包含、不删除
+MMC `/data/86v1-image.*` 图片或 `/data/86v1-return.*` 设置，回旧固件不等于撤销这些文件。
+
+出现 `NEEDS_INSPECTION`、未知/混合页、native 超时或读回不一致，保留停止状态、供电
+和 capture，不清除标记、不重复安装/恢复/复位。健康 MAIN 的恢复不能证明任意损坏后的
+救砖能力。完整断电测试按用户要求跳过，本轮不借用旧冷启动结果。
+
+## 本轮六页冻结与验证范围
+
+| 项目 | 值 |
+| --- | --- |
+| release | `maintained-persistent-images-six-page-20261008-a`，已冻结并安装 |
+| 完整 ELF SHA-256 | `f7e4d2bbeff500ac997e694846523ddc025f94d88d1bccf7306419233ae6fcd3` |
+| 主/辅助/网络/解码/存储 BIN | 3368/396/3940/3012/1676B |
+| 522-input candidate SHA-256 | `e061db87d2e4e4aa1e2836a89fa1dd1f47215826914b5b492b59b9bce7388591` |
+| 528-input freeze SHA-256 | `9a3f4d7e39a1451d7bef16672415d4183f516234a3741d986d3c721b6d39a801` |
+| 当前候选 writer mock | 139 项通过；旧五页 116 项不能替代 |
+
+566 组实际 ARM（448 codec/VIMG、36 UI、42 HTTP、17 设置、23 图片存储），另有 7 项
+ABI、12 项 release、299 项 host HTTP 和 30 项网页检查通过。文件/FAT/OS 边界由模型
+替代，这些结果不证明真实 MMC 掉电耐久性、LCD、RPC 时序或用户及米家验收。
+
+六页程序把完整原 PNG/JPEG/VIMG 保存在两个项目图片槽，完整写入、同步、关闭及独立
+读回确认后才返回 202 并排队给 GUI。启动验证及解码失败的新槽可回退旧图；没有可恢复
+图时保持默认地址画面。`GET /api/image` 返回 `persistent: true`。保存之后若发布或响应
+失败，客户端未收到 202 时文件仍可能已更新，不能自动重发或认定保存未发生。
+图片与设置的存储结构及恢复边界见 [当前架构](architecture.md)。
+
+本轮旧五页自身恢复通过完整五页/native/cache/context、outer GLOBAL和暖读回；六页
+original检查后安装，通过全部六页/native/cache/context、outer GLOBAL、暖读回和fresh
+patched检查。真实307216B VIMG、2204B PNG、55134B JPEG依次POST202，完整RGB565匹配
+参考、计数1/2/3；坏PNG422保持JPEG和计数3。独立AON GLOBAL暖复位不执行OS shutdown
+hooks，自动重载JPEG，计数1/pending0/server1/error0及完整像素匹配。
+
+正式网页`6d2572cb-61e0-40b1-b28f-837e32d53157`的HTML/favicon/JS/CSS四项字节精确且200，
+Chrome零错误、初始零自动LAN请求。agent Chrome显式Send完成GET200、单次6050B PNG
+POST202且按钮“画面已保存”，未加Content-Type，完整RGB565匹配；origin-scoped CDP
+临时本地网络许可测试后恢复prompt，非用户点击许可。第二次独立暖复位自动加载该PNG，
+计数1/pending0/server1/error0与完整像素匹配。详见
+[六页发布结果](../firmware/releases/maintained-persistent-images-20261008-a.json)。
+
+用户对默认GitHub图片、上下滑、双击与米家状态的合并问题回复“确认正常”，只记录合并
+观察，没有分别测量这些项目。MEM-AP像素读回不测量LCD扫描，两次暖重载不等于完整
+断电恢复。六页自身硬件restore仍未测试；完整断电按用户要求跳过，真实文件系统掉电
+耐久性未证明。旧五页自身恢复成功记在新六页迁移范围，不改旧五页发布结果。
+
+## 历史四页升级到五页教程
+
+下方命令和结果只属于此前四页→五页迁移，保留供历史回退审查使用，不替代上面的六页流程。
 
 下面命令须在匹配本机材料及完整 freeze 的前提下执行。先恢复升级前安装的四页自动
 返回版，再选择新五页图片版；它们各用自身保存的 executor 和 verifier，不能直接叠加。
@@ -200,14 +324,14 @@ node $panelNewExecutor check $panelNewRelease
 完整页读回和暖启动通过。旧四页 a 自身恢复现已在本轮迁移中通过完整四页/native/context、
 outer GLOBAL 和暖读回；新五页基线检查为 `original=true` 后完成五页安装、完整
 native/cache/context、outer GLOBAL 和暖读回，fresh check 为 `patched=true`。
-新五页自身硬件恢复尚未测试；能力 GET 返回三种格式，设置 GET60。
+该原始检查点尚未测试五页自身硬件恢复；能力 GET 返回三种格式，设置 GET60。
 直接 Node PNG/JPEG 上传和完整RGB565读回通过，用户浏览器、LCD及米家验收仍单列。
 此前 d→g 的 d restore
 和 g install 结果保留在旧 g 记录中；g restore 另记在四页自动返回版 a 的结果中。
 NOR restore 不会删除新增的 MMC 自动返回设置，配置保存与重启加载须另行验证。
 原厂 OTA 不属于当前补丁维护流程，升级原厂映像后必须重新核对端口和完整基线。
 
-## 本轮五页发布与验证范围
+## 历史五页发布与验证范围
 
 | 项目 | 值 |
 | --- | --- |
@@ -221,7 +345,7 @@ NOR restore 不会删除新增的 MMC 自动返回设置，配置保存与重启
 420 项解码器实际 ARM、36 组 UI、34 组 HTTP、17 组设置、299 项 host HTTP 和 29 项网页
 测试通过，12 项 release 工具测试通过。
 这些离线检查不证明真实可用堆、RPC/GUI 时序、实屏显示、米家或断电恢复。
-本轮五页安装与 fresh patched 检查通过；自身硬件 restore 尚未测试，完整断电按用户要求跳过。
+该检查点五页安装与 fresh patched 检查通过；当时尚未测试自身硬件 restore，完整断电按用户要求跳过。
 直接 Node 上传2204B PNG、55134B JPEG均为202，完整RGB565匹配独立参考，计数依次1、2；
 坏PNG CRC为422且当前JPEG和计数2不变；最后恢复默认PNG为202、计数3，完整像素匹配。
 新鲜运行 alive/ready=1、pending=0、server=1/error=0、GUI cycles推进。

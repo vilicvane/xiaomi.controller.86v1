@@ -56,6 +56,10 @@ class Machine(http.Machine):
     def file_open(self):
         r = self.uc.reg_read
         path = self.string(r(UC_ARM_REG_R0))
+        if path in http.image_store.IMAGE_PATHS:
+            assert (r(UC_ARM_REG_R1), r(UC_ARM_REG_R2)) == (1, 0)
+            assert not self.locks, 'Image startup read while GUI locked'
+            return self.fail(2)
         assert path in PATHS, path
         slot = PATHS.index(path)
         flags, mode = r(UC_ARM_REG_R1), r(UC_ARM_REG_R2)

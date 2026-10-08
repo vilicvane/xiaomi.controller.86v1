@@ -361,6 +361,17 @@ static int jpeg_decode(const u8 *encoded, u32 bytes, u16 *destination) {
 }
 
 int panel_image_decode(const u8 *encoded, u32 bytes, u16 *destination) {
+    if (bytes >= 4 && be32(encoded) == 0x56494d47u) {
+        if (bytes != 307216u || be32(encoded + 4) != 0xe0014001u ||
+            be32(encoded + 8) != 0x00b00400u) return 400;
+        u32 expected = (u32)encoded[12] | (u32)encoded[13] << 8 |
+                       (u32)encoded[14] << 16 | (u32)encoded[15] << 24;
+        u32 check = 2166136261u;
+        for (u32 i = 16; i < bytes; ++i) check = (check ^ encoded[i]) * 16777619u;
+        if (check != expected) return 422;
+        COPY(destination, encoded + 16, PANEL_IMAGE_BYTES);
+        return 0;
+    }
     if (bytes >= 8 && be32(encoded) == 0x89504e47u && be32(encoded + 4) == 0x0d0a1a0au)
         return png_decode(encoded, bytes, destination);
     if (bytes >= 2 && encoded[0] == 255 && encoded[1] == 216)

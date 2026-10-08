@@ -78,10 +78,10 @@ async function main() {
   const { verifyRelease } = await import(new URL('./release.ts', import.meta.url).href);
   const verified = verifyRelease(root, name);
   if (!verified.frozen) throw new Error('Independent reviews and freeze are required before hardware access');
-  const pages = ['927000', '92b000', '92d000', '95a000', 'ccd000'];
+  const pages = ['927000', '92b000', '92d000', '932000', '95a000', 'ccd000'];
   const declaredPages = Object.values(verified.candidate.pages).map(page => page.offset.toString(16)).sort();
   if (JSON.stringify(declaredPages) !== JSON.stringify(pages))
-    throw new Error('Executor admits only the five reviewed page offsets');
+    throw new Error('Executor admits only the six reviewed page offsets');
   mkdirSync(hardware, { recursive: true });
   writeFileSync(lock, `${process.pid}\n`, { flag: 'wx' });
   const capture = join(hardware, mode + '-' + new Date().toISOString().replaceAll(/[:.]/g, '-') + '-' + process.pid);

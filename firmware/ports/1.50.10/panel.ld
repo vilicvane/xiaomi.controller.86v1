@@ -9,8 +9,10 @@ SECTIONS {
     *(.text.broker.settings)
   }
   .network 0x3804d000 : {
-    *http.o(.text* .rodata*) *http-parser.o(.text* .rodata*) *settings.o(.text* .rodata*)
+    *http.o(.text .text.panel* .text.body .text.reply .rodata*)
+    *http-parser.o(.text* .rodata*) *settings.o(.text* .rodata*)
   }
+  .storage 0x38052000 : { *image-store.o(.text* .rodata*) *(.text.storage.http) }
   .feedback 0x3807a764 : { *(.text.feedback*) *(.rodata.feedback*) *(.feedback.settings) }
   /DISCARD/ : { *(.ARM.exidx*) *(.ARM.extab*) *(.comment*) *(.note*) }
   ASSERT(SIZEOF(.prefix) <= 0x1ec, "Prefix exceeds reviewed diagnostic container")
@@ -19,6 +21,7 @@ SECTIONS {
   ASSERT(ADDR(.broker)+SIZEOF(.broker) <= 0x3804be70, "Shared helper at be70 must remain intact")
   ASSERT(ADDR(.network) == 0x3804d000 && SIZEOF(.network) <= 0xff0, "Network exceeds diagnostic test container")
   ASSERT(ADDR(.codec) == 0x38047098 && SIZEOF(.codec) <= 0xd14, "Image codecs exceed reviewed fill diagnostic container")
+  ASSERT(ADDR(.storage) == 0x38052000 && SIZEOF(.storage) <= 0xbf0, "Image storage exceeds reviewed monkey diagnostic tail")
   ASSERT(broker_start == 0x3804b2f5, "Thumb entry changed")
   ASSERT(SIZEOF(.data) == 0 && SIZEOF(.bss) == 0, "State must be owned heap memory")
 }

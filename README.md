@@ -15,13 +15,13 @@
   [用户手册](https://github.com/wuxx/nanoDAP/blob/master/user_manual.md)。
 - **烧录探针夹**：选择适合主板测试点间距的 pogo pin / 弹簧探针夹具，方便接触调试焊盘。
   这里需要测试点夹具，SOIC8 Flash 芯片夹不能替代；也可以焊接短导线。
-- 短连接线、万用表，以及稳定的隔离 **5V** 低压供电。
+- 短连接线和万用表。主板供电使用**调试器上的 5V 电源接口**。
 - Windows 电脑和 Node.js 24。自行编译固件还需要 WSL Ubuntu；使用已准备的安装材料
   刷写时，在 Windows PowerShell 中操作。
 
 ### 怎样连接
 
-断电后接线，使用 SWD。**使用 nanoDAP 的 5V 输出供电时，共需四根线：GND、IO、CK、5V。**
+断电后接线，使用 SWD。**使用调试器上的 5V 电源接口供电时，共需四根线：GND、IO、CK、5V。**
 GND 同时用于调试共地和供电回路。
 
 | nanoDAP | 面板主板 |
@@ -29,7 +29,7 @@ GND 同时用于调试共地和供电回路。
 | GND | GND |
 | SWDIO / IO | JTMS |
 | SWCLK / CK | JTCK |
-| 5V | 已确认的主板低压供电入口 |
+| 调试器上的 5V 电源接口 | 已确认的主板低压供电入口 |
 
 ![86V1 主板接线参考：SWCLK/CK 接 JTCK，SWDIO/IO 接 JTMS，另接 GND 和 5V](docs/images/xiaomi-86v1.jpg)
 

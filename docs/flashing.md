@@ -40,7 +40,7 @@ outer GLOBAL、暖读回及fresh patched检查通过。旧五页
 
 ## 调试器、接线与供电
 
-已验证调试器为 MuseLab nanoDAP，使用 **SWD**。使用 nanoDAP 的 5V 输出供电时，
+已验证调试器为 MuseLab nanoDAP，使用 **SWD**。使用调试器上的 5V 电源接口供电时，
 **面板共接四根线：GND、SWDIO/IO、SWCLK/CK、5V**。
 GND 同时用于调试共地和供电回路。
 购买入口来自 [nanoDAP 官方项目](https://github.com/wuxx/nanoDAP)的 About：
@@ -54,17 +54,17 @@ GND 同时用于调试共地和供电回路。
   三个 SWD 测试点；第四根线接 5V 供电入口。按自己主板的焊盘间距和排列选型。这里需要的是
   测试点探针夹具，SOIC8 Flash 芯片夹不能替代它。没有合适夹具时可焊接短导线。
 - 万用表，用于确认共地、供电入口极性和电压。
-- 稳定的隔离 5V 低压供电。本机已验证 nanoDAP 的 5V 输出；若 USB 供电不足，准备
+- 主板供电使用**调试器上的 5V 电源接口**；若 USB 供电不足，准备
   独立低压电源并共地。
 
 在断电时接线，使用短导线或焊线，按主板丝印对应：
 
-| nanoDAP 或电源 | 面板主板 | 用途 |
+| nanoDAP | 面板主板 | 用途 |
 | --- | --- | --- |
 | GND | GND | 共地 |
 | SWDIO / IO | JTMS | SWD 数据 |
 | SWCLK / CK | JTCK | SWD 时钟 |
-| 5V 供电或独立稳定 5V 电源 | 已核实的主板原低压供电入口 | 为主板供电，电源 GND 与上述共地 |
+| 调试器上的 5V 电源接口 | 已核实的主板原低压供电入口 | 为主板供电，GND 与调试共用 |
 
 ![86V1 主板接线参考：SWCLK/CK 接 JTCK，SWDIO/IO 接 JTMS，另接 GND 和 5V](images/xiaomi-86v1.jpg)
 

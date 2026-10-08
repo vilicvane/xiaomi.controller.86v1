@@ -6,7 +6,7 @@
 完整页/native/cache/context、outer GLOBAL 和暖读回通过，随后 fresh check 为 patched。
 迁移前四页自动返回版检查匹配 patched；随后其自身恢复通过四页/native/context、
 outer GLOBAL 和暖读回，新五页检查为 `original=true` 后才安装。原四页版安装、设置和暖复位
-结果作为历史检查点保留，不继承给新候选。
+结果作为历史检查点保留，不继承给新版本。
 源码入口见 [firmware](../firmware/README.md)，精确材料位于 ignored 的 release 快照。
 [本轮发布结果](../firmware/releases/maintained-images-20261008-a.json)分别记录安装、直接HTTP、
 完整RGB565读回及尚未验收的LCD、用户浏览器和米家项目。
@@ -102,9 +102,9 @@ Content-Length 为 1..1048576B。PNG/JPEG 要求 480×320，受支持范围见
 [HTTP 图片 API](http-image-api.md)；设备不自动裁切缩放。旧 VIMG 仍是固定 307216B
 header/body 和 FNV 校验。完整接收、解码、校验并发布到 GUI 待消费槽后返回 202；
 它不是 LCD 扫描或 Flash 保存完成确认。
-候选的 `GET /` 沿用正式网页 `https://wan.sh/xiaomi-86v1/` 的 303 配置，把设备
+当前版本的 `GET /` 沿用正式网页 `https://wan.sh/xiaomi-86v1/` 的 303 配置，把设备
 endpoint 放在普通 `device` query 参数中，不依赖电脑开发服务器。更换目标 URL 要创建、
-冻结并安装新 release。显式配置空 URL 的构建仍提供 200 说明页，但它不是本轮候选的配置。
+冻结并安装新 release。显式配置空 URL 的构建仍提供 200 说明页，但它不是本轮发布的配置。
 
 接收端不要求 Content-Type；非 identity Content-Encoding 返回 415。PNG 使用完整 chunk、
 CRC、IEND 与压缩流收尾检查，JPEG 要求受限 baseline 单扫描、真实 EOI 和无损坏警告。
@@ -117,7 +117,7 @@ GUI/publisher 锁；可用堆及原生 RPC 的真实耗时仍须实机确认。
 [图片编辑网页](frontend.md)在浏览器内完成裁切、缩放，生成 PNG 和旧 VIMG，直接调用面板
 API；Cloudflare 托管静态文件，不代理图片或访问用户的局域网。设备地址可由
 `device` query 或用户手动输入，图片处理与下载不依赖面板连接。只有用户点击发送才
-GET `/api/image` 查询能力；新候选返回 PNG/JPEG/VIMG，已安装旧维护版明确 404 才选择
+GET `/api/image` 查询能力；当前版本返回 PNG/JPEG/VIMG，其他设备上的旧维护版明确 404 才选择
 VIMG。网络错误、无效能力响应及失败 POST 都不会触发自动换格式重发。
 
 OPTIONS/CORS 已实现，origin 为 `*`，允许 GET、POST 与 Content-Type。历史四页 a 实际 GET
@@ -214,7 +214,8 @@ wifi_recorder 诊断 builtin 的禁用 stub 继承此前版本，它不是 Wi-Fi
 | 直接图片 HTTP 与读回 | Node上传2204B PNG为202/计数1、55134B JPEG为202/计数2；两张完整RGB565匹配独立参考 |
 | 错误图保护与最终状态 | 坏PNG CRC为422且保留JPEG及计数2；恢复默认PNG为202/计数3且完整像素匹配；alive/ready1、pending0、server1/error0，GUI cycles推进 |
 | 正式网页 | 版本2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5，五项资源一致、零浏览器错误、初始零自动LAN请求 |
-| 实际HTTPS浏览器上传 | agent Chrome点击Send：GET能力200、单次6050B PNG POST202，未添加Content-Type；origin-scoped CDP临时granted本地网络权限，非用户点击许可 |
+| 实际 HTTPS 浏览器上传 | agent Chrome 点击 Send：GET 能力200、单次6050B PNG POST202，未添加 Content-Type；origin-scoped CDP 临时授予本地网络权限，非用户点击许可，结束后恢复 prompt |
+| 浏览器上传后只读核验 | 完整307200B RGB565 匹配默认图参考，槽位和计数稳定；generation/displayed_generation=4、pending0、alive/ready1、server1/error0，GUI cycles 推进；不测量 LCD 扫描 |
 | 用户验收 | 用户浏览器权限/上传、LCD、原界面交互、自动返回、息屏与米家待分别确认；Node请求耗时不作为性能基准 |
 | 迁移前后检查 | 旧四页版 patched→自身 restore→新五页 original→五页 install→fresh patched，各自完整集合单列验证 |
 | 当前恢复路线 | 旧四页版自身 restore 已通过；新五页版自身硬件 restore 尚未测试 |
@@ -225,8 +226,10 @@ wifi_recorder 诊断 builtin 的禁用 stub 继承此前版本，它不是 Wi-Fi
 allocated PROGBITS sections，保留原厂代码在 ELF 地址空洞中的字节，不能用 PT_LOAD
 的空洞零填充代替。上述 Canvas 检查也不是浏览器实际网络 POST 或实机显示证据。
 正式页面的独立实机浏览器请求已在上表记录，不能与离线Canvas证据混为一项。
-最初浏览器本地网络prompt阶段GET等待，没有POST；agent仅对测试Chrome的正式网页
-origin临时授予CDP权限后才完成一次发送，没有把它记录为用户授予权限。
+最初浏览器本地网络 prompt 阶段 GET 等待，没有 POST；agent 仅对测试 Chrome 的正式网页
+origin 临时授予 CDP 权限后才完成一次发送，测试结束后权限已恢复为 prompt，
+没有把它记录为用户授予权限。完整 RGB565 与计数通过另一次只读 MEM-AP 核验，
+浏览器请求和像素读回都不证明 LCD 扫描或用户交互验收。
 
 ## 历史四页自动返回版检查点
 

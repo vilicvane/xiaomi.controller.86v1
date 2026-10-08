@@ -93,7 +93,7 @@ URL 不能含凭据、fragment 或预置 `device` 参数；根页面跳转追加
 仍返回 200 本机说明页。ARM HTTP 模型的 `PANEL_TEST_FRONTEND_URL` 和
 `PANEL_TEST_FRONTEND_ORIGIN` 必须与待测 ELF 的构建配置一致；上例对应默认构建。
 本轮源码按内容签名直接接收 480×320 PNG/JPEG，使用独立解码状态和 inactive RGB565 槽；
-不重初始化共享 GUI 图片缓存。图片格式自身的压缩已接入候选，HTTP Content-Encoding
+不重初始化共享 GUI 图片缓存。图片格式自身的压缩已接入当前版本，HTTP Content-Encoding
 只能省略或为 identity。PNG 8-bit/noninterlaced 和 JPEG baseline 的采样、尾部及元数据
 范围见 API 文档。原厂解码器复用研究见 [图片压缩传输](../docs/research/image-compression.md)及
 [直接 PNG/JPEG 上传](../docs/research/direct-image-upload.md)。
@@ -149,10 +149,12 @@ GUI cycles推进。MEM-AP读回不测量LCD扫描，Node请求不是用户浏览
 耗时也不是性能基准；新版本交互、息屏、自动返回和米家仍待用户分别确认。
 
 正式网页版本 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5` 已部署，五项静态资源一致、
-零浏览器错误、初始零自动LAN请求。实际HTTPS页面Send在agent Chrome中完成能力GET200
-和单次6050B PNG POST202，不添加Content-Type。最初权限prompt时GET等待且无POST；
-agent随后通过origin-scoped CDP临时granted本地网络权限，不是用户点击许可。
-此请求链路结果不等于用户浏览器、LCD或米家验收；完整像素与计数单独只读核验。
+零浏览器错误、初始零自动 LAN 请求。实际 HTTPS 页面 Send 在 agent Chrome 中完成能力
+GET200 和单次 6050B PNG POST202，不添加 Content-Type。最初权限 prompt 时 GET 等待
+且无 POST；agent 随后通过 origin-scoped CDP 临时授予本地网络权限，不是用户点击许可，
+结束后权限恢复为 prompt。上传后只读 MEM-AP 核验完整 307200B RGB565 与默认图参考
+一致，槽位和计数稳定，generation/displayed_generation=4、pending0、alive/ready1、
+server1/error0，GUI cycles 推进。这些结果不等于用户浏览器、LCD 或米家验收。
 
 ## 历史四页自动返回版检查点
 

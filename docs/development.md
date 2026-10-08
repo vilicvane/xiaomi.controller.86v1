@@ -15,7 +15,7 @@ PNG/JPEG 请求、完整 RGB565 读回和错误图不替换现图通过，见
 [本轮发布结果](../firmware/releases/maintained-images-20261008-a.json)。
 旧版 382 项 freeze、g 自身恢复、四页安装、真实设置读写和 AON GLOBAL
 暖复位结果保留在 [四页自动返回版结果](../firmware/releases/maintained-idle-return-20261007-a.json)，
-不用于证明新候选已安装。硬件工作前先读
+不用于证明新版本已安装。硬件工作前先读
 [工程约束](engineering-notes.md)、[当前架构](architecture.md)及根目录 `AGENTS.md`。
 历史命令原文保留在 [开发记录归档](research/legacy-development-log.md)，不作为当前操作指南。
 
@@ -112,7 +112,7 @@ node firmware/tools/release.ts verify maintained-images-five-page-20261008-a
 端口依据和禁用的诊断命令见 [1.50.10 端口](../firmware/ports/1.50.10/README.md)。
 
 五页 install 只接受旧图片实验版的精确三页、原厂网络页和原厂解码页。迁移须先用已安装
-四页自动返回版自己的冻结工具 restore，暖读回确认后，再用新候选自己的工具核对五页。
+四页自动返回版自己的冻结工具 restore，暖读回确认后，再用新版本自己的工具核对五页。
 安装顺序 **codec→net→aux→code→entry**，恢复顺序 **entry→code→aux→net→codec**。
 全部页面、保护状态、cache/native/context 和 caller cleanup 闭合后才允许 GLOBAL 重启。
 新恢复目标为同一旧图片实验版三页及两个原厂依赖页，不能直接调用历史三页 writer。
@@ -129,11 +129,13 @@ server=1/error=0、GUI cycles推进。这些是HTTP和MEM-AP证据，不证明LC
 224B context、MMC 自动返回双槽、RAM-only 图片和 `NEEDS_INSPECTION` 约束沿用。
 
 正式网页版本 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5` 已部署，五项资源与本地构建
-逐字节一致，浏览器零错误、初始零自动LAN请求。代理测试Chrome的真实HTTPS页面点击
-Send后，能力GET200及单次6050B PNG POST202通过，没有Content-Type或自动重发。
-最初本地网络权限prompt时GET等待且无POST；随后由agent通过origin-scoped CDP临时
-granted权限完成测试，不是用户点击许可。此结果证明该测试环境中的浏览器请求链路，
-不代表用户浏览器权限、LCD或米家验收；上传后完整像素与计数另行只读核验。
+逐字节一致，浏览器零错误、初始零自动 LAN 请求。agent Chrome 的真实 HTTPS 页面点击
+Send 后，能力 GET200 及单次 6050B PNG POST202 通过，没有 Content-Type 或自动重发。
+最初本地网络权限 prompt 时 GET 等待且无 POST；随后由 agent 通过 origin-scoped CDP
+临时授予权限完成测试，不是用户点击许可，结束后权限已恢复为 prompt。
+随后只读 MEM-AP 核验完整 307200B RGB565 与默认图参考一致，槽位和计数稳定，
+generation/displayed_generation=4、pending=0、alive/ready=1、server=1/error=0，GUI cycles
+推进。这证明测试环境中的浏览器请求及 GUI 消费，不代表用户浏览器权限、LCD 扫描或米家验收。
 
 本轮一次只读 capture 的 `-f/-l` Windows 反斜杠转义在 OpenOCD init 前失败，没有接触
 硬件；路径改为正斜杠后另开进程只读采集，不重发已返回202的图片。这个已确定的本地

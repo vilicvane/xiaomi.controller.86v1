@@ -18,7 +18,7 @@ Flash 页，已冻结并安装。完整五页/native/cache/context、outer GLOBA
 端口审查和独立安装材料；同型号、同版本号不能代替字节与安装状态校验。
 
 安装器只接受精确的**旧图片实验版（技术标识 `native-image-drawer`）三个 Flash 区域，
-加原厂网络与解码区域**作为五页候选的起点。这是已装历史实验程序的特定存储内容，
+加原厂网络与解码区域**作为五页安装器的起点。这是已装历史实验程序的特定存储内容，
 并非原厂状态。旧四页版本只核对其中三页加网络页，五页版本还必须核对解码页。
 这里的“三页/四页/五页”是相应数量的 4KiB Flash 区域，**不是屏幕上的界面页**。
 
@@ -167,7 +167,7 @@ node $panelOldExecutor restore $panelOldRelease
 ```
 
 完整恢复旧图片实验版三页及原厂网络页，GLOBAL 和暖读回闭合后，再核对原厂解码页并
-安装新候选。新完整短根副本 `C:\p86-img-a` 已完成全部绑定字节 hash 核对、116 项
+安装新版本。新完整短根副本 `C:\p86-img-a` 已完成全部绑定字节 hash 核对、116 项
 writer mock 和 freeze，冻结 CLI verify 通过；下列命令只用于这一套完整包。
 
 ```powershell
@@ -229,10 +229,12 @@ NOR restore 不会删除新增的 MMC 自动返回设置，配置保存与重启
 详情见 [本轮发布结果](../firmware/releases/maintained-images-20261008-a.json)。
 
 正式网页版本 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5` 已部署，五项资源一致，
-零浏览器错误和初始零自动LAN请求。agent Chrome中实际点击HTTPS网页Send，能力GET200
-及单次6050B PNG POST202通过，未添加Content-Type。最初权限prompt时GET等待、没有POST；
-测试使用origin-scoped CDP临时授予的本地网络权限，不是用户点击许可，也不验证用户
-浏览器设置。上传后的完整像素与计数单独只读核验，LCD、手势和米家仍待用户确认。
+零浏览器错误和初始零自动 LAN 请求。agent Chrome 中实际点击 HTTPS 网页 Send，能力
+GET200 及单次 6050B PNG POST202 通过，未添加 Content-Type。最初权限 prompt 时 GET
+等待、没有 POST；测试通过 origin-scoped CDP 临时授予本地网络权限，结束后恢复为
+prompt，不是用户点击许可，也不验证用户浏览器设置。上传后只读核验完整 RGB565 与
+默认图参考一致，槽位和计数稳定，generation/displayed_generation=4、pending=0、
+alive/ready=1、server=1/error=0，GUI cycles 推进。LCD、手势和米家仍待用户确认。
 
 ## 历史四页自动返回版检查点
 

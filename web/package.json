@@ -11,6 +11,9 @@
     "test": "node --test tests/*.test.ts"
   },
   "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
     "typescript": "7.0.2",
     "vite": "8.3.3",
     "wrangler": "4.148.0"
@@ -18,13 +21,15 @@
   "engines": {
     "node": ">=24"
   },
-  "dependencies": {
-    "lucide": "1.52.0",
-    "navigo": "8.11.1"
-  },
   "overrides": {
     "miniflare": {
       "sharp": "0.35.5"
     }
+  },
+  "dependencies": {
+    "lucide-react": "1.52.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-router": "8.4.0"
   }
 }

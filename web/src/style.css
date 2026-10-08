@@ -128,15 +128,40 @@ main {
   margin: auto;
   padding: 0 36px;
 }
-.workspace {
+.app-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 310px;
+  grid-template-areas: "content sidebar";
   gap: 24px;
   align-items: start;
 }
+.app-layout.with-editor {
+  grid-template-areas: "content sidebar" "api api";
+}
+.page-content {
+  grid-area: content;
+  min-width: 0;
+}
+.app-sidebar,
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+.app-sidebar {
+  grid-area: sidebar;
+}
+.image-actions {
+  gap: 12px;
+}
+.image-actions > .button {
+  min-height: 45px;
+  font-size: 13px;
+}
 #settings-page {
   max-width: 680px;
-  margin: auto;
+  margin: 0;
 }
 .page-heading h2 {
   margin: 0 0 18px;
@@ -147,13 +172,8 @@ main {
   display: grid;
   gap: 18px;
 }
-.settings-layout .card-heading h3 {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-}
-.settings-layout .field-help {
-  margin-bottom: 0;
+.settings-layout .settings-field {
+  max-width: 200px;
 }
 .settings-layout .settings-actions {
   justify-content: flex-end;
@@ -170,6 +190,37 @@ main {
 .not-found h2 {
   margin: 0 0 20px;
   font-size: 18px;
+}
+.panel-connection {
+  padding: 21px 24px;
+  border: 1px solid #e6e9ee;
+  border-radius: 16px;
+  background: white;
+}
+.panel-address label {
+  display: block;
+  margin-bottom: 7px;
+  color: #556279;
+  font-size: 12px;
+  font-weight: 550;
+}
+.panel-connection .device-field input {
+  font-size: 14px;
+}
+.panel-connection input[aria-invalid="true"] {
+  color: #943e49;
+}
+.panel-connection #device-help {
+  color: #626e81;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 12px 0 0;
+}
+#device-error {
+  grid-column: 1 / -1;
+  margin: 9px 0 0;
+  color: #943e49;
+  font-size: 12px;
 }
 .card {
   background: white;
@@ -191,18 +242,6 @@ main {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-.step {
-  font-size: 10px;
-  letter-spacing: 0.5px;
-  color: #8993a5;
-  background: #f4f6fa;
-  border: 1px solid #e9edf3;
-  border-radius: 6px;
-  width: 26px;
-  height: 25px;
-  display: grid;
-  place-items: center;
 }
 .card-heading h2 {
   font-size: 15px;
@@ -380,17 +419,6 @@ canvas.active + .crop-frame .crop-guides {
   color: #be4745;
   margin: 15px 0 0;
 }
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.connection {
-  padding: 24px;
-}
-.connection .card-heading {
-  margin-bottom: 12px;
-}
 .settings-card {
   padding: 21px 24px;
 }
@@ -466,12 +494,6 @@ canvas.active + .crop-frame .crop-guides {
   margin: 11px 0 0;
   overflow-wrap: anywhere;
 }
-.tiny-panel {
-  color: #afbacb;
-}
-.tiny-panel svg {
-  width: 19px;
-}
 .field-label {
   display: block;
   font-size: 12px;
@@ -513,12 +535,6 @@ canvas.active + .crop-frame .crop-guides {
 .device-field input::placeholder {
   color: #a7b0be;
   font-size: 11px;
-}
-.field-help {
-  color: #98a2b2;
-  font-size: 10px;
-  line-height: 1.8;
-  margin: 9px 0 23px;
 }
 .primary {
   background: var(--accent);
@@ -580,38 +596,9 @@ canvas.active + .crop-frame .crop-guides {
 .primary svg:first-child {
   margin-right: auto;
 }
-.local-note {
-  font-size: 10px;
-  color: #a1aaba;
-  line-height: 1.8;
-  padding-top: 17px;
-  margin: 17px 0 0;
-  border-top: 1px solid #edf0f4;
-}
-.export-card {
-  padding: 21px 24px;
-}
-.export-card h3 {
-  font-size: 12px;
-  font-weight: 600;
-  margin: 0 0 5px;
-}
-.export-card p {
-  font-size: 10px;
-  color: #9aa4b5;
-  margin: 0 0 15px;
-}
-.export-buttons {
-  display: flex;
-  gap: 9px;
-}
-.export-buttons button {
-  flex: 1;
-  font-size: 11px;
-  padding: 7px 8px;
-}
 .api {
-  margin: 25px 0 0;
+  grid-area: api;
+  margin: 0;
   padding: 0 24px;
   scroll-margin-top: 20px;
 }
@@ -699,28 +686,13 @@ footer svg {
   }
 }
 
-.field-help,
-.local-note,
-.export-card p {
-  color: #626e81;
-}
-.field-help,
-.local-note {
-  font-size: 12px;
-}
-.export-card p {
-  font-size: 11px;
-}
 @media (max-width: 920px) {
-  .workspace {
+  .app-layout {
     grid-template-columns: minmax(0, 1fr) 270px;
     gap: 18px;
   }
-  .connection,
+  .panel-connection,
   .settings-card,
-  .export-card {
-    padding: 20px;
-  }
   .editor {
     padding: 20px;
   }
@@ -748,6 +720,21 @@ footer svg {
   .site-header nav {
     gap: 16px;
   }
+  .panel-connection {
+    grid-area: connection;
+    padding: 16px 18px;
+  }
+  .panel-connection .device-field input,
+  .settings-field input {
+    font-size: 16px;
+  }
+  .panel-connection #device-help {
+    margin: 10px 0 0;
+    font-size: 11px;
+  }
+  #device-error {
+    margin: 0;
+  }
   .nav-link {
     font-size: 11px;
   }
@@ -760,9 +747,19 @@ footer svg {
   main {
     padding: 0 16px;
   }
-  .workspace {
+  .app-layout {
     grid-template-columns: 1fr;
+    grid-template-areas: "connection" "content";
     gap: 17px;
+  }
+  .app-layout.with-editor {
+    grid-template-areas: "connection" "content" "actions" "api";
+  }
+  .app-sidebar {
+    display: contents;
+  }
+  .image-actions {
+    grid-area: actions;
   }
   .editor {
     padding: 18px;
@@ -783,52 +780,17 @@ footer svg {
   .image-row {
     padding: 16px 0 0;
   }
-  .image-row .button {
-    font-size: 10px;
-    padding: 7px 9px;
-    min-height: 32px;
-  }
-  .sidebar {
-    gap: 15px;
-  }
-  .connection {
-    padding: 21px;
-  }
   .device-field input {
     font-size: 13px;
   }
   .device-field {
     padding: 12px;
   }
-  .field-help,
-  .local-note {
-    font-size: 11px;
-  }
-  .field-help {
-    margin-bottom: 18px;
-  }
   .primary {
     font-size: 13px;
   }
-  .local-note br {
-    display: none;
-  }
-  .export-card {
-    padding: 20px;
-  }
-  .export-card h3 {
-    font-size: 13px;
-  }
-  .export-card p {
-    font-size: 11px;
-  }
-  .export-buttons button {
-    font-size: 12px;
-    min-height: 40px;
-  }
   .api {
     padding: 0 18px;
-    margin-top: 18px;
   }
   .api-icon {
     width: 30px;

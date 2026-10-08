@@ -1,26 +1,27 @@
 # 86V1 自定义固件：图片编辑前端
 
 86V1 自定义固件的图片下拉屏幕编辑页面，网页显示名称为“小米智能家庭面板”。
-使用 Vite + TypeScript 构建静态文件，Navigo 管理图片编辑与设置的独立页面。
+当前源码使用 React `19.3.0`、TypeScript `7.0.2` 和 Vite `8.3.3` 构建静态文件，
+React Router `8.4.0` 管理图片编辑与设置的独立页面，图标使用 `lucide-react`。
 图片编辑为 HTTP 图片 API 准备 480×320 画面。
 图片在浏览器内裁切、缩放、转换并发送到同一局域网的面板；不需要后端或图片中转服务。
 当前已安装 `maintained-images-five-page-20261008-a`，支持 PNG/JPEG/VIMG。
-直接图片上传网页已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`，五项线上文件与构建
+此前直接图片上传网页已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`，五项线上文件与当时构建
 精确一致，Chrome 启动无错误及自动 LAN 请求。官方 HTTPS 页面的发送按钮已完成一次
-真实 PNG POST/202；LCD、米家及交互用户观察仍待验收。历史 idle-return a 和 g 的结果单独保留。
+真实 PNG POST/202；LCD、米家及交互用户观察仍待验收。React 基础版已另行验证并发布，
+最新右侧连接布局仍仅在本地，待用户确认后发布；历史 idle-return a 和 g 的结果单独保留。
 设备使用入口为 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)；刷写、调试器购买与
 SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确依赖本机私有基线，
 本目录的网页构建和发布命令不会刷写面板。
 支持 PNG、JPEG、WebP、SVG，单文件最大 32MiB；动图采用解码后的静态首帧。
 拖动调整位置，用滚轮、双指或键盘 `+`/`-` 调整 1～5 倍覆盖比例，键盘 `0` 重置构图。
-页面不显示缩放或重置栏，可下载 PNG 和完整的 `.vimg` Payload。
+页面不显示缩放或重置栏，下载只提供 PNG 图片。
 
 页面直接进入编辑工作区，默认画面沿用此前设备端 GitHub 卡片：GitHub 标志、用户名、
 项目名称与金色星标提示。页面主题为克制的深灰色 `#303b4b`，默认图片保持原有金色。
 可直接发送默认画面，也可替换
 自己的图片。API 指南常显，按 METHOD、URL、PAYLOAD 展示接口与完整 PNG/JPEG 文件用法。
-下载的 Payload 为 307216B，包含 VIMG 头、RGB565LE 像素和 FNV 校验，可直接用于
-旧固件的 cURL 上传；不再提供仅像素的 raw RGB565 下载。下载的 PNG 可直接发给当前接口，
+下载的 PNG 可直接发给当前接口，
 无需转换或添加专用头部。普通图片最大 1MiB，必须为 480×320；编码范围见
 [HTTP 图片 API](../docs/http-image-api.md)。图片网页请求和 cURL 示例不指定 Content-Type；
 接收端按文件签名识别 PNG/JPEG/VIMG，并验证完整图像。
@@ -28,10 +29,17 @@ SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确�
 发送时先查询 `GET /api/image`。设备支持 PNG 时，网页把裁切结果的 sRGB 画布导出为完整 PNG
 再上传；JPEG 通过 cURL/CLI 保持文件原字节。只有旧固件能力查询明确返回 404，网页才使用
 RGB565LE、VIMG 头和 FNV。查询错误会停止，失败 POST 不会换格式重发；打开网页不会自动
-访问面板。`.vimg` 下载继续用于旧设备及既有客户端。
+访问面板。旧 VIMG 仍用于上述内部发送兼容，不再提供 VIMG 下载按钮。
 
 从导航进入“设置”（`/xiaomi-86v1/settings`），读取或保存原界面未触摸后的等待时间。
 图片编辑保留在 `/xiaomi-86v1/`；两页都支持 `?device=` 自动填写面板地址。
+两页使用同一个 AppLayout 和面板连接栏，只需填写一次地址。桌面画面页左侧只保留裁切
+预览和图片信息，右侧为共用连接栏，下方依次放置选择、发送和 PNG 下载三个独立按钮，
+没有发送或下载卡片。设置页沿用同一右侧连接栏。移动端画面页按连接、编辑、三个按钮、
+API 指南排列。
+地址编辑立即决定后续操作目标，
+失焦或按 Enter 时以 replace 更新普通 `device` query；内部切页保留尚未填完的地址，
+初次加载及浏览器前进/后退则从 URL 恢复目标。地址无效时不会请求设备。
 自动返回默认 60 秒、0 关闭、范围 0–3600。
 设置按重启保留实现，图片仍为 RAM-only；只计触屏，物理按键不影响计时。设置请求只由
 明确点击发出，初始为“尚未读取”；GET/POST JSON 各有 10 秒超时，不自动重试，地址改变
@@ -41,10 +49,19 @@ RGB565LE、VIMG 头和 FNV。查询错误会停止，失败 POST 不会换格式
 离开设置页会取消尚未完成的请求，保留输入草稿；已发出的保存请求未获确认时，不能
 据取消操作断言设备没有保存。
 
+`EditorProvider` 和 `SettingsProvider` 位于路由上层，切页保留已解码图片、裁切、设置草稿
+及结果状态。图片发送在内部切页时继续；地址变化或应用卸载会取消未完成请求。设置请求
+在离开设置页时取消。已发出的 POST 未获确认时保留不确定状态，不自动重试。
+入口为 [main.tsx](src/main.tsx) 和 [App.tsx](src/App.tsx)，共享连接位于
+[PanelConnection.tsx](src/PanelConnection.tsx) / [panel-context.tsx](src/panel-context.tsx)。
+编辑、Canvas 绘制、设置和 API 说明分别位于 [ImageEditor.tsx](src/ImageEditor.tsx)、
+[editor-render.ts](src/editor-render.ts)、[SettingsPage.tsx](src/SettingsPage.tsx) 与
+[ImageApi.tsx](src/ImageApi.tsx)。
+
 预览在裁切框外继续显示整图，框外以 55% 黑色遮罩变暗；中央 480×320 区域与导出和
 发送使用同一画布。源图缩放和移动使用高质量重采样生成 480×320 成品，预览仍以
 `pixelated` 放大成品像素，模拟实际面板分辨率。
-操作图标来自按需导入的 Lucide，GitHub 品牌 SVG 保留。favicon 按实物描绘黑色玻璃、
+操作图标使用按需导入的 `lucide-react` 组件，GitHub 品牌 SVG 保留。favicon 按实物描绘黑色玻璃、
 横向屏幕和底部白色三连键，浏览器直接使用第一方 SVG，并检查 16/32 像素下的渲染。
 默认 [GitHub 卡片 PNG](public/github-card.png)来自第一方离线绘图，是静态资源而非设备 dump。
 SHA-256：`ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e`。
@@ -86,8 +103,13 @@ Chrome 跟随/填入地址通过，用户另行确认正式页面跳转及 HTTPS
 
 ## 发布
 
-新增直接 PNG 上传的网页改版已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`。
-本轮 HTML、JS、CSS、SVG favicon 和默认 PNG 五项文件均返回 200，字节及 SHA-256 与构建一致；
+React 基础版已发布为 `e6196398-f485-4f11-ab1b-20d18f6fa664`：29 项单元测试、32 项本地
+浏览器检查、7 项线上 HTTP 检查、4 项资源比对和 10 项线上浏览器检查通过。
+这些是右侧连接布局调整前的检查点；当前源码的右侧布局与 PNG-only 下载仍仅在本地，
+本轮验收另行记录，发布等待用户确认。
+
+此前直接 PNG 上传的非 React 网页已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`。
+当轮 HTML、JS、CSS、SVG favicon 和默认 PNG 五项文件均返回 200，字节及 SHA-256 与构建一致；
 Chrome 页面/设置路径检查通过，页面与控制台错误为 0，初始自动 LAN 请求为 0。
 真实发送按钮的 PNG 上传另列于末尾当前验证范围；以下此前线上证据保留原范围。
 
@@ -111,10 +133,12 @@ Worker `xiaomi-86v1` 已发布到
 采用 `dist-cloudflare` 内的静态资源，不包含 Worker 业务代码或后端服务。
 
 [wrangler.jsonc](wrangler.jsonc) 启用 `assets.not_found_handling: single-page-application`。
-Cloudflare 从资源根的 `index.html` 返回 SPA 页面，直接访问或刷新设置页仍由 Navigo
+Cloudflare 从资源根的 `index.html` 返回 SPA 页面，直接访问或刷新设置页由 React Router
 选择内容；未知应用路径由前端显示未找到页面。资源文件继续保留子路径，主站 route 不变。
 根页面由 [prepare-spa.ts](scripts/prepare-spa.ts) 在构建后字节复制，避免手动维护两份 HTML。
 assets-only SPA 对缺失 GET 也返回 HTML 200，不承诺缺失资源的 HTTP 404。
+
+用户确认发布后，从仓库根目录执行：
 
 ```powershell
 npm --prefix web ci
@@ -131,7 +155,7 @@ npm --prefix web run deploy
 该记录的初次检查使用旧布局；新版深灰主题、默认卡片、像素放大、常显 API、
 移动端布局和普通浏览器下载文件名已单列检查通过。
 这些检查保留此前布局和 raw RGB565 下载的原范围；新版框外预览、完整 Payload、
-发送按钮状态及 Lucide 图标也已单列检查通过。最新检查使用模拟 HTTP 和拦截导出
+发送按钮状态及 Lucide 图标也已单列检查通过。当时的检查使用模拟 HTTP 和拦截导出
 Blob/下载属性，没有新做真实设备上传或 `.vimg` 的普通浏览器落盘验证。
 
 历史 d 已另行验证真实 LAN 303、Chrome 跟随/自动填地址、无 Content-Type 网页 POST/202 和
@@ -150,19 +174,19 @@ idle-return a 当轮的 19 项网页单元测试、生产构建及 Windows Chrom
 真实设置 GET/POST 0 和 5 秒、越界 422 且保留运行值，以及保存 5 秒后暖复位重新加载均
 通过，随后保存回 60 秒。直接 Node 图片 POST/202 与用户网页操作、LCD 和完整断电分开记录。
 
-独立设置页的生产构建已用本地 Wrangler 检查：根/嵌套 HTML 精确一致，设置页、设备 query、
+历史 Navigo 版的生产构建曾用本地 Wrangler 检查：根/嵌套 HTML 精确一致，设置页、设备 query、
 尾斜线及未知路径均返回同一 SPA，HEAD 无 body、根路径 307、四项资源与构建字节一致。
 这些是本地 HTTP 托管检查，没有部署或请求面板，也不替代浏览器导航验证。
 
-新版已通过本地 Chrome 的 21 项路由与状态回归：设置页直接访问/query/刷新、前进后退
+历史 Navigo 版通过本地 Chrome 的 21 项路由与状态回归：设置页直接访问/query/刷新、前进后退
 及草稿、共享地址与图片裁切保留、明确读写与迟到编辑保护、离页取消和保存未确认状态、
 API 锚点、修饰点击、未知/尾斜线/无效参数、360px 无溢出与零页面错误。6 次设置请求
-全部使用浏览器模拟接口，没有请求真实面板，不扩展 a 版固件验收或证明新版已上线。
+全部使用浏览器模拟接口，没有请求真实面板，不扩展 a 版固件验收，也不证明 React 改版通过。
 
-## 当前 PNG/JPEG 版本验证
+## 设备 PNG/JPEG 与此前网页验证
 
 当前 images 版本通过 420 个实际 ARM 解码案例、36 组 UI、34 组 HTTP、17 组设置模型，
-网页通过 29 项单元测试。本机 Chrome 的真实 sRGB Canvas PNG 已进入离线 native HTTP
+`0aa9d5c` 当轮网页通过 29 项单元测试。本机 Chrome 的真实 sRGB Canvas PNG 已进入离线 native HTTP
 模型，接收、解码和 GUI 像素均与参考一致；解码本身执行原厂 ARM 指令。
 该 Chrome 检查没有请求真实面板。独立实机验证已完成五页安装闭包、GLOBAL、暖启动和
 新鲜 patched 检查；Node PNG/JPEG 请求均返回 202，RGB565 读回与参考一致。
@@ -178,3 +202,16 @@ pending 0、server 1/error 0、GUI 运行正常；不是 LCD scanout。临时 or
 当前结果见 [images 发布结果](../firmware/releases/maintained-images-20261008-a.json)。
 历史 a/g 的暖启动、设置或上传结果不继承到此版本，解码研究详见
 [直接 PNG/JPEG 研究](../docs/research/direct-image-upload.md)。
+
+React 基础版的网页验证与发布范围见上节；它沿用同一图片和设置 API，没有扩展设备验收。
+最新本地右侧布局、PNG 下载与 HMR 调整的验收见下节，不沿用基础版或历史 Navigo 的检查结论。
+
+## 最新本地版本验证
+
+2026-10-08 的右侧布局通过类型检查、生产构建和 29 项单元测试；Chrome 的 32 项通用回归、
+24 项设置确认回归、6 项实际 Fast Refresh 检查和 5 项布局检查通过。设置和图片请求使用模拟接口，
+没有请求真实面板；PNG 导出使用拦截的 Blob，没有实际下载文件。默认图片像素保持一致，预览继续按像素拉伸。
+
+本地 Wrangler 的 7 项 HTTP 检查与 4 项资源字节比对通过；生产产物的 10 项 Chrome 检查覆盖
+子路径、刷新、历史、共享地址、API 锚点、未知路径和手机布局，无页面错误或自动设备请求。
+最新源码尚未发布，发布需用户明确通知。本地预览服务器由当前开发会话保留，地址以 Vite 输出为准。

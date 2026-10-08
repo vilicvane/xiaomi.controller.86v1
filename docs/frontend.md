@@ -1,11 +1,11 @@
 # 86V1 自定义固件：图片编辑前端
 
 本页面用于 86V1 自定义固件的图片下拉屏幕功能。页面源码在 [web](../web/README.md)，
-使用 Vite 和 TypeScript 构建为静态文件；网页显示名称为“小米智能家庭面板”。
+使用 Vite 和 TypeScript 构建为静态文件，Navigo 管理页面路由；网页显示名称为“小米智能家庭面板”。
 目标画面固定为 480×320、横向 3:2；裁切、缩放和 RGB565 转换都在用户的浏览器执行。
 当前固件的图片接收程序处理已完成的像素，不解码 PNG/JPEG。
-本轮 a 的自动返回设置卡片已部署，固件安装、真实设置读写与暖复位加载通过；
-网页操作和定时返回的用户观察仍单列。
+a 的自动返回设置接口、真实读写与暖复位加载通过；设置页导航是后续网页维护，
+固件和用户观察范围保持原记录，不用网页改版推定实机验收。
 
 页面从编辑工作区开始，默认显示此前设备端的 GitHub 卡片，保留 GitHub 标志、
 `vilicvane`、完整项目名称和金色星标提示。页面主题采用克制的深灰色 `#303b4b`，
@@ -58,7 +58,9 @@ a 沿用相同配置，实际跳转结果由新发布独立记录。
 
 ## 自动返回设置
 
-卡片可读取或保存原界面未触摸后的等待时间，默认 60 秒，0 关闭，最大 3600 整数秒。
+页面导航提供“画面”和“设置”。图片编辑位于 `/xiaomi-86v1/`，自动返回位于独立的
+`/xiaomi-86v1/settings` 页面，支持直接访问和刷新；两页均读取 `?device=`。
+设置页可读取或保存原界面未触摸后的等待时间，默认 60 秒，0 关闭，最大 3600 整数秒。
 只计触摸屏，物理键不重置；原系统息屏返回独立生效。设置保存到 MMC 并按重启保留实现，
 与 RAM 图片分开。接口和用户操作见 [自动返回说明](auto-return.md)。
 
@@ -66,6 +68,8 @@ a 沿用相同配置，实际跳转结果由新发布独立记录。
 GET/POST `/api/settings`，POST 声明 `application/json`；只在明确点击按钮时联网，页面
 初始不伪装已读取。10 秒超时、一次请求、手动重试；保存缺少确认时提示重新读取，不能
 声称一定未保存。地址变化取消并隔离旧响应，请求期间的新编辑不被读回值覆盖。
+离开设置页取消未完成请求并保留输入草稿；已发出的 POST 即使被取消，也可能已由
+设备保存，因此未收到确认时保留不确定状态。
 
 19 项网页测试与 Chrome 模拟接口检查通过，涵盖范围/JSON、读写、0关闭、取消/超时、
 状态按钮、旧响应和新编辑、390/360px 布局且图片预览不变。该检查没有访问面板，不能
@@ -143,10 +147,11 @@ API 文档无需连接设备即可阅读，上传需要使用当前非零设备�
 
 网页已于 2026-10-07 发布为 Worker `xiaomi-86v1`，独立入口为
 [Workers 页面](https://xiaomi-86v1.vilicvane.workers.dev/xiaomi-86v1/)，已返回 HTTP 200。
-当前含设置卡片的发布版本为 `ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`。正式页面 200、四项
-线上资源与当前构建字节一致，Chrome 显示设置卡片、初始零自动 LAN 请求，页面错误为 0。
+此前同页设置卡片的发布版本为 `ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`。正式页面 200、四项
+线上资源与当时构建字节一致，Chrome 显示设置卡片、初始零自动 LAN 请求，页面错误为 0。
 这次页面检查没有请求面板；此前版本 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12` 的证据保持
 原范围。
+独立设置页与 SPA 回退于 2026-10-08 发布，验证记录见本页末尾。
 独立入口的无尾斜线路径返回 307 到 `/xiaomi-86v1/`；SVG favicon、JS、CSS 和默认 PNG
 四项线上资源的字节与 SHA-256 均匹配构建产物。Windows Chrome 已验证 HTTPS 页面
 标题、默认图加载，以及测试用 `?device=` 查询参数到输入框/API URL 的同步，无页面错误或
@@ -160,6 +165,7 @@ API 文档无需连接设备即可阅读，上传需要使用当前非零设备�
 | 项目目录 | `web` |
 | 构建输出 | `dist-cloudflare/xiaomi-86v1` |
 | Worker assets directory | `dist-cloudflare` |
+| 缺页处理 | `single-page-application`，根 `index.html` 由构建后复制 |
 | Worker 名称 | `xiaomi-86v1` |
 | 精确路径 route | `wan.sh/xiaomi-86v1` |
 | 子路径 route | `wan.sh/xiaomi-86v1/*` |
@@ -175,10 +181,26 @@ npm --prefix web run deploy
 
 `deploy` 执行 `npm run build && wrangler deploy`，Wrangler `4.148.0` 是锁定的开发依赖，
 使用操作者的 Cloudflare 登录。配置见 [wrangler.jsonc](../web/wrangler.jsonc)。
-目录结构与子路径一致，使用默认静态资源路由；没有 Worker 业务代码、后端服务或图片中转。
+目录结构与子路径一致，没有 Worker 业务代码、后端服务或图片中转。构建末尾执行
+[prepare-spa.ts](../web/scripts/prepare-spa.ts)，将嵌套页面字节复制到资源根 `index.html`；
+官方 SPA fallback 固定读取这个根文件。它让设置页的直接访问、刷新与未知路径先取得
+同一 SPA，再由 Navigo 选择页面或显示未找到。没有根页面时，仅开启 fallback 仍无法
+使用嵌套的 HTML。assets-only 模式下，缺失 GET 包括资源请求也会返回 HTML 200；
+客户端未找到页面不代表服务端 HTTP 404。
 两条 route 只覆盖该页面及其资源，不替换主站。配置遵循
 [Cloudflare 子目录静态资源](https://developers.cloudflare.com/workers/static-assets/routing/advanced/serving-a-subdirectory/)
+、[SPA 配置](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)
 和 [Workers Routes](https://developers.cloudflare.com/workers/configuration/routing/routes/)。
+
+在 `web` 目录中，可以本地运行实际 Wrangler 资源服务，检查设置页的直接访问和刷新：
+
+```sh
+npm run build
+npx wrangler dev --local --ip 127.0.0.1 --port 8787
+```
+
+然后访问 `http://127.0.0.1:8787/xiaomi-86v1/settings`。这验证本地托管行为，不是
+Cloudflare 发布或面板联网验收。
 
 浏览器上传要求页面和面板处于可互访的局域网，并允许页面访问本地网络。
 Chrome 142 引入该权限；对 private IP literal 的请求在授权后可获得 mixed-content 豁免，见
@@ -253,3 +275,27 @@ Windows Chrome 跟随后自动填写 endpoint/API，页面错误为 0，没有�
 双击、上下滑、第三键三击取消、息屏和米家仍待单列验收；完整断电按用户要求跳过。
 历史范围见 [g 发布结果](../firmware/releases/maintained-http-20261007-g.json)，
 本轮安装与设置结果另见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
+
+后续独立设置页改版已通过本地 Wrangler 生产产物检查：根 shell 副本与嵌套 HTML 字节一致；
+设置路径、query、尾斜线、未知路径、HEAD 和标准 SPA 缺资源行为符合配置，根路径 307，
+四项资源响应与新构建一致。这些是本地 HTTP 检查，未部署、未请求面板；浏览器中的
+导航、历史和刷新行为另行验证，不扩展旧 a 实机结果。
+
+### 独立设置页正式发布
+
+2026-10-08 部署版本为 `e4aae372-469f-4df1-8cd7-b6acc3163d6d`，入口为
+[设置](https://wan.sh/xiaomi-86v1/settings)。采用 Navigo `8.11.1` 的 History API 路由，
+页面切换保留图片、裁切和设置草稿；面板地址同步到两页和普通 `device` query。
+畸形 query 先规范化，不能让路由解析失败。未知应用路径显示未找到页面。
+
+19 项前端单元测试与生产构建通过。正式站点的 7 项 HTTP 检查通过，包括设置页直接访问、
+query、尾斜线、未知路径、HEAD 和根路径跳转；4 项静态资源逐字节匹配构建。
+Windows Chrome 的 8 项线上检查覆盖设置页刷新、默认图片、导航和历史状态保留、
+移动布局、未知路径和畸形 query，页面错误与自动设备请求均为 0。
+这些检查没有向面板发送设置或图片，不改变 a 版的实机验收范围。
+
+新版随后通过本地 Chrome 的 21 项路由与状态回归：画面页不再显示设置、设置页 query
+和刷新、图片裁切保留、前进后退草稿、两处地址同步、显式读写、迟到编辑保护、离页
+取消和 POST 未确认、地址切换、API hash、修饰点击、未知路径/尾斜线/无效或畸形 query，
+以及 360px 无横向溢出和零页面错误。6 次设置请求均为浏览器模拟接口，没有访问面板；
+不扩展原 a 结果，也不据本地回归推定新版线上部署已完成。

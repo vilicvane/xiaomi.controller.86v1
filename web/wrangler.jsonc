@@ -8,6 +8,7 @@
     { "pattern": "wan.sh/xiaomi-86v1/*", "zone_name": "wan.sh" }
   ],
   "assets": {
-    "directory": "./dist-cloudflare"
+    "directory": "./dist-cloudflare",
+    "not_found_handling": "single-page-application"
   }
 }

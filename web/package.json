@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build --base=/xiaomi-86v1/ --outDir=dist-cloudflare/xiaomi-86v1",
+    "build": "tsc --noEmit && vite build --base=/xiaomi-86v1/ --outDir=dist-cloudflare/xiaomi-86v1 && node scripts/prepare-spa.ts",
     "deploy": "npm run build && wrangler deploy",
     "preview": "vite preview --host 127.0.0.1 --base=/xiaomi-86v1/ --outDir=dist-cloudflare/xiaomi-86v1",
     "test": "node --test tests/*.test.ts"
@@ -19,7 +19,8 @@
     "node": ">=24"
   },
   "dependencies": {
-    "lucide": "1.52.0"
+    "lucide": "1.52.0",
+    "navigo": "8.11.1"
   },
   "overrides": {
     "miniflare": {

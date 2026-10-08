@@ -1,7 +1,8 @@
 # 86V1 自定义固件：图片编辑前端
 
 86V1 自定义固件的图片下拉屏幕编辑页面，网页显示名称为“小米智能家庭面板”。
-使用 Vite + TypeScript 构建静态文件，为该功能的 HTTP 图片 API 准备 480×320 画面。
+使用 Vite + TypeScript 构建静态文件，Navigo 管理图片编辑与设置的独立页面。
+图片编辑为 HTTP 图片 API 准备 480×320 画面。
 图片在浏览器内裁切、缩放、转换并发送到同一局域网的面板；不需要后端或图片中转服务。
 设备使用入口为 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)；刷写、调试器购买与
 SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确依赖本机私有基线，
@@ -18,12 +19,16 @@ SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确�
 页面的 cURL 示例；不再提供仅像素的 raw RGB565 下载。
 图片网页请求和图片 cURL 示例不指定 Content-Type；接收端直接校验 VIMG、固定长度及 FNV。
 
-“自动返回”卡片读取或保存原界面未触摸后的等待时间，默认 60 秒、0 关闭、范围 0–3600。
+从导航进入“设置”（`/xiaomi-86v1/settings`），读取或保存原界面未触摸后的等待时间。
+图片编辑保留在 `/xiaomi-86v1/`；两页都支持 `?device=` 自动填写面板地址。
+自动返回默认 60 秒、0 关闭、范围 0–3600。
 设置按重启保留实现，图片仍为 RAM-only；只计触屏，物理按键不影响计时。设置请求只由
 明确点击发出，初始为“尚未读取”；GET/POST JSON 各有 10 秒超时，不自动重试，地址改变
 取消旧请求，迟到响应不覆盖新编辑。客户端位于 `src/settings.ts`，协议与当前验收范围见
 [自动返回说明](../docs/auto-return.md)。a 安装、真实设置接口和暖复位加载已验证，旧 g 无此接口；
 网页读写及定时返回的用户观察仍单列。
+离开设置页会取消尚未完成的请求，保留输入草稿；已发出的保存请求未获确认时，不能
+据取消操作断言设备没有保存。
 
 预览在裁切框外继续显示整图，框外以 55% 黑色遮罩变暗；中央 480×320 区域与导出和
 发送使用同一画布。源图缩放和移动使用高质量重采样生成 480×320 成品，预览仍以
@@ -43,7 +48,8 @@ npm --prefix web run build
 ```
 
 使用 Node.js 24。开发服务器地址以 Vite 控制台为准。生产产物位于
-`web/dist-cloudflare/xiaomi-86v1/`，资源前缀为 `/xiaomi-86v1/`，不提交依赖和生成产物。
+`web/dist-cloudflare/xiaomi-86v1/`，资源前缀为 `/xiaomi-86v1/`；构建末尾复制同一页面到
+`web/dist-cloudflare/index.html`，供 Cloudflare SPA 回退使用，不提交依赖和生成产物。
 构建后可运行 `npm --prefix web run preview` 查看该子路径。
 设备地址可手动输入，或由页面 URL 的 `?device=` 查询参数传入，例如
 `https://wan.sh/xiaomi-86v1/?device=http%3A%2F%2FPANEL_IPV4%3A18086`。
@@ -76,12 +82,23 @@ Worker `xiaomi-86v1` 已发布到
 此次检查没有面板上传、下载或固件操作。
 目标地址 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)已能正常访问，HTTP 200、无尾
 斜线路径 307、静态资源和 Chrome 页面加载及测试用 `?device=` 参数均已验证。
-当前含设置卡片的发布版本为 `ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`。正式页面 200、四项
-线上资源与构建字节一致，Chrome 显示设置卡片、初始不自动请求 LAN、页面错误为 0；
+此前同页设置卡片的发布版本为 `ecf90b3d-d93f-4a09-aab7-7d5b513a9d49`。正式页面 200、四项
+线上资源与当时构建字节一致，Chrome 显示设置卡片、初始不自动请求 LAN、页面错误为 0；
 这次页面检查没有请求面板。此前图片网页版本 `d92ceb00-ba7c-4832-ae9c-e00879c5ca12` 的
 跳转和上传证据保持原范围。
+独立设置页与 SPA 回退于 2026-10-08 发布，版本为
+`e4aae372-469f-4df1-8cd7-b6acc3163d6d`，可直接访问
+[设置页](https://wan.sh/xiaomi-86v1/settings)。正式站点 7 项 HTTP 检查、4 项资源字节比对
+及 8 项 Chrome 导航/刷新/历史/移动布局检查通过；没有页面错误或自动设备请求。
+19 项单元测试与生产构建通过；面板实机范围保持原记录。
 部署仅绑定 `wan.sh/xiaomi-86v1` 和 `wan.sh/xiaomi-86v1/*` 两条狭窄 route，
 采用 `dist-cloudflare` 内的静态资源，不包含 Worker 业务代码或后端服务。
+
+[wrangler.jsonc](wrangler.jsonc) 启用 `assets.not_found_handling: single-page-application`。
+Cloudflare 从资源根的 `index.html` 返回 SPA 页面，直接访问或刷新设置页仍由 Navigo
+选择内容；未知应用路径由前端显示未找到页面。资源文件继续保留子路径，主站 route 不变。
+根页面由 [prepare-spa.ts](scripts/prepare-spa.ts) 在构建后字节复制，避免手动维护两份 HTML。
+assets-only SPA 对缺失 GET 也返回 HTML 200，不承诺缺失资源的 HTTP 404。
 
 ```powershell
 npm --prefix web ci
@@ -116,3 +133,12 @@ Blob/下载属性，没有新做真实设备上传或 `.vimg` 的普通浏览器
 固件与设置实机结果见 [a 发布结果](../firmware/releases/maintained-idle-return-20261007-a.json)。
 真实设置 GET/POST 0 和 5 秒、越界 422 且保留运行值，以及保存 5 秒后暖复位重新加载均
 通过，随后保存回 60 秒。直接 Node 图片 POST/202 与用户网页操作、LCD 和完整断电分开记录。
+
+独立设置页的生产构建已用本地 Wrangler 检查：根/嵌套 HTML 精确一致，设置页、设备 query、
+尾斜线及未知路径均返回同一 SPA，HEAD 无 body、根路径 307、四项资源与构建字节一致。
+这些是本地 HTTP 托管检查，没有部署或请求面板，也不替代浏览器导航验证。
+
+新版已通过本地 Chrome 的 21 项路由与状态回归：设置页直接访问/query/刷新、前进后退
+及草稿、共享地址与图片裁切保留、明确读写与迟到编辑保护、离页取消和保存未确认状态、
+API 锚点、修饰点击、未知/尾斜线/无效参数、360px 无溢出与零页面错误。6 次设置请求
+全部使用浏览器模拟接口，没有请求真实面板，不扩展 a 版固件验收或证明新版已上线。

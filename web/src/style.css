@@ -108,6 +108,10 @@ input:focus-visible {
 .nav-link {
   color: #626e81;
 }
+.nav-link[aria-current="page"] {
+  color: var(--accent);
+  font-weight: 650;
+}
 .nav-link svg {
   width: 16px;
 }
@@ -129,6 +133,43 @@ main {
   grid-template-columns: minmax(0, 1fr) 310px;
   gap: 24px;
   align-items: start;
+}
+#settings-page {
+  max-width: 680px;
+  margin: auto;
+}
+.page-heading h2 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 650;
+}
+.settings-layout {
+  display: grid;
+  gap: 18px;
+}
+.settings-layout .card-heading h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.settings-layout .field-help {
+  margin-bottom: 0;
+}
+.settings-layout .settings-actions {
+  justify-content: flex-end;
+}
+.settings-layout .settings-actions button {
+  flex: initial;
+  padding: 8px 15px;
+}
+.not-found {
+  max-width: 680px;
+  margin: auto;
+  padding: 28px;
+}
+.not-found h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
 }
 .card {
   background: white;
@@ -914,10 +955,10 @@ main {
   .site-header nav {
     gap: 14px;
   }
-  .site-header .nav-link {
-    font-size: 0;
+  .site-header .api-nav span {
+    display: none;
   }
-  .site-header .nav-link:after {
+  .site-header .api-nav:after {
     content: "API";
     font-size: 11px;
   }
@@ -935,5 +976,16 @@ main {
   }
   .api-heading {
     padding: 17px 0;
+  }
+}
+@media (max-width: 420px) {
+  .brand h1 {
+    font-size: 12px;
+  }
+  .site-header nav {
+    gap: 11px;
+  }
+  .brand-mark {
+    display: none;
   }
 }

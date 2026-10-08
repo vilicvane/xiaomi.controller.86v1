@@ -25,6 +25,7 @@
 - 主板原供电连接点输入 3.3V 未启动，输入 5V 正常启动。这只确认主板供电入口，
   不表示芯片或调试引脚允许 5V。
 - 成功路径为 nanoDAP **SWD**、通用 MEM-AP：GND、JTMS/SWDIO、JTCK/SWCLK。
+  加上调试器上的 5V 电源接口到主板低压供电入口的供电线，共四根；接线照片见 [刷写指南](flashing.md#调试器接线与供电)。
   最初虽接过 JTDI/JTDO，项目没有建立已验证 JTAG 链。
 - DPIDR=`0x1be12aeb`，AP0 IDR=`0x1aeb0015`，MCU CPUID=`0x630f1321`。
   `swd-memory.cfg` 使用 MEM-AP，避免未经审查的 CPU 自动探测和 Flash 驱动操作。

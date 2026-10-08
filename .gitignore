@@ -6,6 +6,7 @@
 !/AGENTS.md
 !/README.md
 !/docs/**/*.md
+!/docs/images/xiaomi-86v1.jpg
 !/firmware/**/*.c
 !/firmware/**/*.h
 !/firmware/**/*.S

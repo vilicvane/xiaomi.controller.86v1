@@ -8,8 +8,15 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { useLocation, useNavigate, useNavigationType } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { normalizeDeviceEndpoint, queryEndpoint } from "./panel-api.ts";
+import {
+  connectionReturnTo,
+  deviceSearch,
+  resolvePanelEndpoint,
+  savePanelEndpoint,
+  type PanelAddressStorage,
+} from "./panel-address.ts";
 
 type PanelState = {
   address: string;
@@ -19,16 +26,24 @@ type PanelState = {
   search: string;
   inputRef: RefObject<HTMLInputElement | null>;
   setAddress(value: string): void;
-  commitAddress(): void;
+  commitAddress(): boolean;
   focusAddress(): void;
   getRevision(): number;
+};
+type AddressState = {
+  locationKey: string;
+  pathname: string;
+  endpoint: string | null;
+  address: string;
+  revision: number;
+  error: string;
 };
 
 const PanelContext = createContext<PanelState | null>(null);
 
-function endpointOf(address: string): string | null {
+function browserStorage(): PanelAddressStorage | null {
   try {
-    return normalizeDeviceEndpoint(address);
+    return window.localStorage;
   } catch {
     return null;
   }
@@ -37,54 +52,85 @@ function endpointOf(address: string): string | null {
 export function PanelProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const navigationType = useNavigationType();
-  const [state, setState] = useState(() => ({
-    address: queryEndpoint(location.search)?.slice(7) ?? "",
-    revision: 0,
-  }));
+  const [state, setState] = useState<AddressState>(() => {
+    const endpoint = resolvePanelEndpoint(location.search, browserStorage());
+    return { locationKey: location.key, pathname: location.pathname, endpoint,
+      address: endpoint?.slice(7) ?? "", revision: 0, error: "" };
+  });
   const current = useRef(state);
-  const lastLocation = useRef(location.key);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [error, setError] = useState("");
+
+  // Reconcile history before rendering children, so their request guards see the new target.
+  // Updating this component's own state here also avoids a child-first layout-effect gap.
+  if (state.locationKey !== location.key) {
+    const endpoint = resolvePanelEndpoint(location.search, browserStorage());
+    const targetChanged = endpoint !== state.endpoint;
+    const enteringConnection = location.pathname.replace(/\/$/, "") === "/connection" &&
+      state.pathname.replace(/\/$/, "") !== "/connection";
+    const next = { ...state, locationKey: location.key, pathname: location.pathname, endpoint,
+      revision: state.revision + (targetChanged ? 1 : 0),
+      ...((targetChanged || enteringConnection) ? { address: endpoint?.slice(7) ?? "", error: "" } : {}) };
+    current.current = next;
+    setState(next);
+  } else {
+    current.current = state;
+  }
+
   const setAddress = useCallback((address: string) => {
     if (address === current.current.address) return;
-    current.current = { address, revision: current.current.revision + 1 };
-    setState(current.current);
-    setError("");
+    const next = { ...current.current, address, error: "" };
+    current.current = next;
+    setState(next);
   }, []);
   const getRevision = useCallback(() => current.current.revision, []);
-  const focusAddress = useCallback(() => inputRef.current?.focus(), []);
+  const focusAddress = useCallback(() => {
+    if (location.pathname.replace(/\/$/, "") === "/connection") {
+      inputRef.current?.focus();
+      return;
+    }
+    void navigate({ pathname: "/connection", search: deviceSearch(location.search, current.current.endpoint) }, {
+      state: { returnTo: connectionReturnTo({ returnTo: location }) },
+    });
+  }, [location.pathname, location.hash, location.search, navigate]);
 
   useLayoutEffect(() => {
-    if (lastLocation.current === location.key) return;
-    lastLocation.current = location.key;
     const incoming = queryEndpoint(location.search);
-    // Internal navigation keeps even incomplete drafts. History restores its URL target.
-    if (navigationType === "POP") setAddress(incoming?.slice(7) ?? "");
-    else if (incoming !== endpointOf(current.current.address))
-      setAddress(incoming?.slice(7) ?? "");
-  }, [location.key, location.search, navigationType, setAddress]);
-
-  const endpoint = endpointOf(state.address);
-  const params = new URLSearchParams(location.search);
-  params.delete("device");
-  if (endpoint) params.set("device", endpoint);
-  const search = params.size ? "?" + params.toString() : "";
+    if (!incoming) return;
+    // Redirects remain usable when storage is unavailable; only explicit save promises persistence.
+    try {
+      savePanelEndpoint(incoming, browserStorage());
+    } catch { /* Best-effort automatic remember. */ }
+  }, [location.key, location.search]);
 
   function commitAddress() {
-    if (state.address.trim() && !endpoint) {
-      try {
-        normalizeDeviceEndpoint(state.address);
-      } catch (cause) {
-        setError((cause as Error).message);
-      }
+    let endpoint: string;
+    try {
+      endpoint = normalizeDeviceEndpoint(current.current.address);
+    } catch (cause) {
+      const next = { ...current.current, error: (cause as Error).message };
+      current.current = next;
+      setState(next);
+      inputRef.current?.focus();
+      return false;
     }
-    if (search !== location.search)
-      void navigate({ pathname: location.pathname, search, hash: location.hash }, { replace: true });
+    try {
+      savePanelEndpoint(endpoint, browserStorage());
+    } catch {
+      const next = { ...current.current, error: "无法在此浏览器保存面板地址，请检查浏览器存储权限后重试。" };
+      current.current = next;
+      setState(next);
+      return false;
+    }
+    const next = { ...current.current, endpoint, address: endpoint.slice(7), error: "",
+      revision: current.current.revision + (endpoint === current.current.endpoint ? 0 : 1) };
+    current.current = next;
+    setState(next);
+    return true;
   }
 
   return (
-    <PanelContext.Provider value={{ ...state, endpoint, error, search, inputRef,
+    <PanelContext.Provider value={{ address: state.address, endpoint: state.endpoint, revision: state.revision,
+      error: state.error, search: deviceSearch(location.search, state.endpoint), inputRef,
       setAddress, commitAddress, focusAddress, getRevision }}>
       {children}
     </PanelContext.Provider>

@@ -86,7 +86,7 @@ PNG / JPEG 上传前会查询能力；旧固件明确返回 404 时，工具会�
 
 ## 已部署客户端的 VIMG
 
-VIMG 保留用于旧固件及既有客户端，网页仍可下载完整 `.vimg` Payload：
+VIMG 保留用于旧固件及既有客户端；网页检测到旧版接口时会在内部生成完整 VIMG Payload，下载按钮仅导出 PNG：
 
 ```sh
 curl --data-binary "@wallpaper-480x320.vimg" "http://PANEL_IPV4:18086/api/image"

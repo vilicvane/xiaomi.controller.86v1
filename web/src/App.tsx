@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
-import { Link, NavLink, Outlet, Route, Routes, useLocation, useMatch } from "react-router";
-import { ArrowRight, CodeXml, Image as ImageIcon, Settings2 } from "lucide-react";
+import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation } from "react-router";
+import { ArrowRight, CodeXml, Image as ImageIcon, Settings2, Wifi } from "lucide-react";
 import { PanelProvider, usePanel } from "./panel-context.tsx";
 import { PanelConnection } from "./PanelConnection.tsx";
 import { EditorProvider, ImageEditor, ImageActions } from "./ImageEditor.tsx";
@@ -18,21 +18,23 @@ function GitHubMark() {
 function AppLayout() {
   const { search } = usePanel();
   const location = useLocation();
-  const editing = useMatch("/") !== null;
   const previousPath = useRef(location.pathname);
   const content = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const path = location.pathname.replace(/\/$/, "") || "/";
-    document.title = (path === "/settings" ? "设置 · " : path === "/" ? "" : "页面未找到 · ") + "小米智能家庭面板";
+    const titles: Record<string, string> = { "/": "", "/settings": "设置 · ", "/api": "API 指南 · ", "/connection": "面板地址 · " };
+    document.title = (titles[path] ?? "页面未找到 · ") + "小米智能家庭面板";
     if (previousPath.current !== location.pathname) {
       window.scrollTo(0, 0);
-      const heading = content.current!.querySelector<HTMLHeadingElement>("h2")!;
-      heading.tabIndex = -1;
-      heading.focus({ preventScroll: true });
+      const target = content.current!.querySelector<HTMLElement>(path === "/connection" ? "#device" : "h2");
+      // A route awaiting its address redirect has no page content to focus yet.
+      if (target) {
+        if (target.tagName === "H2") target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+      }
     }
     previousPath.current = location.pathname;
-    if (location.hash === "#api") document.getElementById("api")?.scrollIntoView();
   }, [location.pathname, location.hash]);
 
   return <>
@@ -48,21 +50,20 @@ function AppLayout() {
         <NavLink className="nav-link" to={{ pathname: "/settings", search }} data-page="settings">
           <Settings2 aria-hidden="true" /><span>设置</span>
         </NavLink>
-        <Link className="nav-link api-nav" to={{ pathname: "/", search, hash: "#api" }} data-anchor="api">
+        <NavLink className="nav-link api-nav" to={{ pathname: "/api", search }} data-page="api">
           <CodeXml aria-hidden="true" /><span>API 指南</span>
-        </Link>
+        </NavLink>
+        <NavLink className="nav-link" to={{ pathname: "/connection", search }} data-page="connection"
+          state={{ returnTo: { pathname: location.pathname, hash: location.hash } }}>
+          <Wifi aria-hidden="true" /><span>连接</span>
+        </NavLink>
         <a className="github-link" href={PROJECT} target="_blank" rel="noopener noreferrer" aria-label="GitHub 项目">
           <GitHubMark /><span>GitHub</span>
         </a>
       </nav>
     </header>
-    <main className={`app-layout${editing ? " with-editor" : ""}`}>
+    <main className="app-layout">
       <div className="page-content" ref={content}><Outlet /></div>
-      <aside className="app-sidebar">
-        <PanelConnection />
-        {editing && <div className="image-actions"><ImageActions /></div>}
-      </aside>
-      {editing && <ImageApi />}
     </main>
     <footer><span><strong>xiaomi.controller.86v1</strong></span>
       <a href={PROJECT} target="_blank" rel="noopener noreferrer">vilicvane <ArrowRight aria-hidden="true" /></a>
@@ -71,7 +72,17 @@ function AppLayout() {
 }
 
 function EditorPage() {
-  return <div id="editor-page"><ImageEditor /></div>;
+  return <div id="editor-page">
+    <ImageEditor />
+    <div className="image-actions"><ImageActions /></div>
+  </div>;
+}
+
+function RequirePanel() {
+  const { endpoint, search } = usePanel();
+  const location = useLocation();
+  return endpoint ? <Outlet /> : <Navigate to={{ pathname: "/connection", search }} replace
+    state={{ returnTo: { pathname: location.pathname, hash: location.hash } }} />;
 }
 
 function NotFoundPage() {
@@ -86,8 +97,12 @@ export function App() {
   return <PanelProvider><EditorProvider><SettingsProvider>
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<EditorPage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route element={<RequirePanel />}>
+          <Route index element={<EditorPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="api" element={<ImageApi />} />
+        <Route path="connection" element={<PanelConnection />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

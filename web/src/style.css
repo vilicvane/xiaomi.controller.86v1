@@ -54,8 +54,8 @@ input:focus-visible {
 }
 .site-header {
   height: 86px;
-  max-width: 1220px;
-  padding: 0 36px;
+  max-width: 680px;
+  padding: 0 24px;
   margin: auto;
   display: flex;
   align-items: center;
@@ -96,8 +96,8 @@ input:focus-visible {
 .site-header nav {
   display: flex;
   align-items: center;
-  gap: 27px;
-  font-size: 13px;
+  gap: 16px;
+  font-size: 12px;
 }
 .nav-link,
 .github-link {
@@ -124,42 +124,29 @@ input:focus-visible {
   color: var(--accent);
 }
 main {
-  max-width: 1220px;
+  max-width: 680px;
   margin: auto;
-  padding: 0 36px;
+  padding: 0 24px;
 }
 .app-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 310px;
-  grid-template-areas: "content sidebar";
-  gap: 24px;
-  align-items: start;
-}
-.app-layout.with-editor {
-  grid-template-areas: "content sidebar" "api api";
+  min-height: 360px;
 }
 .page-content {
-  grid-area: content;
   min-width: 0;
 }
-.app-sidebar,
 .image-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-width: 0;
-}
-.app-sidebar {
-  grid-area: sidebar;
-  align-self: stretch;
-}
-.image-actions {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
   gap: 12px;
-  margin-top: auto;
+  margin-top: 20px;
+  align-items: start;
 }
 .image-actions > .button {
   min-height: 45px;
   font-size: 13px;
+}
+.image-actions #send-form {
+  min-width: 0;
 }
 .settings-layout {
   display: grid;
@@ -173,7 +160,7 @@ main {
 }
 .settings-layout .settings-field {
   flex: 1 1 140px;
-  max-width: 200px;
+  min-width: 0;
 }
 .settings-layout .settings-actions {
   flex-shrink: 0;
@@ -194,10 +181,24 @@ main {
   font-size: 18px;
 }
 .panel-connection {
-  padding: 21px 24px;
-  border: 1px solid #e6e9ee;
-  border-radius: 16px;
-  background: white;
+  padding: 24px;
+}
+.panel-connection h2 {
+  margin: 0 0 20px;
+  font-size: 15px;
+  font-weight: 650;
+}
+.connection-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.connection-actions .button {
+  width: auto;
+  gap: 12px;
+}
+.connection-actions .button svg {
+  margin: 0;
 }
 .panel-address label {
   display: block;
@@ -207,7 +208,7 @@ main {
   font-weight: 550;
 }
 .panel-connection .device-field input {
-  font-size: 14px;
+  font-size: 16px;
 }
 .panel-connection input[aria-invalid="true"] {
   color: #943e49;
@@ -219,7 +220,6 @@ main {
   margin: 12px 0 0;
 }
 #device-error {
-  grid-column: 1 / -1;
   margin: 9px 0 0;
   color: #943e49;
   font-size: 12px;
@@ -229,9 +229,6 @@ main {
   border: 1px solid #e6e9ee;
   border-radius: 16px;
   box-shadow: 0 3px 12px #24334e03;
-}
-.editor {
-  padding: 24px;
 }
 .card-heading {
   display: flex;
@@ -599,10 +596,35 @@ canvas.active + .crop-frame .crop-guides {
   margin-right: auto;
 }
 .api {
-  grid-area: api;
   margin: 0;
   padding: 0 24px;
   scroll-margin-top: 20px;
+}
+.api-page {
+  display: grid;
+  gap: 20px;
+}
+.api-intro {
+  margin: 0;
+  color: #626e81;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.api-statuses {
+  margin: 12px 0 0;
+}
+.api-statuses > div {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 6px 0;
+}
+.api-statuses dt {
+  color: #4c5d76;
+  flex-shrink: 0;
+}
+.api-statuses dd {
+  margin: 0;
 }
 .api-icon {
   width: 36px;
@@ -624,8 +646,8 @@ canvas.active + .crop-frame .crop-guides {
 }
 .api-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
   border-top: 1px solid var(--line);
   padding: 23px 0 28px;
   color: #808da1;
@@ -656,12 +678,12 @@ canvas.active + .crop-frame .crop-guides {
   width: 13px;
 }
 footer {
-  max-width: 1220px;
+  max-width: 680px;
   margin: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px 36px 35px;
+  padding: 30px 24px 35px;
   gap: 20px;
   color: #a4adbb;
   font-size: 10px;
@@ -688,21 +710,7 @@ footer svg {
   }
 }
 
-@media (max-width: 920px) {
-  .app-layout {
-    grid-template-columns: minmax(0, 1fr) 270px;
-    gap: 18px;
-  }
-  .panel-connection,
-  .settings-card,
-  .editor {
-    padding: 20px;
-  }
-  .dimension span {
-    margin: 0 3px;
-  }
-}
-@media (max-width: 720px) {
+@media (max-width: 600px) {
   .site-header {
     height: 73px;
     padding: 0 20px;
@@ -723,7 +731,6 @@ footer svg {
     gap: 16px;
   }
   .panel-connection {
-    grid-area: connection;
     padding: 16px 18px;
   }
   .panel-connection .device-field input,
@@ -735,7 +742,7 @@ footer svg {
     font-size: 11px;
   }
   #device-error {
-    margin: 0;
+    margin-top: 9px;
   }
   .nav-link {
     font-size: 11px;
@@ -749,21 +756,6 @@ footer svg {
   main {
     padding: 0 16px;
   }
-  .app-layout {
-    grid-template-columns: 1fr;
-    grid-template-areas: "connection" "content";
-    gap: 17px;
-  }
-  .app-layout.with-editor {
-    grid-template-areas: "connection" "content" "actions" "api";
-  }
-  .app-sidebar {
-    display: contents;
-  }
-  .image-actions {
-    grid-area: actions;
-    margin-top: 0;
-  }
   .settings-layout .settings-field {
     flex-basis: 100%;
     max-width: none;
@@ -773,9 +765,6 @@ footer svg {
   }
   .settings-layout .settings-actions button {
     flex: 1;
-  }
-  .editor {
-    padding: 18px;
   }
   .card-heading {
     margin-bottom: 16px;
@@ -828,7 +817,7 @@ footer svg {
 }
 
 .brand h1 {
-  font-size: 17px;
+  font-size: 14px;
   line-height: 1.5;
   letter-spacing: 0;
   font-weight: 650;
@@ -865,7 +854,6 @@ main {
 }
 .api-body {
   padding-top: 21px;
-  gap: 32px;
 }
 .request-fields {
   margin: 0 0 20px;
@@ -912,7 +900,7 @@ main {
 .api-body p {
   color: #626e81;
 }
-@media (max-width: 720px) {
+@media (max-width: 600px) {
   .brand h1 {
     font-size: 13px;
   }
@@ -954,6 +942,17 @@ main {
   }
 }
 @media (max-width: 420px) {
+  .image-actions {
+    gap: 8px;
+  }
+  .image-actions > .button,
+  .image-actions .primary {
+    font-size: 12px;
+    padding: 9px 10px;
+  }
+  .image-actions #send-icon {
+    display: none;
+  }
   .brand h1 {
     font-size: 12px;
   }

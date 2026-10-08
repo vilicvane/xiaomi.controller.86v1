@@ -370,7 +370,7 @@ export function ImageEditor() {
     }
   }
 
-  return <section className="editor card" aria-labelledby="preview-title">
+  return <section className="editor" aria-labelledby="preview-title">
       <div className="card-heading"><div><h2 id="preview-title">调整画面</h2></div>
         <span className="dimension">480 × 320 <span>·</span> 3:2</span></div>
       <div id="drop-zone" className={`preview-well${dragging ? " dragging" : ""}`}
@@ -405,7 +405,7 @@ export function ImageEditor() {
     </section>;
 }
 
-/** The shared app sidebar places these actions below its single device connection panel. */
+/** Image actions sit directly below the crop preview. */
 export function ImageActions() {
   const { state: { source, upload }, load, send, downloadPng } = useContext(EditorContext)!;
   const input = useRef<HTMLInputElement>(null);

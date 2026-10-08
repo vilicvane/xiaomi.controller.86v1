@@ -49,7 +49,7 @@ document.querySelector("#app")!.innerHTML = `
       </aside>
     </div>
     <section class="api card" id="api" aria-labelledby="api-title"><div class="api-heading"><span class="api-icon">${icon("code")}</span><h2 id="api-title">图片上传 API</h2><span class="api-badge">HTTP</span></div>
-      <div class="api-body"><dl class="request-fields"><div><dt>Method</dt><dd><code class="method">POST</code></dd></div><div><dt>URL</dt><dd><code id="api-url">http://PANEL_IPV4:18086/api/image</code></dd></div><div><dt>Content-Length</dt><dd>文件实际字节数，最大 <code>1 MiB</code></dd></div><div><dt>Payload</dt><dd>完整的 480 × 320 PNG 或 JPEG 文件</dd></div></dl><div><p>将图片裁切缩放为 <strong>480 × 320</strong> 后，直接发送图片文件即可，不需要专用头部或 Content-Type。网页下载的 PNG 可直接用于 API；网页发送时会检查固件能力，旧版设备仍使用 VIMG。</p><h3>cURL 示例</h3><pre class="api-example"><code id="api-curl"></code></pre><p>保留文件名前的 <code>@</code>，它表示让 cURL 读取本地文件内容。只将 <code>@</code> 后面的文件名或路径替换为下载的 <code>.png</code> 文件，或其他符合格式要求的 JPEG。cURL 会自动发送 Content-Length。旧版固件请使用下载的 <code>.vimg</code> 文件。</p><p><code>202</code> 表示面板已接收并排队显示。图片保存在 RAM，重启后清除。</p><a class="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md" target="_blank" rel="noopener noreferrer">完整协议 ${icon("arrow")}</a></div></div></section>
+      <div class="api-body"><dl class="request-fields"><div><dt>Method</dt><dd><code class="method">POST</code></dd></div><div><dt>URL</dt><dd><code id="api-url">http://PANEL_IPV4:18086/api/image</code></dd></div><div><dt>Content-Length</dt><dd>文件实际字节数，最大 <code>1 MiB</code></dd></div><div><dt>Payload</dt><dd>完整的 480 × 320 PNG 或 JPEG 文件</dd></div></dl><div><p>将图片裁切缩放为 <strong>480 × 320</strong> 后，直接发送图片文件即可，不需要专用头部或 Content-Type。网页下载的 PNG 可直接用于 API；网页发送时会检查固件能力，旧版设备仍使用 VIMG。</p><h3>cURL 示例</h3><pre class="api-example"><code id="api-curl"></code></pre><p>保留文件名前的 <code>@</code>，它表示让 cURL 读取本地文件内容。只将 <code>@</code> 后面的文件名或路径替换为下载的 <code>.png</code> 文件，或其他符合格式要求的 JPEG。cURL 会自动发送 Content-Length。旧版固件请使用下载的 <code>.vimg</code> 文件。</p><p><code>202</code> 表示面板已接收并排队显示。支持持久保存的固件会先保存图片，重启后自动恢复；旧版固件只保存在 RAM 中。</p><a class="text-link" href="https://github.com/vilicvane/xiaomi.controller.86v1/blob/main/docs/http-image-api.md" target="_blank" rel="noopener noreferrer">完整协议 ${icon("arrow")}</a></div></div></section>
     </div>
     <section id="settings-page" hidden></section>
     <section id="not-found-page" class="not-found card" hidden><h2 tabindex="-1">找不到这个页面</h2><a href="${BASE}" class="button secondary" data-page="editor">返回画面 ${icon("arrow")}</a></section>
@@ -374,6 +374,7 @@ element("download-payload").addEventListener("click", () =>
 function status(
   message = "",
   kind: "idle" | "working" | "success" | "error" = "idle",
+  persistent = false,
 ) {
   const states = {
     idle: { label: "发送画面", icon: "upload" },
@@ -384,7 +385,7 @@ function status(
   const button = element<HTMLButtonElement>("send");
   button.dataset.state = kind;
   button.setAttribute("aria-busy", String(kind === "working"));
-  element("send-label").textContent = states[kind].label;
+  element("send-label").textContent = kind === "success" && persistent ? "画面已保存" : states[kind].label;
   element("send-icon").innerHTML = icon(states[kind].icon);
   const feedback = element("send-feedback");
   feedback.textContent = message;
@@ -412,7 +413,7 @@ element<HTMLFormElement>("send-form").addEventListener(
       const sentRevision = revision;
       const vimg = imageBody(pixels());
       const png = await pngBody();
-      await sendCanvasImage(endpoint, png, vimg);
+      const result = await sendCanvasImage(endpoint, png, vimg);
       let addressChanged = true;
       try {
         addressChanged =
@@ -422,8 +423,9 @@ element<HTMLFormElement>("send-form").addEventListener(
       }
       const edited = sentRevision !== revision || addressChanged;
       status(
-        edited ? "本次画面已接收；当前编辑或地址已改变，可再次发送。" : "",
+        edited ? `本次画面已${result.persistent ? "保存" : "接收"}；当前编辑或地址已改变，可再次发送。` : "",
         "success",
+        result.persistent,
       );
     } catch (cause) {
       status(

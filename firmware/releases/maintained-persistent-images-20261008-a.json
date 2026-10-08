@@ -1,0 +1,493 @@
+{
+  "release": "maintained-persistent-images-six-page-20261008-a",
+  "factory_firmware": "1.50.10",
+  "date": "2026-10-08",
+  "candidate_sha256": "e061db87d2e4e4aa1e2836a89fa1dd1f47215826914b5b492b59b9bce7388591",
+  "freeze_sha256": "9a3f4d7e39a1451d7bef16672415d4183f516234a3741d986d3c721b6d39a801",
+  "candidate_inputs": 522,
+  "frozen_inputs": 528,
+  "program": {
+    "mainBytes": 3368,
+    "auxBytes": 396,
+    "netBytes": 3940,
+    "codecBytes": 3012,
+    "storeBytes": 1676,
+    "elfSha256": "f7e4d2bbeff500ac997e694846523ddc025f94d88d1bccf7306419233ae6fcd3"
+  },
+  "context_bytes": 224,
+  "worker_image_state_bytes": 16,
+  "worker_stack_bytes": 16384,
+  "pages": {
+    "code": {
+      "offset": "0x92b000",
+      "before_sha256": "abd0ef0b0316ab1de0089f63a8b8d72e1c5067a71b228e6755f5de9861df1ad2",
+      "after_sha256": "10d09ef72551f5f3de43c1e0085e2488ed86201b9fb4319997c433167429ffa2"
+    },
+    "entry": {
+      "offset": "0xccd000",
+      "before_sha256": "ed3bc98fdd0af88b22107c506dc4bc6e00fef11ae844d5f0c237199acde24c26",
+      "after_sha256": "8d00658f19aaa6ea7d18d38dc65859b85fdf33b43bd02d4f014fc52abe57da60"
+    },
+    "aux": {
+      "offset": "0x95a000",
+      "before_sha256": "3e6328adde7e52148c2f4cb6f43ed8444f57a125761dc370b56cdbf627bb5a75",
+      "after_sha256": "1e207f75866b660291550e84d5d181a01e9beceb1e737eea48f90c3fcde4b0c3"
+    },
+    "net": {
+      "offset": "0x92d000",
+      "before_sha256": "76a994fbd3892960f43db969b4744fbb726d23feac5c24df86041398ee5d299d",
+      "after_sha256": "c8012b56dd2a85e9006171bc49fbcfd52ce4208b0d14e9fe645789095ef6a869"
+    },
+    "codec": {
+      "offset": "0x927000",
+      "before_sha256": "21c40d397e6ec14f61011544f736962470f623c91ba3bbf7a6d89d120ba23c02",
+      "after_sha256": "2b93200bc8c510879510d3b78f91029fce086dcf9e8282e3c5e3e927381c01a3"
+    },
+    "store": {
+      "offset": "0x932000",
+      "before_sha256": "6874cd0d613150d2c71c70bbf5513f83f72214304e2891f092d50e6e87d84c71",
+      "after_sha256": "9b2e104cc35fd21c0eaeb980aeafd5271cf931a0086e9b985c8e82916916c019"
+    }
+  },
+  "baseline": {
+    "name": "native-image-drawer",
+    "freeze_sha256": "fa99d95a98b3abd4f3e76ce304a4d6a12623f50338d0240a6aba4b91f0a0cf61",
+    "additional_pages": [
+      "stock 0x92d000",
+      "stock 0x927000",
+      "stock 0x932000"
+    ]
+  },
+  "upgrade": {
+    "from": "maintained-images-five-page-20261008-a",
+    "before": {
+      "original": false,
+      "patched": true,
+      "full_pages": 5,
+      "result_sha256": "7a7e936c4c5acd147301c61a85446dd915a7ca11b9ef01f244e418340005e269"
+    },
+    "previous_release_restore": {
+      "passed": true,
+      "full_pages": 5,
+      "native_app_complete": true,
+      "safe_to_resume": true,
+      "protection_cache_context_closed": true,
+      "outer_global": true,
+      "warm_readback": true,
+      "result_sha256": "eabd30aaf0266d9782fad86d5c2fbf78272f80e5eee0d2aef611642b653f395b",
+      "outer_result_sha256": "e0ca6d74ed7686d9fad4709770a215eedd51a023659c2067745b3c9a03d3345f"
+    },
+    "new_baseline": {
+      "original": true,
+      "patched": false,
+      "full_pages": 6,
+      "result_sha256": "14c0e04ac26e7eb0610bede1abac2af2fe254d7d2b094c380f955fccfbf4f534"
+    },
+    "install_followed_exact_restore": true,
+    "short_execution_bundle_inputs_identical": true
+  },
+  "installation": {
+    "passed": true,
+    "full_pages": 6,
+    "native_app_complete": true,
+    "safe_to_resume": true,
+    "protection_cache_context_closed": true,
+    "outer_global": true,
+    "warm_readback": true,
+    "result_sha256": "e8164d8f79cfe0d5b6bc0b6f32a7bef455eb91f941907fe697dc5f6bf1db8d59",
+    "outer_result_sha256": "b177527d5d502a06d455047b213431bc7171fce4ff3e912a18b6eaaa415b0bb2",
+    "fresh_check": {
+      "original": false,
+      "patched": true,
+      "full_pages": 6,
+      "result_sha256": "bff5ea245e15985cc711adfd000f3247e5a1ed71874d6028435b8efe139e5600"
+    },
+    "own_hardware_restore": "not_tested",
+    "final_after_two_warm_resets": {
+      "patched": true,
+      "original": false,
+      "full_pages": 6,
+      "result_sha256": "bff5ea245e15985cc711adfd000f3247e5a1ed71874d6028435b8efe139e5600"
+    }
+  },
+  "offline": {
+    "actual_arm_groups": 566,
+    "actual_arm_ui_groups": 36,
+    "actual_arm_http_groups": 42,
+    "actual_arm_settings_groups": 17,
+    "actual_arm_image_store_groups": 23,
+    "image_store_completed_calls": 264,
+    "actual_arm_codec_cases": 420,
+    "actual_arm_vimg_cases": 28,
+    "independent_poisoned_jpeg_abi_groups": 7,
+    "writer_mocks": 139,
+    "node_release_tests": 12,
+    "host_http_checks": 299,
+    "web_tests": 30,
+    "hardware_proof": false,
+    "writer_mock_sha256": "978e3592a3a487520ea54730a25486f3daf282bac286c6a729aa9cddcd909c96",
+    "arm_model_sha256": "d065224a77d842217ebb46a0b37bd5fffa2128f88e0f50f53bb6d7b983548905"
+  },
+  "storage": {
+    "medium": "MMC /data through existing exact1.50.10 native FAT ABI",
+    "paths": [
+      "/data/86v1-image.0",
+      "/data/86v1-image.1"
+    ],
+    "record_header_bytes": 20,
+    "magic": "VPI1",
+    "format": "little-endian sequence/length/bodyFNV/headerFNV plus complete original PNG/JPEG/VIMG",
+    "max_encoded_bytes": 1048576,
+    "known_decoded_record_protected": true,
+    "save_requires_sync_close_independent_full_byte_readback": true,
+    "boot_fallback": "Newest fully checked decodable image, then older; no valid image retains default address UI",
+    "nor_backup_restore_includes_or_deletes_files": false,
+    "failure_semantics": "Non202 or missing response can leave a newly saved image if publication or reply fails; no automatic retry. Files shorterthan4B cannotprove projectownership andsave409."
+  },
+  "direct_http": {
+    "source": "Node HTTP, not browser or LCD scanout",
+    "capability_persistent": true,
+    "settings_get_seconds": 60,
+    "settings_post": "not_performed",
+    "requests": [
+      {
+        "label": "persistent_capabilities",
+        "status": 200,
+        "body_bytes": 0,
+        "body_sha256": null,
+        "elapsed_ms": 555,
+        "response": "{\"formats\":[\"png\",\"jpeg\",\"vimg\"],\"persistent\":true}\n"
+      },
+      {
+        "label": "settings_read_only",
+        "status": 200,
+        "body_bytes": 0,
+        "body_sha256": null,
+        "elapsed_ms": 39,
+        "response": "{\"return_after_seconds\":60}\n"
+      },
+      {
+        "label": "save_vimg",
+        "status": 202,
+        "body_bytes": 307216,
+        "body_sha256": "6896fc3c58db76c91e329955692705652b76118df883742d8294c68bd2ea89ef",
+        "elapsed_ms": 5035,
+        "response": ""
+      },
+      {
+        "label": "save_png",
+        "status": 202,
+        "body_bytes": 2204,
+        "body_sha256": "ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e",
+        "elapsed_ms": 261,
+        "response": ""
+      },
+      {
+        "label": "save_jpeg",
+        "status": 202,
+        "body_bytes": 55134,
+        "body_sha256": "92258a039937a73071bb61f3ec8dc43a14269838b74fe8e38aba1c087ec90e13",
+        "elapsed_ms": 1672,
+        "response": ""
+      },
+      {
+        "label": "damaged_png",
+        "status": 422,
+        "body_bytes": 2204,
+        "body_sha256": "3df98a6b0750545ff71f4c379d4d818c684ea039aecebbfd2a2d8ae2fbe1c5a0",
+        "elapsed_ms": 366,
+        "response": ""
+      },
+      {
+        "label": "after_warm_capabilities",
+        "status": 200,
+        "body_bytes": 0,
+        "body_sha256": null,
+        "elapsed_ms": 567,
+        "response": "{\"formats\":[\"png\",\"jpeg\",\"vimg\"],\"persistent\":true}\n"
+      },
+      {
+        "label": "save_default_png",
+        "status": 202,
+        "body_bytes": 2204,
+        "body_sha256": "ec1af029dc4492a8a09d8e4d985b3266434b05458d407167b3bddb710154c59e",
+        "elapsed_ms": 255,
+        "response": ""
+      },
+      {
+        "label": "after_warm_capabilities",
+        "status": 200,
+        "body_bytes": 0,
+        "body_sha256": null,
+        "elapsed_ms": 569,
+        "response": "{\"formats\":[\"png\",\"jpeg\",\"vimg\"],\"persistent\":true}\n"
+      }
+    ],
+    "full_rgb565_readbacks": [
+      {
+        "label": "saved-vimg",
+        "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 1,
+        "displayed_generation": 1,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 16093,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "saved-png",
+        "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 2,
+        "displayed_generation": 2,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 17887,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "saved-jpeg",
+        "image_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "expected_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 3,
+        "displayed_generation": 3,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 19902,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "rejected-keeps-jpeg",
+        "image_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "expected_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 3,
+        "displayed_generation": 3,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 422,
+        "gui_cycles": 21931,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "warm-reloaded-jpeg",
+        "image_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "expected_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 1,
+        "displayed_generation": 1,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 2947,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "saved-default",
+        "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 2,
+        "displayed_generation": 2,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 4721,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "browser-saved-default",
+        "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 3,
+        "displayed_generation": 3,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 36036,
+        "return_after_ms": 60000
+      },
+      {
+        "label": "warm-reloaded-default",
+        "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+        "pixel_match": true,
+        "stable_slot_and_generation": true,
+        "alive": 1,
+        "ready": 1,
+        "generation": 1,
+        "displayed_generation": 1,
+        "pending": 0,
+        "server_state": 1,
+        "server_error": 0,
+        "gui_cycles": 2986,
+        "return_after_ms": 60000
+      }
+    ],
+    "evidence_sha256": "4f1e85fe40c3127004b3d516b8f5f9ba896772057ff4a77e34f67d77603bc4f0",
+    "request_durations_are_not_benchmarks": true
+  },
+  "persistence": {
+    "warm_reset_count": 2,
+    "os_shutdown_hooks": false,
+    "register": "0x400800a4",
+    "value": "0x200",
+    "jpeg_reload": {
+      "label": "warm-reloaded-jpeg",
+      "image_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+      "expected_sha256": "5a28faf9dd128fea6854542f48094545bed5d7b9d7c0a9d2bd8807ece7583d95",
+      "pixel_match": true,
+      "stable_slot_and_generation": true,
+      "alive": 1,
+      "ready": 1,
+      "generation": 1,
+      "displayed_generation": 1,
+      "pending": 0,
+      "server_state": 1,
+      "server_error": 0,
+      "gui_cycles": 2947,
+      "return_after_ms": 60000
+    },
+    "browser_png_reload": {
+      "label": "warm-reloaded-default",
+      "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+      "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+      "pixel_match": true,
+      "stable_slot_and_generation": true,
+      "alive": 1,
+      "ready": 1,
+      "generation": 1,
+      "displayed_generation": 1,
+      "pending": 0,
+      "server_state": 1,
+      "server_error": 0,
+      "gui_cycles": 2986,
+      "return_after_ms": 60000
+    },
+    "cold_power_cycle": "skipped_by_user_request",
+    "real_write_interruption_or_power_loss": "not_tested"
+  },
+  "frontend": {
+    "version": "6d2572cb-61e0-40b1-b28f-837e32d53157",
+    "official_url": "https://wan.sh/xiaomi-86v1/",
+    "static_assets": [
+      {
+        "path": "/xiaomi-86v1/",
+        "status": 200,
+        "sha256": "948b3d9fe01d382822625a80fb358d95937207b8e6b1910d7ad3cc16853c803e"
+      },
+      {
+        "path": "/xiaomi-86v1/favicon.svg",
+        "status": 200,
+        "sha256": "9deb6871422d648c4b38611b177a8e70d5b83b9f9f14e7adffc684c62866d750"
+      },
+      {
+        "path": "/xiaomi-86v1/assets/index-BOARENIK.js",
+        "status": 200,
+        "sha256": "d1f6694b339d48a20d85092ebcfe08427358141fd390a3c1064e569cd61d6fd2"
+      },
+      {
+        "path": "/xiaomi-86v1/assets/index-9MlYzZU2.css",
+        "status": 200,
+        "sha256": "4ea220f00891b708906dc491cec686bf445bf865f752c0cb66c570c3ad510975"
+      }
+    ],
+    "initial_lan_requests": 0,
+    "page_errors": [],
+    "actual_https_send": {
+      "requests": [
+        {
+          "path": "/api/image",
+          "method": "GET",
+          "bytes": 0,
+          "sha256": null,
+          "content_type": null
+        },
+        {
+          "path": "/api/image",
+          "method": "POST",
+          "bytes": 6050,
+          "sha256": "6c143f6a071c80c02f05be1fecfbf99012f63b6e09869c24a2f877f1a96bb965",
+          "content_type": null
+        }
+      ],
+      "responses": [
+        {
+          "path": "/api/image",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/image",
+          "method": "POST",
+          "status": 202
+        }
+      ],
+      "state": "success",
+      "label": "画面已保存",
+      "passed": true
+    },
+    "permission": "temporary origin-scoped agent CDP grant; not human permission click",
+    "permission_restored": "prompt",
+    "actual_browser_result_sha256": "456c57a92dabc77af6c70113205ddc911afb0716b42959a58b141074cff50c06",
+    "permission_restored_sha256": "b60acc01d75a5227b48601c84380e78004f695f35bb85f18eeedefb05cbcc931",
+    "pixel_readback": {
+      "label": "browser-saved-default",
+      "image_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+      "expected_sha256": "224cb0599b95530f1876f069004ed23b7061c25ac9bee165e5beaefd0d338bc3",
+      "pixel_match": true,
+      "stable_slot_and_generation": true,
+      "alive": 1,
+      "ready": 1,
+      "generation": 3,
+      "displayed_generation": 3,
+      "pending": 0,
+      "server_state": 1,
+      "server_error": 0,
+      "gui_cycles": 36036,
+      "return_after_ms": 60000
+    }
+  },
+  "user_observation": {
+    "prompt": "Default GitHub card, swipes, doubletap address and MiHome online/control; no powercut requested",
+    "reply": "确认正常",
+    "scope": "One bundled user report, not separate measured feature observations"
+  },
+  "limitations": [
+    "Full powercycle explicitly skipped; do not inherit oldcoldboot or arbitraryFAT/MMC powercut safety.",
+    "Store/decoder/HTTP models stub file/OS/allocator/locks/GUI boundaries; actualdisk failure and randompowerloss not tested.",
+    "Dual slots protect lastknown-decoded good record, butFAT andMMC are notproven atomic; unexpectedmount/pathrace betweenpreflightandcreate remainsoutside guarantee.",
+    "No sender authentication; format/hash checks do not authenticate sender.",
+    "HTTP202 andMEM-AP pixels/GUI generation do not measureLCD scanout. BrowserCDPgrant doesnotrepresent userpermissionclick.",
+    "Ownsixpage hardware restore untested; previousfivepage ownrestore passed duringthis migration only. Historical results remain unchanged."
+  ]
+}

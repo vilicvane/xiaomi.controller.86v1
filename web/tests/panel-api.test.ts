@@ -18,6 +18,7 @@ import {
   PanelUploadError,
   fnv1a32,
   getImageFormats,
+  getImageCapabilities,
   queryEndpoint,
   imageBody,
   imageFormat,
@@ -231,8 +232,26 @@ test("canvas upload selects PNG on new firmware and VIMG only on an explicit leg
       return new Response(null, { status: 202 });
     });
     assert.deepEqual(methods, ["GET", "POST"]);
-    assert.deepEqual(result, { status: 202, accepted: true });
+    assert.deepEqual(result, { status: 202, accepted: true, persistent: false });
   }
+});
+
+test("saved confirmation requires an explicit persistence capability and a successful POST", async () => {
+  for (const persistent of [true, false, undefined]) {
+    const methods: string[] = [];
+    const result = await sendCanvasImage("192.0.2.20", png, vimg, async (_url, init) => {
+      methods.push(init!.method!);
+      return init?.method === "GET" ? Response.json({ formats: ["png"], persistent }) :
+        new Response(null, { status: 202 });
+    });
+    assert.deepEqual(methods, ["GET", "POST"]);
+    assert.deepEqual(result, { status: 202, accepted: true, persistent: persistent === true });
+  }
+  assert.deepEqual(await getImageCapabilities("192.0.2.20", async () => new Response(null, { status: 404 })),
+    { formats: ["vimg"], persistent: false });
+  await assert.rejects(sendCanvasImage("192.0.2.20", png, vimg, async (_url, init) =>
+    init?.method === "GET" ? Response.json({ formats: ["png"], persistent: true }) :
+      new Response(null, { status: 503 })), /HTTP 503|无法接收/);
 });
 
 test("failed or invalid capability reads never POST and never silently select VIMG", async () => {
@@ -243,6 +262,7 @@ test("failed or invalid capability reads never POST and never silently select VI
     () => Response.json({ formats: [] }),
     () => Response.json({ formats: "png" }),
     () => Response.json({ formats: ["png", 1] }),
+    () => Response.json({ formats: ["png"], persistent: "true" }),
     () => Response.json({ formats: ["jpeg"] }),
   ];
   for (const failure of failures) {

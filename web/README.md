@@ -4,10 +4,10 @@
 使用 Vite + TypeScript 构建静态文件，Navigo 管理图片编辑与设置的独立页面。
 图片编辑为 HTTP 图片 API 准备 480×320 画面。
 图片在浏览器内裁切、缩放、转换并发送到同一局域网的面板；不需要后端或图片中转服务。
-当前已安装 `maintained-images-five-page-20261008-a`，支持 PNG/JPEG/VIMG。
-直接图片上传网页已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`，五项线上文件与构建
-精确一致，Chrome 启动无错误及自动 LAN 请求。官方 HTTPS 页面的发送按钮已完成一次
-真实 PNG POST/202；LCD、米家及交互用户观察仍待验收。历史 idle-return a 和 g 的结果单独保留。
+当前已安装 `maintained-persistent-images-six-page-20261008-a`，支持 PNG/JPEG/VIMG 的 MMC 持久保存。
+网页版本 `6d2572cb-61e0-40b1-b28f-837e32d53157` 已部署，HTML/favicon/JS/CSS 与构建
+一致，Chrome 无错误、初始无自动局域网请求。正式 HTTPS 按钮发送 PNG 返回 202，显示
+“画面已保存”；完整像素读回和暖重启后的自动恢复通过。历史五页及更早结果单独保留。
 设备使用入口为 [wan.sh/xiaomi-86v1/](https://wan.sh/xiaomi-86v1/)；刷写、调试器购买与
 SWD 接线见 [刷写与配置指南](../docs/flashing.md)。安装指南明确依赖本机私有基线，
 本目录的网页构建和发布命令不会刷写面板。
@@ -33,7 +33,7 @@ RGB565LE、VIMG 头和 FNV。查询错误会停止，失败 POST 不会换格式
 从导航进入“设置”（`/xiaomi-86v1/settings`），读取或保存原界面未触摸后的等待时间。
 图片编辑保留在 `/xiaomi-86v1/`；两页都支持 `?device=` 自动填写面板地址。
 自动返回默认 60 秒、0 关闭、范围 0–3600。
-设置按重启保留实现，图片仍为 RAM-only；只计触屏，物理按键不影响计时。设置请求只由
+设置按重启保留实现，当前图片也单独保存到 MMC；只计触屏，物理按键不影响计时。设置请求只由
 明确点击发出，初始为“尚未读取”；GET/POST JSON 各有 10 秒超时，不自动重试，地址改变
 取消旧请求，迟到响应不覆盖新编辑。客户端位于 `src/settings.ts`，协议与当前验收范围见
 [自动返回说明](../docs/auto-return.md)。idle-return a 安装、真实设置接口和暖复位加载已验证，旧 g 无此接口；
@@ -70,8 +70,10 @@ npm --prefix web run build
 [前端开发与使用说明](../docs/frontend.md)，完整协议见
 [HTTP 图片 API](../docs/http-image-api.md)。
 
-HTTP 202 表示设备已接收并排队供 GUI 消费；图片保存在 RAM，重启不会保留。
-当前 images 和历史 idle-return a 沿用 `https://wan.sh/xiaomi-86v1/`；访问面板 `IP:18086` 会用 303 跳转，
+能力 `persistent: true` 加本次 POST 202 表示已保存并排队供 GUI 消费，按钮显示“画面已保存”。
+旧版没有该能力时只显示“画面已接收”，图片在 RAM。保存后发布或响应仍可能失败，不能自动重发。
+详情见 [图片持久保存](../docs/persistent-images.md)。
+当前版本和历史 idle-return a 沿用 `https://wan.sh/xiaomi-86v1/`；访问面板 `IP:18086` 会用 303 跳转，
 通过 `?device=` 自动填入设备地址，使用设备不需要电脑开发服务器。未来更换目标
 hostname 需要新的冻结固件 release；网页发布不会自动修改设备中的目标 URL。
 浏览器请求本地网络权限时，授权后才能上传。
@@ -159,9 +161,17 @@ idle-return a 当轮的 19 项网页单元测试、生产构建及 Windows Chrom
 API 锚点、修饰点击、未知/尾斜线/无效参数、360px 无溢出与零页面错误。6 次设置请求
 全部使用浏览器模拟接口，没有请求真实面板，不扩展 a 版固件验收或证明新版已上线。
 
-## 当前 PNG/JPEG 版本验证
+## 当前持久保存版验证
 
-当前 images 版本通过 420 个实际 ARM 解码案例、36 组 UI、34 组 HTTP、17 组设置模型，
+30 项网页测试通过；正式页面能力 GET200 和单次 6050B PNG POST202/“画面已保存”通过，
+没有 Content-Type 或自动重发。临时 CDP 本地网络权限测试后恢复 prompt，非用户点击许可。
+完整 RGB565 读回一致，随后暖重启自动加载该 PNG，计数1、pending0/server1/error0。
+用户对默认画面、手势、双击及米家的组合问题回复“确认正常”；完整断电仍按用户要求跳过。
+安装与实际请求范围见 [本轮发布结果](../firmware/releases/maintained-persistent-images-20261008-a.json)。
+
+## 历史五页 PNG/JPEG 验证
+
+历史 images 版本通过 420 个实际 ARM 解码案例、36 组 UI、34 组 HTTP、17 组设置模型，
 网页通过 29 项单元测试。本机 Chrome 的真实 sRGB Canvas PNG 已进入离线 native HTTP
 模型，接收、解码和 GUI 像素均与参考一致；解码本身执行原厂 ARM 指令。
 该 Chrome 检查没有请求真实面板。独立实机验证已完成五页安装闭包、GLOBAL、暖启动和

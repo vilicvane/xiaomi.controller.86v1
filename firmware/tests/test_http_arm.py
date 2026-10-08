@@ -11,6 +11,7 @@ import os
 import struct
 import sys
 import zlib
+import test_image_store_arm as image_store
 
 ROOT = Path(__file__).resolve().parents[2]
 TEST_SHA = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
@@ -68,8 +69,12 @@ def upload(payload, checksum=None, content_type='application/octet-stream'):
     return request('POST', '/api/image', fields), header, payload
 
 
-class Machine(previous.Machine):
-    def __init__(self, fail_allocation=0, **options):
+class Machine(image_store.FileSystem, previous.Machine):
+    def __init__(self, fail_allocation=0, files=None, mounts=None, file_faults=None, **options):
+        self.init_files(files if files is not None else getattr(self, 'files', None),
+                        mounts if mounts is not None else getattr(self, 'mounts', None),
+                        file_faults)
+        self.file_errno = ERROR
         self.ip_family = 2
         self.ip_queries = 0
         self.receive_calls = []
@@ -79,7 +84,6 @@ class Machine(previous.Machine):
         self.before_receive = None
         self.lock_fail_calls = set()
         self.lock_calls = 0
-        self.file_calls = []
         self.heap_live = {}
         self.heap_next = HEAP
         self.heap_attempts = 0
@@ -110,7 +114,7 @@ class Machine(previous.Machine):
         self.uc.mem_write(0x38000000, STOCK_A7)
         with ELF.open('rb') as stream:
             for section in ELFFile(stream).iter_sections():
-                if section['sh_flags'] & 2 and section['sh_size']:
+                if section['sh_type'] == 'SHT_PROGBITS' and section['sh_flags'] & 2 and section['sh_size']:
                     self.uc.mem_write(section['sh_addr'], section.data())
         super()._install_hooks()
         self.hook(0x380051ec, lambda: self.ret(0))  # getenv OS boundary
@@ -137,7 +141,9 @@ class Machine(previous.Machine):
             self.heap_events.append({'failed': size})
             self.ret(0)
             return
-        if self.allocations:
+        if self.allocations and ((self.allocations[0], size) in
+            ((HEADER, 2048), (CTX, 224), (PIXELS, 1843200)) or
+            self.allocations[0] == 0 and size == 2048):
             pointer = self.allocations.pop(0)
             if not pointer:
                 self.heap_events.append({'failed': size})
@@ -167,32 +173,6 @@ class Machine(previous.Machine):
             self.freed.append(pointer)
             self.heap_events.append({'freed': size})
         self.ret(0)
-
-    def file_open(self):
-        r = self.uc.reg_read
-        assert not self.locks, 'File open while GUI locked'
-        assert r(UC_ARM_REG_SP) % 8 == 0
-        path = self.string(r(UC_ARM_REG_R0))
-        assert path in ('/data/86v1-return.0', '/data/86v1-return.1')
-        assert (r(UC_ARM_REG_R1), r(UC_ARM_REG_R2)) == (1, 0)
-        self.file_calls.append(('open-missing', path))
-        self.word(ERROR, 2)
-        self.ret(-1)
-
-    def file_getfile(self):
-        raise AssertionError('Missing-only filesystem obtained a descriptor')
-
-    def file_read(self):
-        raise AssertionError('Missing-only filesystem attempted a read')
-
-    def file_write(self):
-        raise AssertionError('Missing-only filesystem attempted a write')
-
-    def file_sync(self):
-        raise AssertionError('Missing-only filesystem attempted fsync')
-
-    def file_close(self):
-        raise AssertionError('Missing-only filesystem attempted file close')
 
     def string(self, address):
         data = bytearray()
@@ -334,6 +314,7 @@ class Machine(previous.Machine):
 
     def codec_cleanup(self):
         assert self.heap_live == {HEADER: 2048}, self.heap_live
+        assert not self.descriptors, self.descriptors
         self.guards()
         assert hashlib.sha256(self.uc.mem_read(0x38000000, 0x4e0000)).hexdigest() == self.native_code_hash
 
@@ -489,11 +470,11 @@ def response_checks():
     before = tuple(m.f(name) for name in ('image', 'receive', 'image_pending', 'generation', 'displayed_generation'))
     slots = bytes(m.uc.mem_read(IMAGE, 614400))
     m.transact([request('GET', '/api/image')])
-    m.response(200, b'{"formats":["png","jpeg","vimg"]}\n', image_capability=True)
+    m.response(200, b'{"formats":["png","jpeg","vimg"],"persistent":true}\n', image_capability=True)
     assert tuple(m.f(name) for name in ('image', 'receive', 'image_pending', 'generation', 'displayed_generation')) == before
     assert bytes(m.uc.mem_read(IMAGE, 614400)) == slots
     m.codec_cleanup()
-    checks.append('GET/api/image returns exact PNG/JPEG/VIMG capability JSON with application/json, close/no-store/CORS, without image-slot/pending/generation mutation or transient allocation')
+    checks.append('GET/api/image returns exact PNG/JPEG/VIMG and persistent:true capability JSON with application/json, close/no-store/CORS, without image-slot/pending/generation mutation or transient allocation')
 
     cases = [
         (request('PUT', '/'), 405),
@@ -688,12 +669,14 @@ def image_checks():
         m.transact([http + binary, data])
         m.response(503)
         assert not m.f('image_pending') and m.f('image') == IMAGE
+        assert m.files[image_store.IMAGE_PATHS[1]] == image_store.record(1, binary + data)
+        assert image_store.Machine(m.files).load(payload) == 0
     m = Machine().ready().custom()
     m.fail_clock_calls.add(m.clock_calls + 5)
     m.transact([http + binary, data])
     m.response(400)
     assert not m.f('image_pending') and m.f('image') == IMAGE
-    checks.append('Failed publication lock, dead owner and payload CLOCK failure preserve pending0 and active image even after receive has begun')
+    checks.append('Failed publication lock or dead owner returns503 without pending/active changes even after verified save; fresh boot still recovers the saved file. Payload CLOCK failure preserves active image without claiming durable rollback')
 
     m = Machine().ready().custom()
     m.now = 0xfffffff0
@@ -776,6 +759,7 @@ def encoded_image_checks(formats=('png', 'jpeg')):
             assert m.f('generation') == 1 and m.f('displayed_generation') == 0
             assert bytes(m.uc.mem_read(IMAGE, 307200)) == before
             assert bytes(m.uc.mem_read(RECEIVE, 307200)) == reference
+            assert m.files[image_store.IMAGE_PATHS[1]] == image_store.record(1, encoded)
             m.codec_cleanup()
             m.tick(ms=0)
             assert m.f('image') == RECEIVE and m.f('receive') == IMAGE and not m.f('image_pending')
@@ -793,7 +777,7 @@ def encoded_image_checks(formats=('png', 'jpeg')):
                 'worker_stack_observed_bytes': WORKER_SP - m.minimum_worker_sp})
             m.f('alive', 0)
             assert m.worker() and not m.heap_live
-        checks.append(f'Actual ARM HTTP→stock {image_format.upper()} decoder handles coalesced and fragmented/EAGAIN/EINTR binary input without Content-Type; exact RGB565 stays inactive until actual GUI swap/render matches full RGB32 reference; encoded/native heap frees before202')
+        checks.append(f'Actual ARM HTTP→stock {image_format.upper()} decoder handles coalesced and fragmented/EAGAIN/EINTR binary input without Content-Type; exact RGB565 stays inactive until actual GUI swap/render matches full RGB32 reference; original encoded file sync/close/readback and encoded/native heap cleanup precede202')
 
     if 'png' in formats:
         png = (FIXTURES / 'card-original.png').read_bytes()
@@ -865,6 +849,7 @@ def encoded_image_checks(formats=('png', 'jpeg')):
             assert m.f('generation') == generation
             assert bytes(m.uc.mem_read(active, 307200)) == before
             assert bytes(m.uc.mem_read(receive, 307200)) == reference
+            assert m.files[image_store.IMAGE_PATHS[(index + 1) & 1]] == image_store.record(index + 1, encoded)
             m.codec_cleanup()
             m.tick(ms=0)
             assert m.f('image') == receive and m.f('receive') == active and not m.f('image_pending')
@@ -878,7 +863,173 @@ def encoded_image_checks(formats=('png', 'jpeg')):
             'active_preserved_until_gui_swap': True, 'transient_heap_cleanup': True,
             'heap_peak_bytes': m.heap_peak, 'allocation_attempts': m.heap_attempts,
             'worker_stack_observed_bytes': WORKER_SP - m.minimum_worker_sp})
-        checks.append('PNG→JPEG→PNG on the same HTTP worker alternates both owned image slots, produces exact GUI frames, advances generation once per admission and leaves no decoder state or transient allocations between requests')
+        checks.append('PNG→JPEG→PNG on the same HTTP worker alternates RAM slots and original encoded MMC records, produces exact GUI frames, advances generation once per admission and leaves no decoder state or transient allocations between requests')
+    return checks
+
+
+def persistence_checks():
+    checks = []
+    values = image_store.fixtures()
+    for name, encoded, reference in values:
+        files = {image_store.IMAGE_PATHS[1]: image_store.record(1, encoded)}
+        m = Machine(files=files).ready().custom()
+        m.f('generation', 0)
+        m.return_on_empty = False
+        active = bytes(m.uc.mem_read(IMAGE, 307200))
+        assert not m.worker()
+        assert m.f('image_pending') and m.f('image') == IMAGE
+        assert m.f('generation') == 0 and bytes(m.uc.mem_read(IMAGE, 307200)) == active
+        assert bytes(m.uc.mem_read(RECEIVE, 307200)) == reference
+        m.codec_cleanup()
+        m.tick(ms=0)
+        assert m.f('image') == RECEIVE and m.f('generation') == m.f('displayed_generation') == 1
+        assert bytes(m.uc.mem_read(PIXELS, 614400)) == expanded_pixels(reference)
+        m.transact([request('GET', '/api/image')])
+        m.response(200, b'{"formats":["png","jpeg","vimg"],"persistent":true}\n', image_capability=True)
+        assert m.files == files and not m.file_counts['write']
+        m.codec_cleanup()
+        CODEC_EVIDENCE.append({'case': name + '-fresh-server-boot', 'native_decode': True,
+                              'exact_inactive_rgb565': True, 'exact_gui_rgb32': True,
+                              'no_boot_file_writes': True,
+                              'worker_stack_observed_bytes': WORKER_SP - m.minimum_worker_sp})
+    checks.append('Fresh HTTP worker loads persisted PNG/JPEG/VIMG before listening, leaves active/generation unchanged until GUI admission, then renders exact full RGB32; GET advertises persistence without rewriting files')
+
+    _, png, reference = values[0]
+    bad_png = bytearray(png)
+    bad_png[-1] ^= 1
+    for newer in (image_store.record(3, bytes(bad_png)), image_store.record(3, png)[:-1],
+                  image_store.record(3, png, checksum=0), image_store.record(3, png) + b'x'):
+        files = {image_store.IMAGE_PATHS[0]: image_store.record(2, png), image_store.IMAGE_PATHS[1]: newer}
+        m = Machine(files=files).ready().custom()
+        m.f('generation', 0)
+        m.return_on_empty = False
+        m.worker()
+        assert m.f('image_pending') and bytes(m.uc.mem_read(RECEIVE, 307200)) == reference
+        m.tick(ms=0)
+        assert m.f('generation') == m.f('displayed_generation') == 1
+        assert bytes(m.uc.mem_read(PIXELS, 614400)) == expanded_pixels(reference)
+        assert m.files == files and not m.file_counts['write']
+        m.codec_cleanup()
+    checks.append('Boot verifies both envelopes and actual native image contents; torn/hash-invalid/trailing/native-CRC-invalid newer record falls back to older complete image without modifying files')
+
+    _, jpeg, jpeg_pixels = values[1]
+    fallback_files = {image_store.IMAGE_PATHS[0]: image_store.record(2, png),
+                      image_store.IMAGE_PATHS[1]: image_store.record(3, bytes(bad_png))}
+    for failed in (False, True):
+        m = Machine(files=fallback_files).ready().custom()
+        m.f('generation', 0)
+        m.return_on_empty = False
+        m.worker()
+        m.tick(ms=0)
+        assert m.f('generation') == m.f('displayed_generation') == 1
+        assert bytes(m.uc.mem_read(PIXELS, 614400)) == expanded_pixels(reference)
+        active, receive = m.f('image'), m.f('receive')
+        if failed:
+            m.file_faults[('write', 1)] = 0
+        m.transact(encoded_events(jpeg))
+        m.response(503 if failed else 202)
+        assert m.files[image_store.IMAGE_PATHS[0]] == fallback_files[image_store.IMAGE_PATHS[0]]
+        if failed:
+            assert not m.f('image_pending') and m.f('generation') == 1
+            assert bytes(m.uc.mem_read(active, 307200)) == reference
+            assert image_store.Machine(m.files).load(reference) == 0
+        else:
+            assert m.files[image_store.IMAGE_PATHS[1]] == image_store.record(5, jpeg)
+            assert m.f('image_pending') and bytes(m.uc.mem_read(receive, 307200)) == jpeg_pixels
+            m.tick(ms=0)
+            assert m.f('generation') == m.f('displayed_generation') == 2
+            assert bytes(m.uc.mem_read(PIXELS, 614400)) == expanded_pixels(jpeg_pixels)
+        m.codec_cleanup()
+    checks.append('Worker retains the actually decoded old record when newer hash-valid PNG cannot decode; failed next save preserves recoverable old image, while successful save replaces bad slot with sequence5 and GUI renders exact JPEG')
+
+    for replacement in (None, b'VPI1', image_store.record(4, png)):
+        m = Machine(files={image_store.IMAGE_PATHS[0]: image_store.record(2, png)}).ready().custom()
+        m.f('generation', 0)
+        m.return_on_empty = False
+        m.worker()
+        m.tick(ms=0)
+        if replacement is None:
+            del m.files[image_store.IMAGE_PATHS[0]]
+        else:
+            m.files[image_store.IMAGE_PATHS[0]] = replacement
+        before = dict(m.files)
+        m.transact(encoded_events(jpeg))
+        m.response(503)
+        assert m.files == before and not m.file_counts['write']
+        assert not m.f('image_pending') and m.f('generation') == m.f('displayed_generation') == 1
+        assert bytes(m.uc.mem_read(m.f('image'), 307200)) == reference
+        m.codec_cleanup()
+    checks.append('Known loaded slot missing/torn/externally replaced causes HTTP503 before truncate/write; worker-local protection keeps active pixels and both generation counters unchanged')
+
+    for files, faults, error in (({image_store.IMAGE_PATHS[0]: b'FOREIGN'}, {}, 409),
+                                 ({image_store.IMAGE_PATHS[0]: b'VPI1'}, {}, 422),
+                                 ({}, {('open', 3): 5}, 503)):
+        m = Machine(files=files, file_faults=faults).ready().custom()
+        active = bytes(m.uc.mem_read(IMAGE, 307200))
+        m.return_on_empty = False
+        assert not m.worker()
+        assert m.f('server_error') == error and m.f('server_state') == 1
+        m.transact([request('GET', '/api/image')])
+        m.response(200, b'{"formats":["png","jpeg","vimg"],"persistent":true}\n', image_capability=True)
+        assert not m.f('image_pending') and m.f('generation') == 1
+        assert bytes(m.uc.mem_read(IMAGE, 307200)) == active
+        assert m.files == files and not m.file_counts['write']
+        assert not m.f('server_error')
+        m.codec_cleanup()
+    m = Machine(files={image_store.IMAGE_PATHS[1]: image_store.record(1, png)}, fail_allocation=1).ready().custom()
+    m.return_on_empty = False
+    assert not m.worker() and m.f('server_error') == 503
+    m.transact([request('GET', '/api/image')])
+    m.response(200, b'{"formats":["png","jpeg","vimg"],"persistent":true}\n', image_capability=True)
+    assert not m.f('image_pending') and m.f('generation') == 1
+    m.codec_cleanup()
+    checks.append('Foreign/damaged/I/O/OOM saved image records boot status409/422/503 without publishing partial output or preventing the HTTP service; a later successful request resets last-status error, and header allocation remains independent')
+
+    cases = [({image_store.IMAGE_PATHS[0]: b'FOREIGN'}, {}, 409),
+             ({image_store.IMAGE_PATHS[1]: b'FOREIGN'}, {}, 409),
+             ({}, {('write', 1): 0}, 503), ({}, {('write', 1): ('error', 5)}, 503),
+             ({}, {('sync', 1): 5}, 503), ({}, {('close', 1): 5}, 503)]
+    for files, faults, status in cases:
+        m = Machine(files=files, file_faults=faults).ready().custom()
+        active = bytes(m.uc.mem_read(IMAGE, 307200))
+        generation = m.f('generation'), m.f('displayed_generation')
+        m.transact(encoded_events(png))
+        m.response(status)
+        assert not m.f('image_pending') and m.f('image') == IMAGE
+        assert bytes(m.uc.mem_read(IMAGE, 307200)) == active
+        assert (m.f('generation'), m.f('displayed_generation')) == generation
+        assert m.f('server_error') == status
+        if status == 409:
+            assert m.files == files and not m.file_counts['write']
+        m.codec_cleanup()
+    checks.append('Decoded HTTP image is not published when save returns foreign409 or write/zero-progress/sync/close503; original active pixels and both generation counters remain unchanged, with no automatic retry')
+
+    m = Machine().ready().custom()
+    active = bytes(m.uc.mem_read(IMAGE, 307200))
+    def reject_readback(model, event):
+        assert not model.f('image_pending') and model.f('generation') == 1
+        assert bytes(model.uc.mem_read(IMAGE, 307200)) == active
+        if event['op'] == 'read' and model.file_counts['sync']:
+            model.file_faults[('read', event['call'])] = ('error', 5)
+    m.on_file_operation = reject_readback
+    m.transact(encoded_events(png))
+    m.response(503)
+    assert m.files[image_store.IMAGE_PATHS[1]] == image_store.record(1, png)
+    assert not m.f('image_pending') and m.f('generation') == 1
+    m.codec_cleanup()
+    assert image_store.Machine(m.files).load(reference) == 0
+    checks.append('Independent readback failure returns503 and never publishes even if the complete modeled record already exists; a later fresh load can recover it, without falsely promising durable rollback')
+
+    m = Machine().ready().custom()
+    def before_publish(model, event):
+        assert not model.f('image_pending') and model.f('generation') == 1
+    m.on_file_operation = before_publish
+    m.transact(encoded_events(png), [('error', 5)])
+    assert not m.sent and 12 in m.closed and m.f('image_pending')
+    assert m.files[image_store.IMAGE_PATHS[1]] == image_store.record(1, png)
+    m.codec_cleanup()
+    assert image_store.Machine(m.files).load(reference) == 0
+    checks.append('Write/sync/close/full readback all run outside GUI locks and before pending; lost HTTP response after commit does not undo the saved file or queue publication and does not imply client confirmation')
     return checks
 
 
@@ -1008,13 +1159,15 @@ def server_checks():
 
 
 def main(formats=('png', 'jpeg')):
-    checks = parser_checks() + response_checks() + image_checks() + encoded_image_checks(formats) + exact_checks() + server_checks()
+    checks = parser_checks() + response_checks() + image_checks() + encoded_image_checks(formats) + persistence_checks() + exact_checks() + server_checks()
     result = {'passed': True, 'hardware_operation': False, 'check_count': len(checks),
         'checks': checks, 'elf_sha256': hashlib.sha256(ELF.read_bytes()).hexdigest(),
         'test_sha256': TEST_SHA,
+        'image_store_model_sha256': hashlib.sha256(Path(image_store.__file__).read_bytes()).hexdigest(),
         'context_bytes': 224, 'header_heap_bytes': 2048, 'image_payload_bytes': 307200,
         'original_nor_sha256': ORIGINAL_SHA, 'stock_native_decoders_executed': list(formats),
         'worker_stack_requested_bytes': WORKER_STACK_BYTES, 'encoded_image_cases': CODEC_EVIDENCE,
+        'image_persistence': True, 'modeled_file_abi': 'Exact FAT inode/type/ops; OPEN/READ/WRITE/SYNC/CLOSE mocked, not hardware durability',
         'configured_redirect_tested': bool(FRONTEND), 'configured_cors_tested': ORIGIN != '*',
         'limitations': 'Actual project and original PNG/JPEG ARM instructions execute; allocator/getenv/socket APIs, selected libc formatting/zeroing, locks and GUI driver boundaries are mocked. Worker stack is block-observed with a lower boundary guard on tested paths only. Real RPC timing/OS scheduling/LCD scanout/available heap/cold boot are unchecked.'}
     output = Path(os.environ.get('PANEL_TEST_OUTPUT', ROOT / 'build/reviews/direct-images-http-arm-offline-result.json'))

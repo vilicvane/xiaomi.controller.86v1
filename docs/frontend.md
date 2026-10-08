@@ -3,7 +3,19 @@
 本页面用于 86V1 自定义固件的图片下拉屏幕功能。页面源码在 [web](../web/README.md)，
 使用 Vite 和 TypeScript 构建为静态文件，Navigo 管理页面路由；网页显示名称为“小米智能家庭面板”。
 目标画面固定为 480×320、横向 3:2；裁切和缩放在用户的浏览器执行。
-当前已安装 `maintained-images-five-page-20261008-a`，设备端接收并解码 PNG/JPEG。
+当前六页图片持久保存版接收并解码 PNG/JPEG，并在成功上传时保存到 MMC。
+能力查询的 `persistent: true` 使发送按钮显示“画面已保存”；省略或为 false 则显示“画面已接收”。
+页面仍只在明确发送操作时访问局域网，失败不会自动重发。保存语义见
+[图片持久保存](persistent-images.md)，本轮验证见
+[发布结果](../firmware/releases/maintained-persistent-images-20261008-a.json)。
+
+本轮网页版本 `6d2572cb-61e0-40b1-b28f-837e32d53157` 已部署，HTML、SVG favicon、JS 和 CSS
+四项资源与构建一致。Chrome 页面无错误、初始无局域网请求；显式发送时能力 GET200、
+单次 6050B PNG POST202，按钮显示“画面已保存”，完整像素读回及暖重启后加载一致。
+测试通过 agent CDP 临时授予正式网页本地网络权限，完成后恢复 prompt，非用户点击权限的证据。
+
+以下五页版的部署及浏览器结果保留为历史检查点，不作为六页版的验证：
+此前已安装 `maintained-images-five-page-20261008-a`，设备端接收并解码 PNG/JPEG。
 网页在点击发送时查询设备能力，支持 PNG 时发送完整 PNG；旧 idle-return a 或 g 的能力查询
 明确返回 404 时才选择 VIMG。新版网页已部署为 `2ee45a5f-6b04-42ce-80bb-2e92e4dc4cc5`，
 五项线上文件均为 200 且字节与构建一致；Chrome 启动无错误、无自动 LAN 请求。
@@ -68,7 +80,7 @@ body 格式，并提供可复制的 cURL 示例，直接发送下载的 `.png`�
 `/xiaomi-86v1/settings` 页面，支持直接访问和刷新；两页均读取 `?device=`。
 设置页可读取或保存原界面未触摸后的等待时间，默认 60 秒，0 关闭，最大 3600 整数秒。
 只计触摸屏，物理键不重置；原系统息屏返回独立生效。设置保存到 MMC 并按重启保留实现，
-与 RAM 图片分开。接口和用户操作见 [自动返回说明](auto-return.md)。
+与图片的两个 MMC 文件分开；旧五页及更早版图片只在 RAM。接口和用户操作见 [自动返回说明](auto-return.md)。
 
 `settings.ts` 复用图片客户端的地址规范化，但不改图片协议。读取和保存分别请求
 GET/POST `/api/settings`，POST 声明 `application/json`；只在明确点击按钮时联网，页面
@@ -112,8 +124,9 @@ curl --data-binary "@picture-480x320.png" "http://PANEL_IPV4:18086/api/image"
 旧固件请改用下载的 `.vimg`，不要直接发送 PNG/JPEG。第一方 CLI 会查询 PNG/JPEG 能力，
 不兼容时提示升级并停止；命令见 [HTTP 图片 API](http-image-api.md)。
 
-`202` 仅确认完整图像已接受并排队供 GUI 消费，不证明 LCD 扫描已经完成；图片仅存于
-RAM，不是保存到 Flash。连接中断或浏览器没有收到响应时，结果可能不确定，不能报告成功。
+当前 `persistent: true` 的固件返回 `202` 时，已完成 MMC 保存和完整读回确认，并排队供 GUI
+消费，不证明 LCD 扫描已经完成；旧五页及更早版的图片仅存 RAM。
+连接中断或浏览器没有收到响应时，保存结果可能不确定，不能报告成功。
 页面不会自动重复发送来掩盖失败。
 
 此前安装过的 `maintained-http-four-page-20261007-g` 接受不指定 Content-Type 的 VIMG HTTP API；

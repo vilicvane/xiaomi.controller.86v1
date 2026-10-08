@@ -16,7 +16,49 @@
   a bus lock requiring complete power removal.
 - After any uncertain native call, preserve the stopped state and evidence.
   Do not blindly retry, resume, reset, or replay old CPU/SRAM context.
-- Current installed release is maintained-images-five-page-20261008-a, for this exact 1.50.10 image.
+- Current installed release is maintained-persistent-images-six-page-20261008-a, exact 1.50.10 only.
+  Candidate SHA e061db87d2e4e4aa1e2836a89fa1dd1f47215826914b5b492b59b9bce7388591;
+  528-input freeze SHA 9a3f4d7e39a1451d7bef16672415d4183f516234a3741d986d3c721b6d39a801.
+  ELF SHA f7e4d2bbeff500ac997e694846523ddc025f94d88d1bccf7306419233ae6fcd3.
+  Main/aux/net/codec/store are 3368/396/3940/3012/1676B, ending at
+  0x3804be30/0x3807a8f0/0x3804df64/0x38047c5c/0x3805268c.
+  Six NOR pages: 0x927000/0x92b000/0x92d000/0x932000/0x95a000/0xccd000.
+  New storage container 0x38052000..0x38052bf0 borrows only the optional monkey diagnostic main tail.
+  Preserve prefix4B/suffix1036B and payload exterior; entry+0xe6c changes 0x38051fd1 to 0x3804b109.
+  Stock0x932000 SHA 6874cd0d613150d2c71c70bbf5513f83f72214304e2891f092d50e6e87d84c71.
+  Normal boot/recovery mkgpt is required; do not borrow it. Neighbor0x38052bf0 is retained.
+  Install store→codec→net→aux→code→entry; restore entry→code→aux→net→codec→store.
+  Baseline is exact old image experiment three pages plus stock net/codec/store; never overlay six pages
+  with historical writers. Use complete byte-matching C:\p86-persist-a frozen executor and adjacent verifier.
+  Native168B caller/kernel unchanged. Previous five-page own restore passed full native/cache/context,
+  outer GLOBAL and warm readback; then six-page original check, full install closure and fresh patched passed.
+  New six-page own hardware restore is untested. Final check after two independent warm resets is patched.
+  Context224B and16KiB network stack unchanged; known image record state16B lives only on the worker stack.
+  Images save original PNG/JPEG/VIMG to project MMC /data/86v1-image.0/.1, with20B VPI1 header,
+  sequence/parity/length/body FNV/header FNV and1..1MiB content. Preflight both slots and FAT objects;
+  protect the actual decoded known sequence/length/hash even if a newer hash-valid file cannot decode.
+  Write the other slot, sync, close and independently compare every byte before updating state/pending.
+  Boot validates and decodes newest, then falls back to older. GET /api/image returns persistent:true.
+  POST202 confirms saved+queued, not LCD scanout. Non202/missing ACK can leave a new file if publication
+  or reply fails; never automatically retry. Foreign files409; I/O/confirmation503. Torn1..3B magic cannot
+  prove ownership and remains foreign409. Preflight/open are not filesystem-wide atomic. Real FAT/MMC
+  power-loss safety is unproven; NOR backup/restore neither captures nor removes image/settings files.
+  Final566 ARM groups:448codec/VIMG+36UI+42HTTP+17settings+23store(264completed calls); ABI7,
+  actual candidate139 writer mocks,12release,299host HTTP and30web tests passed. OS boundaries modeled.
+  Real VIMG307216B/PNG2204B/JPEG55134B POST202/full565 exact, generation/display1/2/3;
+  bad PNG422 preserves JPEG3. Two standalone AON GLOBAL warm resets without OS shutdown hooks reloaded
+  JPEG and browser PNG respectively, fresh generation/display1,pending0/server1/error0, full565 exact.
+  Settings GET60, no new settings POST. Official web6d2572cb-61e0-40b1-b28f-837e32d53157 deployed;
+  four HTML/assets exact200, initial LAN requests0 and errors0. Actual HTTPS explicit send returned
+  capability200/one6050B PNG POST202/button画面已保存/full565 exact generation3 before warm reload.
+  Agent CDP origin-scoped local-network grant was temporary and restored to prompt, not a user permission click.
+  User replied确认正常 to the bundled default card/swipes/doubletap/MiHome question; record this scope,
+  do not turn it into separate measured observations. Public result:
+  firmware/releases/maintained-persistent-images-20261008-a.json.
+  Cold power cycle explicitly user-skipped; do not ask again. Preserve NEEDS_INSPECTION on uncertainty.
+- Previous installed release was maintained-images-five-page-20261008-a, for this exact 1.50.10 image.
+  The following is its original checkpoint; its own later restore passed during the six-page migration
+  and is recorded only in the new persistent-images result, leaving historical frozen results unchanged.
   Candidate SHA 992b58c7aa72a162aca23756088ce8951467fa1d624ba8c7889a155ab430021b;
   477-input freeze SHA 627a224c619b59a6813b47685e272cd19a4f8b25bb04af1bdbf690b31cf2a330.
   Main/aux/net/codec are 3368/396/4012/2916B ending 0x3804be30/0x3807a8f0/0x3804dfac/0x38047bfc.

@@ -1,6 +1,7 @@
 #include "panel.h"
 #include "http.h"
 #include "image-codec.h"
+#include "image-store.h"
 
 int panel_exact(int fd, u8 *data, u32 bytes, u32 start, u32 sending)
 {
@@ -32,6 +33,7 @@ static int body(struct incoming *input, u8 *destination, u32 bytes)
     return panel_exact(input->fd, destination + count, bytes - count, input->start, 0);
 }
 
+__attribute__((section(".text.storage.http"), noinline))
 static unsigned headers(struct incoming *input, u8 *buffer,
                         struct panel_http_request *request)
 {
@@ -56,7 +58,8 @@ static unsigned headers(struct incoming *input, u8 *buffer,
 }
 
 __attribute__((section(".text.codec.http"), noinline))
-static unsigned image(struct broker *c, struct incoming *input, unsigned length)
+static unsigned image(struct broker *c, struct panel_image_store *store,
+                      struct incoming *input, unsigned length)
 {
     u32 header[4] = {0};
     unsigned prefix = length < sizeof(header) ? length : sizeof(header);
@@ -70,21 +73,15 @@ static unsigned image(struct broker *c, struct incoming *input, unsigned length)
     u8 *destination = 0;
     if (!LOCK(c->mutex, 0)) { destination = (u8 *)c->receive; UNLOCK(c->mutex); }
     if (!destination) return 503;
-    if (raw) {
-        if (body(input, destination, PANEL_IMAGE_BYTES)) return 400;
-        u32 checksum = 2166136261u;
-        for (u32 i = 0; i < PANEL_IMAGE_BYTES; ++i) checksum = (checksum ^ destination[i]) * 16777619u;
-        if (checksum != header[3]) return 422;
-    } else {
-        u8 *encoded = ALLOC(length);
-        if (!encoded) return 503;
-        for (unsigned i = 0; i < prefix; ++i) encoded[i] = ((u8 *)header)[i];
-        unsigned status = body(input, encoded + prefix, length - prefix) ? 400 :
-                          panel_image_decode(encoded, length, (u16 *)destination);
-        FREE(encoded);
-        if (status) return status;
-    }
-    unsigned status = 503;
+    u8 *encoded = ALLOC(length);
+    if (!encoded) return 503;
+    for (unsigned i = 0; i < prefix; ++i) encoded[i] = ((u8 *)header)[i];
+    unsigned status = body(input, encoded + prefix, length - prefix) ? 400 :
+                      panel_image_decode(encoded, length, (u16 *)destination);
+    if (!status) status = panel_image_save(store, encoded, length);
+    FREE(encoded);
+    if (status) return status;
+    status = 503;
     if (!LOCK(c->mutex, 0)) {
         if (c->alive) { c->image_pending = 1; status = 202; }
         UNLOCK(c->mutex);
@@ -98,7 +95,7 @@ static void reply(struct broker *c, int fd, char *buffer, unsigned status,
     static const char welcome[] =
         "86V1 custom firmware\nFrontend URL is not configured.\n"
         "POST /api/image accepts 480x320 PNG, JPEG or VIMG.\n";
-    static const char formats[] = "{\"formats\":[\"png\",\"jpeg\",\"vimg\"]}\n";
+    static const char formats[] = "{\"formats\":[\"png\",\"jpeg\",\"vimg\"],\"persistent\":true}\n";
     char json[PANEL_SETTINGS_BODY_BYTES];
     unsigned size = 0;
     const char *payload = welcome;
@@ -146,6 +143,13 @@ void panel_server(struct broker *c)
     panel_settings_load(&store);
     if (!LOCK(c->mutex, 0)) {
         c->return_after_ms = store.seconds * 1000u; c->activity_valid = 0;
+        UNLOCK(c->mutex);
+    }
+    struct panel_image_store image_store;
+    unsigned loaded = panel_image_load(c->receive, &image_store);
+    c->server_error = loaded == 404 ? 0 : loaded;
+    if (!loaded && !LOCK(c->mutex, 0)) {
+        if (c->alive) c->image_pending = 1;
         UNLOCK(c->mutex);
     }
     u8 *buffer = ALLOC(PANEL_HTTP_HEADER_BYTES);
@@ -203,7 +207,7 @@ void panel_server(struct broker *c)
                         UNLOCK(c->mutex); status = 200;
                     }
                 }
-            } else if (request.method == PANEL_HTTP_POST) status = image(c, &input, request.length);
+            } else if (request.method == PANEL_HTTP_POST) status = image(c, &image_store, &input, request.length);
             else if (request.resource == PANEL_HTTP_IMAGE) status = 200;
             else status = PANEL_FRONTEND_URL[0] ? 303 : 200;
         }

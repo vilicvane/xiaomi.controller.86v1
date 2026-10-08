@@ -1,8 +1,12 @@
 # 86V1 自定义固件：HTTP 图片 API
 
-本页描述已安装的 `maintained-images-five-page-20261008-a` 的 PNG / JPEG / VIMG 接口，
-实机直接上传、完整像素读回和拒绝损坏 PNG 的结果见
-[发布结果](../firmware/releases/maintained-images-20261008-a.json)。
+本页描述 `maintained-persistent-images-six-page-20261008-a` 的 PNG / JPEG / VIMG 接口，
+它将成功上传的图片保存在 MMC，并在启动时加载。验证范围见
+[发布结果](../firmware/releases/maintained-persistent-images-20261008-a.json)。
+此前五页图片格式版的图片只保存在 RAM，其结果单独保留。
+
+本轮直接 PNG/JPEG/VIMG 保存、损坏 PNG 拒绝和完整像素读回均通过。
+直接 JPEG 与正式网页 PNG 在两次独立暖重启后自动恢复，完整像素一致；完整断电未验收。
 此前 `maintained-idle-return-four-page-20261007-a` 只接受 VIMG；其历史结果不改写。
 历史 raw TCP/VACK 协议另见 [原型协议](image-upload-protocol.md)，维护版不接受旧 raw TCP 上传。
 
@@ -53,9 +57,12 @@ node firmware/tools/upload.ts PANEL_IPV4 photo-480x320.jpg
 PNG / JPEG 上传前会查询能力；旧固件明确返回 404 时，工具会提示升级而停止，
 不会把普通图片偷偷改成另一种格式，也不会发送必然不兼容的 POST。
 
-`202` 表示图像已完成接收及校验，并在 RAM 中排队供 GUI 消费；
-不表示 LCD 扫描完成，也不表示图片已保存到 Flash。重启后图片清除。
-未完整接收、解码失败或失败发布不会替换当前图像。
+当前版 `202` 表示图像已完成接收、解码、MMC 写入、同步、关闭及独立完整读回确认，
+然后在 RAM 中排队供 GUI 消费；不表示 LCD 扫描完成。
+未完整接收、解码失败或保存失败不会发布当前请求的画面。
+保存完成后仍可能发生发布失败或响应丢失，因此未收到 `202` 不保证持久图片未改变。
+客户端应报告失败或结果不确定，不能自动重发。保存及启动恢复见
+[图片持久保存](persistent-images.md)。
 地址页接收新图片后仍保持地址页，双击返回图片时展示最新一张。
 
 ## 请求与能力查询
@@ -65,15 +72,17 @@ PNG / JPEG 上传前会查询能力；旧固件明确返回 404 时，工具会�
 | `GET /` | 配置前端 URL 时 `303` + Location，否则 `200` 本机说明页 |
 | `GET /api/image` | `200`、`application/json`，列出可上传的格式 |
 | `OPTIONS /api/image` | `204`，提供 CORS header |
-| `POST /api/image` | 完整接收、校验并排队供 GUI 消费后 `202` |
+| `POST /api/image` | 完整接收、校验、确认保存并排队供 GUI 消费后 `202` |
 
 能力响应为：
 
 ```json
-{"formats":["png","jpeg","vimg"]}
+{"formats":["png","jpeg","vimg"],"persistent":true}
 ```
 
 已部署的旧维护版对 `GET /api/image` 返回 404，网页仅在这个明确响应后选择 VIMG。
+五页图片格式版返回同样的三种格式但没有 `persistent`；缺省或 `false` 表示 RAM 接收，
+只有明确的 `true` 才表示成功上传包括持久保存。网页相应显示“已接收”或“已保存”。
 能力查询发生网络错误、返回无效 JSON 或其他 HTTP 状态时，客户端停止，不把错误当作旧固件。
 能力 GET 只读，不上传、清除或持久化任何图片。
 
@@ -118,20 +127,21 @@ node firmware/tools/upload.ts PANEL_IPV4 --pattern
 
 常见状态为 400 无效/截断请求、404 路径不存在、405 方法不支持、408 请求头超时、
 411 缺 Content-Length、413 body 过大、415 不支持格式/编码、417 不支持 Expect、
-422 图片尺寸或内容校验失败、431 请求头超过2048B、503 clock/资源/解码或发布不可用。
+409 图片存储路径存在不属于本项目的文件、422 图片尺寸或内容校验失败、
+431 请求头超过2048B、503 clock/资源/解码/文件 I/O/保存确认或发布不可用。
 不支持 Transfer-Encoding、chunked、100-continue 或连接复用。
 PNG / JPEG 自身的格式压缩受到支持；HTTP Content-Encoding 只能省略或为 identity，
 gzip、deflate 等其他值返回 415，不能在图片外再包一层 HTTP 压缩。
 
 接收/发送各自检查 5 秒无进展及 30 秒总期限。网络 worker 串行处理请求，等待及解码
-期间不持 GUI/publisher 锁；这些应用检查不约束底层 native RPC 的最长延迟。
+及 MMC 保存期间不持 GUI/publisher 锁；这些应用检查不约束底层 native RPC 的最长延迟。
 解码器使用每请求的独立状态及预算，不借用共享 GUI 图片缓存或正在显示的缓冲区。
 连接失效或超时后不保证错误 response 送达；客户端未收到成功时应报告结果不确定，
 检查设备后手动重试，不能自动重发。
 
 API 提供 Access-Control-Allow-Origin、GET/POST 及 Content-Type 的预检响应。
 浏览器前端须和设备在可互访的局域网；浏览器本地网络权限仍需用户允许。
-当前正式 HTTPS 页面在 agent Chrome 中已完成能力查询和单次 PNG 上传，返回 202，
+此前五页图片格式版的正式 HTTPS 页面在 agent Chrome 中完成能力查询和单次 PNG 上传，返回 202，
 完整 RGB565 读回一致。该测试临时用 CDP 授予站点本地网络权限，随后恢复 prompt；
 不代表用户点击了权限提示或所有浏览器均可用。
 g 的正式 HTTPS 页面 VIMG 上传曾由用户确认，并观察到 GUI 消费新图，

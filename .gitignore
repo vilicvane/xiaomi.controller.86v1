@@ -17,6 +17,7 @@
 !/firmware/tests/test_http_arm.py
 !/firmware/tests/test_settings_arm.py
 !/firmware/tests/test_image_codec_arm.py
+!/firmware/tests/test_image_store_arm.py
 !/firmware/tests/ui-offline-result.json
 !/firmware/tests/http-arm-offline-result.json
 !/firmware/releases/maintained-http-20261007.json
@@ -24,6 +25,7 @@
 !/firmware/releases/maintained-http-20261007-g.json
 !/firmware/releases/maintained-idle-return-20261007-a.json
 !/firmware/releases/maintained-images-20261008-a.json
+!/firmware/releases/maintained-persistent-images-20261008-a.json
 !/web/package.json
 !/web/package-lock.json
 !/web/tsconfig.json

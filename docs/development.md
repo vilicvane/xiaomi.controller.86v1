@@ -1,18 +1,19 @@
 # 开发与维护流程
 
-当前项目为 **86V1 自定义固件**，本轮已安装版为 `maintained-images-five-page-20261008-a`，
-只适用于本机精确的 1.50.10 映像。它新增设备端 PNG/JPEG 解码和第五个 Flash 页，
-已冻结，116 项 writer 模拟通过；本轮五页安装、完整页/native/cache/context、outer GLOBAL
-和暖读回通过，随后新鲜检查为 `patched=true`。
-已完成 420 项解码器实际 ARM 检查、36 组 UI、34 组 HTTP、17 组设置，
-299 项 host HTTP、29 项网页和 12 项 release 工具测试通过。
+当前项目为 **86V1 自定义固件**，本轮六页图片持久保存版本为
+`maintained-persistent-images-six-page-20261008-a`，仅适用于本机精确的 1.50.10 映像。
+566 组实际 ARM、7 项 ABI、139 项当前候选 writer、12 项 release、299 项 host HTTP 和
+30 项网页检查通过，522-input candidate 与 528-input freeze 已完成。六页实机安装、
+完整页/native/cache/context、outer GLOBAL 和暖读回通过，fresh check 为 patched=true。
+PNG/JPEG持久保存、两次独立暖复位自动重载及完整RGB565读回通过，见
+[六页发布结果](../firmware/releases/maintained-persistent-images-20261008-a.json)。
 
-本轮迁移前，四页 `maintained-idle-return-four-page-20261007-a` 的新鲜只读检查为
+历史五页迁移前，四页 `maintained-idle-return-four-page-20261007-a` 的新鲜只读检查为
 `patched=true`。现已由它自身冻结执行器完成恢复，四页/native/context、outer GLOBAL
 和暖读回闭合；随后新五页检查为 `original=true`，再由新版本自身工具安装，五页暖读回
-和 fresh patched 检查通过。新能力 GET200 返回三种格式，设置 GET60；直接 Node 的
+和 fresh patched 检查通过。五页能力 GET200 返回三种格式，设置 GET60；直接 Node 的
 PNG/JPEG 请求、完整 RGB565 读回和错误图不替换现图通过，见
-[本轮发布结果](../firmware/releases/maintained-images-20261008-a.json)。
+[五页发布结果](../firmware/releases/maintained-images-20261008-a.json)。
 旧版 382 项 freeze、g 自身恢复、四页安装、真实设置读写和 AON GLOBAL
 暖复位结果保留在 [四页自动返回版结果](../firmware/releases/maintained-idle-return-20261007-a.json)，
 不用于证明新版本已安装。硬件工作前先读
@@ -30,7 +31,7 @@ Git 保存第一方源码、脚本、文档及明确准入的 review/result JSON
 | `backups/mi-panel-flash-16m-1.50.10-20261004.bin` | 精确 16MiB 原厂 NOR 基线 |
 | 各版本原始/补丁 4KiB 页、BIN/ELF | 重构、完整页比对和逐级回退 |
 | 旧图片实验版（`native-image-drawer`）93 项 freeze 及其依赖闭包 | 自定义固件的精确三页安装基线与旧回退材料 |
-| `build/releases/<唯一名称>/` | 新版本源码、构建输入、工具、完整页镜像及审查证据的不可覆盖快照；本轮为五页，历史 release 保持自身布局 |
+| `build/releases/<唯一名称>/` | 新版本源码、构建输入、工具、完整页镜像及审查证据的不可覆盖快照；本轮为六页，历史 release 保持自身布局 |
 | `tools/xpack-openocd-0.12.0-7/` | 本地已绑定 hash 的 OpenOCD |
 | WSL Ubuntu LLVM18、本地 `ld.lld`、公开 ABI 参考材料 | 新版本离线编译及分析 |
 | Unicorn、pyelftools、OpenOCD Jim mock 环境 | ARM 程序模型及固定 writer 模拟 |
@@ -48,11 +49,13 @@ Git 保存第一方源码、脚本、文档及明确准入的 review/result JSON
 ```powershell
 node firmware/tools/release.ts baseline
 node --test firmware/tools/release.test.ts
-node firmware/tools/release.ts verify maintained-images-five-page-20261008-a
+node firmware/tools/release.ts verify maintained-persistent-images-six-page-20261008-a
 ```
 
 这些是离线命令，不连接、halt、reset 或写设备。`release.ts` 没有硬件执行接口；它检查
-历史 freeze 的完整依赖、当前 release 的快照和派生页，不把重新计算 hash 当作完成审查。
+历史基线 freeze 的完整依赖、六页 release 的快照和派生页，不把重新计算 hash 当作完成审查。
+canonical 工具只接受 schema4 六页布局；旧五页及四页版本必须使用其自身冻结的
+`snapshot/firmware/tools/release.ts` 和相邻工具，不能用当前工具代替旧验证器。
 候选未 prepare/freeze 或材料缺失时，`verify` 应报告未就绪，不能绕过检查。
 维护源码、构建及 ARM 模型入口见 [firmware](../firmware/README.md)，发布流程和审查 JSON
 格式见 [离线工具](../firmware/tools/README.md)。
@@ -60,7 +63,8 @@ node firmware/tools/release.ts verify maintained-images-five-page-20261008-a
 已冻结的 C/S/链接脚本、BIN/ELF、prepare 输出及结果保持原字节。后续可以修改 canonical
 `firmware/` 源码并构建另一个唯一 release，不能覆盖旧快照或运行会改写历史 result 的生成器。
 缺材料先报告，不连接硬件凑结果。当前 [HTTP 图片 API](http-image-api.md) 与
-[历史 TCP 协议](image-upload-protocol.md) 分开记录；图片上传只修改 RAM。
+[历史 TCP 协议](image-upload-protocol.md) 分开记录。六页源码会保存图片到项目专用 MMC
+文件；旧五页及更早版本只修改图片 RAM。
 
 本轮源码按内容签名接收 PNG/JPEG/VIMG，Content-Type 可省略，Content-Length 为
 1..1048576B；非 identity Content-Encoding 拒绝。VIMG 的固定长度与 FNV 保留，
@@ -77,19 +81,19 @@ node firmware/tools/release.ts verify maintained-images-five-page-20261008-a
 [阶段计划](maintenance-plan.md)。
 
 1. 确认当前源码、freeze、manifest 和保存的安装结果相互匹配；硬件前按该版本核对所有
-   live 页，本轮为五页，旧自动返回版为四页，
+   live 页，本轮为六页，旧图片版为五页、旧自动返回版为四页，
    不将文档检查点当作实时探测结果。
 2. 在 WSL LLVM18 中使用 Cortex-A7 Thumb、freestanding、`-Oz` 构建。build record 绑定
    源码、输出和实际使用的八个 compiler resource headers；header 原字节复制到本地快照。
    原生函数地址和 ABI 仍按精确映像审查。
 3. 离线检查 ELF allocated 段、4B Thumb B.W 入口、加载地址和分段 raw BIN 一致性。
-   四段代码分别输出 `panel.bin`、`panel-aux.bin`、`panel-net.bin`、`panel-codec.bin`，不生成填满中间地址洞的
+   五段代码分别输出 `panel.bin`、`panel-aux.bin`、`panel-net.bin`、`panel-codec.bin`、`panel-store.bin`，不生成填满中间地址洞的
    平铺 BIN；核对各容器末端、相邻 helper
    和页面其余字节。
 4. 用实际 ARM ELF 模型验证绘图、输入和交接，writer Jim mock 验证固定页流程；另做独立
    程序/容量及 writer 审查。mock/stub 不证明 IRQ、真实驱动、网络或 LCD 时序。
-5. `prepare NAME OWNERSHIP.json` 创建独立私有快照，分别绑定网络页和解码页的 ownership 审查。
-   完成 storage ownership、程序、writer、实际 ARM 模型及当前 116 项 writer mock 五份
+5. `prepare NAME OWNERSHIP.json` 创建独立私有快照，分别绑定网络页、解码页和存储页的 ownership 审查。
+   完成 storage ownership、程序、writer、实际 ARM 模型及当前 139 项 writer mock 五份
    独立证据后，`freeze NAME EVIDENCE.json` 才能绑定全部输入。提交前核对准入
    文件，不能 force-add dump、原厂字节数组、session 或 BIN/ELF。
 6. 一个负责人使用该 release 冻结的 `hardware.ts` 和相邻验证器串行检查、安装，明确
@@ -100,9 +104,55 @@ node firmware/tools/release.ts verify maintained-images-five-page-20261008-a
 
 纯文档整理只检查链接、引用的版本及 `git diff --check`，不为提交而重复刷写。
 
-## 本轮五页发布
+## 本轮六页图片持久保存
 
-本轮四段 BIN 为 main/aux/net/codec **3368/396/4012/2916B**，完整 ELF SHA-256 为
+五段 BIN main/aux/net/codec/store 为 **3368/396/3940/3012/1676B**，完整 ELF SHA 为
+`f7e4d2bbeff500ac997e694846523ddc025f94d88d1bccf7306419233ae6fcd3`；
+522-input candidate SHA 为 `e061db87d2e4e4aa1e2836a89fa1dd1f47215826914b5b492b59b9bce7388591`，
+528-input freeze SHA 为 `9a3f4d7e39a1451d7bef16672415d4183f516234a3741d986d3c721b6d39a801`。
+存储容器为 `0x38052000..0x38052bf0`，NOR 页 `0x932000`，
+仅借用可选 `monkey` 压力诊断单函数尾部。原页 SHA 为
+`6874cd0d613150d2c71c70bbf5513f83f72214304e2891f092d50e6e87d84c71`；页前 4B、
+后 1036B 及 BIN 外字节保留，入口页 `+0xe6c` 从 `0x38051fd1` 改为禁用 stub。
+该诊断可通过持久调试开关启动，本版放弃它。正常启动/恢复需要的 `mkgpt` 已排除，不能借用。
+
+六页基线为旧图片实验版精确三页及原厂网络、解码、存储页；不能直接叠加在五页维护版上。
+迁移前须使用五页版自身冻结执行器恢复，核对其五页及 native/cache/context 闭合后，再
+用六页自身工具检查全部六页。安装 **store→codec→net→aux→code→entry**，恢复
+**entry→code→aux→net→codec→store**；完整页和 native 状态闭合前不允许 GLOBAL 或自动重试。
+本轮已使用完整短根副本 `C:\p86-img-a` 完成旧五页自身恢复，完整五页/native/cache/context、
+outer GLOBAL 和暖读回通过；随后 `C:\p86-persist-a` 六页检查为original，再安装六页，
+完整页/native/cache/context、outer GLOBAL、暖读回与fresh patched检查通过。
+六页自身硬件restore尚未测试；旧五页原始result保持不变，后续恢复记在新六页结果中。
+
+图片文件为 MMC `/data/86v1-image.0` 与 `.1`，20B little-endian `VPI1` header
+包含 magic/sequence/length/body FNV/header FNV，后接完整原编码 PNG/JPEG/VIMG，1..1MiB。
+16B sequence/length/hash/valid 状态归网络线程私有，broker 保持 224B。启动检查两槽，
+实际解码新版失败可回退旧图，全部失败保持默认图；保存完整预检两槽并保护已知可解码槽，
+另一槽即使 hash 有效但图像坏也不能导致可恢复旧图被覆盖。短读写、fsync、close 与
+独立完整逐字节读回确认后，才更新已知状态及 GUI pending。
+
+`GET /api/image` 返回 `persistent: true`；202 表示图片保存已确认并排队供 GUI 消费。
+发布锁、owner 或响应失败可能发生在保存之后，非 202/无响应不保证文件未改变；不自动重试。
+foreign 文件409、I/O/资源/确认失败503；不足4B的现有文件无法证明归属，保持foreign保护。
+中断模型证明的是应用双槽选择与旧图保护，不证明真实 FAT/MMC/RPMsgFS 掉电耐久性。
+NOR 备份及安装/恢复不包含、不删除图片或设置文件，回到旧固件也保留这些项目文件。
+
+真实307216B VIMG、2204B PNG和55134B JPEG依次POST202，完整RGB565匹配参考，计数1/2/3；
+坏PNG为422且保留JPEG和计数3。第一次独立AON GLOBAL暖复位不执行OS shutdown hooks，
+重新加载JPEG，计数1/pending0/server1/error0及完整像素匹配。随后保存默认PNG，再从正式
+网页发送6050B PNG，GET200/POST202、按钮“画面已保存”和完整RGB565读回通过。第二次
+独立暖复位自动加载浏览器保存的默认PNG，计数1/pending0/server1/error0和完整像素匹配。
+
+正式网页版本 `6d2572cb-61e0-40b1-b28f-837e32d53157`，HTML/favicon/JS/CSS四项精确200，
+Chrome零错误、初始零自动LAN请求。浏览器测试临时使用origin-scoped CDP本地网络许可，
+结束后恢复prompt，不记为用户点击许可。用户对默认GitHub图片、上下滑、双击和米家状态
+的合并问题回复“确认正常”，只记录合并观察，不扩展为分别测量。MEM-AP不证明LCD扫描，
+暖重载不证明真实MMC掉电耐久性；完整断电仍按用户要求跳过。
+
+## 历史五页发布检查点
+
+该历史五页的四段 BIN 为 main/aux/net/codec **3368/396/4012/2916B**，完整 ELF SHA-256 为
 `3f67d12758931a05fc22e20ddd89c51688ea9ec12de185ededce821b0ead79d3`。
 471 项 candidate 输入对应候选 SHA
 `992b58c7aa72a162aca23756088ce8951467fa1d624ba8c7889a155ab430021b`；
@@ -124,7 +174,7 @@ native/cache/context 闭合、outer GLOBAL、暖读回和 fresh patched 检查�
 generation/displayed_generation 依次为1和2。坏 PNG CRC 返回422且保留JPEG和计数2；
 最后恢复默认PNG为202，完整像素匹配且计数为3。新鲜运行状态 alive/ready=1、pending=0、
 server=1/error=0、GUI cycles推进。这些是HTTP和MEM-AP证据，不证明LCD扫描、用户浏览器
-或米家验收；请求耗时不作为性能基准。新版本自身硬件恢复尚未测试，完整断电仍按用户
+或米家验收；请求耗时不作为性能基准。该五页原始检查点尚未测试自身硬件恢复，完整断电仍按用户
 要求跳过。新结果不覆盖旧自动返回版记录或借用其图片、米家和冷启动证据。
 224B context、MMC 自动返回双槽、RAM-only 图片和 `NEEDS_INSPECTION` 约束沿用。
 
@@ -198,7 +248,8 @@ a 新增 [自动返回设置](auto-return.md)：只根据触摸屏活动计时�
 
 | 已安装版本 | 恢复入口 | 精确目标 |
 | --- | --- | --- |
-| 当前五页图片版 | 本版自己的冻结 `hardware.ts restore`，自身硬件恢复尚未测试 | 旧图片实验版三页与原厂网络/解码页 |
+| 当前六页图片持久保存版（已安装） | 六页本版冻结执行器；自身硬件恢复未测试 | 旧图片实验版三页与原厂网络/解码/存储页 |
+| 历史五页图片版 | 本版自己的冻结 `hardware.ts restore`，本轮六页迁移中已通过 | 旧图片实验版三页与原厂网络/解码页 |
 | 历史四页自动返回版 | 上述四页 a 冻结 `hardware.ts restore`，本轮五页迁移中已通过 | 旧图片实验版三页与原厂网络页 |
 | 历史自定义固件 g 四页 | g 自己冻结的 `hardware.ts restore`，a 迁移中已通过 | 旧图片实验版三页与原厂网络页 |
 | 历史自定义固件 d 四页 | d 自己冻结的 `hardware.ts restore`，g 迁移中已通过 | 旧图片实验版三页与原厂网络页 |
